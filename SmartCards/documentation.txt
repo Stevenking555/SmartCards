@@ -1,0 +1,25 @@
+After creating project:
+
+Set program.cs
+- Add connection string, dbcontext
+- add swagger:
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
+
+- and change the inside of the if block to this:
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
+
+Set launchSettings.json in Properties folder:
+- set "launchBrowser" to true
+- add this line to http: "launchUrl": "swagger",
+(this will instantly navigate us to swagger when runnign the project)
+
+Create Models
+
+Create Controllers
+
+Create Services
