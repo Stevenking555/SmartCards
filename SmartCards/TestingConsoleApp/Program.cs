@@ -73,7 +73,6 @@ namespace TestingConsoleApp
         }
 
         // --- CRUD OPERATIONS ---
-
         static void ExecuteList(string entity)
         {
             if (entity == "User")
