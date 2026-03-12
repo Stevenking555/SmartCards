@@ -1,4 +1,0 @@
-<Solution>
-  <Project Path="SmartCards.API/SmartCards.API.csproj" />
-  <Project Path="TestingConsoleApp/TestingConsoleApp.csproj" Id="e72157bd-ec2c-4757-af59-37ffcd32fe02" />
-</Solution>
