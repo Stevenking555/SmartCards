@@ -13,12 +13,16 @@ export class LoginComponent {
   auth = inject(AuthService);
   router = inject(Router);
   
-  email = '';
-  password = '';
+  currentuser = {
+    email: '',
+    password: '',
+    userName: '',
+  }
 
   onSubmit() {
-    if (this.email && this.password.length >= 6) {
-      this.auth.login(this.email, this.password);
+    if (this.currentuser.email && this.currentuser.password.length >= 6) {
+      this.auth.login(this.currentuser.email, this.currentuser.password);
+      this.router.navigate(['/home']);
       // Sikeres belépés után navigálhatunk pl. a főoldalra
     } else {
       alert("Wrong credentials!");

@@ -20,7 +20,7 @@ export class RegisterComponent {
   onSubmit() {
     if (this.email && this.password.length >= 6 && this.password === this.passwordAgain) {
       this.auth.register(this.email, this.password, this.passwordAgain);
-      // Sikeres regisztráció után navigálhatunk pl. a bejelentkező oldalra
+      this.router.navigate(['/login']);
     } else {
       alert("Wrong credentials!");
     }

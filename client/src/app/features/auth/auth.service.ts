@@ -4,6 +4,7 @@ import { Injectable, signal } from '@angular/core';
 export class AuthService {
   // Signal-t használunk az azonnali UI frissítéshez (React useState megfelelője)
   userName = signal<string | null>(null);
+  currentUser: any;
 
   register(email: string, password: string, passwordAgain: string) {
     const name = email.split('@')[0];
@@ -13,10 +14,12 @@ export class AuthService {
   login(email: string, password: string) {
     const name = email.split('@')[0];
     this.userName.set(name);
+    this.currentUser = { email, name, password };
   }
 
   logout() {
     this.userName.set(null);
+    this.currentUser = null;
   }
 
   forgotPassword(email: string) {
