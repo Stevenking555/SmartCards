@@ -7,9 +7,18 @@
   },
   "newProjectRoot": "projects",
   "projects": {
-    "SmartCardsFront": {
+    "client": {
       "projectType": "application",
-      "schematics": {},
+      "schematics": {
+        "schematics/angular:component": {
+        "skipTests": true,
+        "path": "src"
+      },
+      "@schematics/angular:service": {
+        "skipTests": true,
+        "path": "src/core/services"
+      }
+    },
       "root": "",
       "sourceRoot": "src",
       "prefix": "app",
@@ -57,10 +66,10 @@
           "builder": "@angular/build:dev-server",
           "configurations": {
             "production": {
-              "buildTarget": "SmartCardsFront:build:production"
+              "buildTarget": "client:build:production"
             },
             "development": {
-              "buildTarget": "SmartCardsFront:build:development"
+              "buildTarget": "client:build:development"
             }
           },
           "defaultConfiguration": "development"
