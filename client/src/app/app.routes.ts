@@ -1,17 +1,19 @@
 import { Routes } from '@angular/router';
-import { LoginComponent } from './features/auth/login/login';
-import { RegisterComponent } from './features/auth/register/register';
-import { ForgotPasswordComponent } from './features/auth/forgot-password/forgot-password';
-import { HomePageComponent } from './features/home-page/home-page';
-import { ProfilePageComponent } from './features/profile/profile';
-import { ExplorePageComponent } from './features/explore/explore';
+import { LoginComponent } from './login/login';
+import { HomeComponent } from './home/home';
+import { ProfilePageComponent } from './profile/profile';
+import { RegisterComponent } from './account/register/register';
+import { AboutComponent } from './about/about';
+import { Decks } from './decks/decks';
+import { DeckDetailComponent } from './decks/deck-detail/deck-detail';
 
 export const routes: Routes = [
   { path: 'login', component: LoginComponent },
-  { path: 'register', component: RegisterComponent },
-  { path: 'forgot-password', component: ForgotPasswordComponent },
-  { path: 'home', component: HomePageComponent },
+  { path: 'home', component: HomeComponent },
+  { path: 'decks', component: Decks },
+  { path: 'decks/:id', component: DeckDetailComponent },
   { path: 'profile', component: ProfilePageComponent },
-  { path: 'explore', component: ExplorePageComponent },
+  { path: 'register', component: RegisterComponent },
+  { path: 'about', component: AboutComponent },
   { path: '', redirectTo: 'login', pathMatch: 'full' }
 ];

@@ -1,7 +1,10 @@
-import { AuthService } from './features/auth/auth.service';
-import { Component, inject, OnInit } from '@angular/core';
+﻿import { Component, inject, OnInit, signal } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
+import { AccountService } from './_services/account-service';
+import { lastValueFrom } from 'rxjs';
+import { User } from '../app/_models/user';
+import { ThemeService } from './_services/theme.service';
 
 @Component({
   standalone: true,
@@ -10,9 +13,38 @@ import { HttpClient } from '@angular/common/http';
   styleUrl: './app.css',
   imports: [RouterOutlet]
 })
-export class App {
+export class App implements OnInit {
 
-  protected title ='SmartCardsFront';
-  public auth = inject(AuthService);
+  private accountService = inject(AccountService);
+  private themeService = inject(ThemeService); // Initializes the saved theme on load
+  protected title ='Client';
+  private http = inject(HttpClient);
+  protected members = signal<User[]>([]);
+
+  async ngOnInit() {
+    this.members.set(await this.getMembers());
+    this.setCurrentUser();
+  }
+
+  setCurrentUser() {
+
+    const userString = localStorage.getItem('user');
+    if (!userString) return;
+
+    const user = JSON.parse(userString);
+    this.accountService.currentUser.set(user);
+
+  }
+
+  async getMembers() {
+    try {
+      return lastValueFrom(this.http.get<User[]>('https://localhost:5001/api/members'));
+    }
+    catch (error) {
+      console.log(error);
+      throw error;
+    }
+  }
 
 }
+
