@@ -62,7 +62,7 @@
           </div>
         </div>
 
-        <form -- -- class="space-y-4 max-w-lg"><!--TODO: --(ngSubmit)="saveProfile()"--  making a working this-->
+        <form (ngSubmit)="saveProfile()" class="space-y-4 max-w-lg">
           <div class="form-control w-full">
             <label class="label"><span class="label-text font-bold uppercase tracking-wider text-xs">{{ 'profile.username' | translate }}</span></label>
             <input type="text" [(ngModel)]="username" name="username" class="input input-bordered input-primary w-full bg-base-200" required />
@@ -72,10 +72,15 @@
             <label class="label"><span class="label-text font-bold uppercase tracking-wider text-xs">{{ 'profile.email' | translate }}</span></label>
             <input type="email" [(ngModel)]="email" name="email" class="input input-bordered input-primary w-full bg-base-200" required />
           </div>
+          <!-- TODO: make the old password label -->
+          <div class="form-control w-full">
+            <label class="label"><span class="label-text font-bold uppercase tracking-wider text-xs">{{ 'profile.old_password' | translate }}</span></label>
+            <input type="text" [(ngModel)]="password" name="password" [placeholder]="'profile.password.placeholder' | translate" class="input input-bordered w-full bg-base-200" />
+          </div>
 
           <div class="form-control w-full">
             <label class="label"><span class="label-text font-bold uppercase tracking-wider text-xs">{{ 'profile.new_password' | translate }}</span></label>
-            <input type="password" [(ngModel)]="password" name="password" [placeholder]="'profile.password.placeholder' | translate" class="input input-bordered w-full bg-base-200" />
+            <input type="text" [(ngModel)]="newPassword" name="newPassword" [placeholder]="'profile.password.placeholder' | translate" class="input input-bordered w-full bg-base-200" />
           </div>
 
           <button type="submit" class="btn btn-primary w-full mt-6 rounded-xl">{{ 'profile.save' | translate }}</button>

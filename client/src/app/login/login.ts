@@ -1,4 +1,4 @@
-﻿import { Component, inject, signal } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { AccountService } from '../_services/account-service';
@@ -29,7 +29,9 @@ export class LoginComponent {
   }
 
   logout() {
-    this.accountService.logout();
+    this.accountService.logout().subscribe({
+      next: () => this.router.navigateByUrl('/')
+    });
   }
 
   protected registerMode = signal(false);

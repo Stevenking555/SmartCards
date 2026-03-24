@@ -1,6 +1,6 @@
 import { Injectable, inject, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { LoginCreds, RegisterCreds, User } from '../_models/user';
+import { ChangePasswordForm, LoginCreds, RegisterCreds, UpdateEmailForm, User } from '../_models/user';
 import { tap } from 'rxjs/internal/operators/tap';
 
 @Injectable({
@@ -39,8 +39,36 @@ export class AccountService {
   }
 
   logout() {
-    localStorage.removeItem('user');
-    this.currentUser.set(null);
+    return this.http.post(this.baseUrl + 'account/logout', {}).pipe(
+      tap(() => {
+        localStorage.removeItem('user');
+        this.currentUser.set(null);
+      })
+    );
+  }
+
+  refreshToken() {
+    return this.http.post<User>(this.baseUrl + 'account/refresh-token', {}).pipe(
+      tap(user => {
+        if (user) {
+          this.setCurrentUser(user);
+        }
+      })
+    )
+  }
+
+  changePassword(model: ChangePasswordForm) {
+    return this.http.post(this.baseUrl + 'account/change-password', model, { responseType: 'text' });
+  }
+
+  updateEmail(model: UpdateEmailForm) {
+    return this.http.put<User>(this.baseUrl + 'account/update-email', model).pipe(
+      tap(user => {
+        if (user) {
+          this.setCurrentUser(user);
+        }
+      })
+    );
   }
 
 }

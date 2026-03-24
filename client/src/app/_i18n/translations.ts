@@ -23,6 +23,7 @@ export const EN: Record<string, string> = {
   'profile.info.desc': 'Update your details',
   'profile.username': 'Username',
   'profile.email': 'Email Address',
+  'profile.old_password': 'Old Password',
   'profile.new_password': 'New Password',
   'profile.password.placeholder': 'Leave blank to keep current',
   'profile.save': 'Save Changes',
@@ -32,6 +33,10 @@ export const EN: Record<string, string> = {
   'profile.language': 'Language',
   'profile.language.en': 'English',
   'profile.language.hu': 'Hungarian',
+  'profile.alert.success': 'Profile details successfully updated!',
+  'profile.alert.error.name': 'Error saving name',
+  'profile.alert.error.email': 'Error saving email. Did you provide the correct password?',
+  'profile.alert.require_password': 'Please enter your password to save profile changes!',
 
   // Home
   'home.welcome': 'Welcome back',
@@ -195,6 +200,7 @@ export const HU: Record<string, string> = {
   'profile.info.desc': 'Részletek frissítése',
   'profile.username': 'Felhasználónév',
   'profile.email': 'Email Cím',
+  'profile.old_password': 'Jelenlegi Jelszó',
   'profile.new_password': 'Új Jelszó',
   'profile.password.placeholder': 'Hagyd üresen a jelenlegi megtartásához',
   'profile.save': 'Változtatások Mentése',
@@ -204,6 +210,10 @@ export const HU: Record<string, string> = {
   'profile.language': 'Nyelv',
   'profile.language.en': 'Angol',
   'profile.language.hu': 'Magyar',
+  'profile.alert.success': 'Profil adatok sikeresen frissítve!',
+  'profile.alert.error.name': 'Hiba a név mentésekor',
+  'profile.alert.error.email': 'Hiba az email mentésekor. Jó jelszót adtál meg?',
+  'profile.alert.require_password': 'Kérlek add meg a jelszavad a profil módosításainak mentéséhez!',
 
   // Home
   'home.welcome': 'Üdvözlünk újra',
