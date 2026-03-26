@@ -1,10 +1,10 @@
-﻿import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
-import { AccountService } from './_services/account-service';
+import { AccountService } from '../core/services/account-service';
 import { lastValueFrom } from 'rxjs';
-import { User } from '../app/_models/user';
-import { ThemeService } from './_services/theme.service';
+import { User } from '../core/models/user';
+import { ThemeService } from '../core/services/theme.service';
 
 @Component({
   standalone: true,
@@ -47,4 +47,5 @@ export class App implements OnInit {
   }
 
 }
+
 
