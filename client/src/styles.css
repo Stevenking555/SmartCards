@@ -17,7 +17,7 @@
   name: "night";
 }
 @plugin "daisyui/theme" {
-  name: "cyberpunk";
+  name: "coffee";
 }
 @plugin "daisyui/theme" {
   name: "synthwave";
@@ -28,6 +28,20 @@
 @plugin "daisyui/theme" {
   name: "dim";
 }
+@plugin "daisyui/theme" {
+  name: "sunset";
+}
+@plugin "daisyui/theme" {
+  name: "business";
+}
+@plugin "daisyui/theme" {
+  name: "luxury";
+}
+@plugin "daisyui/theme" {
+  name: "halloween";
+}
+
+
 
 .sidebar-nav-item {
   display: flex;
@@ -37,7 +51,7 @@
   border-radius: 10px;
   font-size: 13px;
   font-weight: 500;
-  color: #6b7280;
+  color: oklch(var(--bc) / 0.6); 
   cursor: pointer;
   transition: all 0.15s;
   width: 100%;
@@ -45,13 +59,19 @@
 }
 
 .sidebar-nav-item:hover {
-  background: rgba(255, 255, 255, 0.05);
-  color: #ffffff;
+  @apply bg-primary/15 text-primary;
+  & svg {
+    @apply stroke-primary;
+  }
 }
 
 .sidebar-nav-item.active {
-  background: rgba(99, 102, 241, 0.15);
-  color: #818cf8;
+/* The theme's primary colour will be with 25% transition */
+  @apply bg-primary/25 text-primary;
+  & svg {
+    @apply stroke-primary;
+  }
+  font-weight: 700;
 }
 
 /* 3D Flip Utilities */

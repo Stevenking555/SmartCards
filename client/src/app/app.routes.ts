@@ -1,11 +1,11 @@
 import { Routes } from '@angular/router';
-import { LoginComponent } from './login/login';
-import { HomeComponent } from './home/home';
-import { ProfilePageComponent } from './profile/profile';
-import { RegisterComponent } from './account/register/register';
-import { AboutComponent } from './about/about';
-import { Decks } from './decks/decks';
-import { DeckDetailComponent } from './decks/deck-detail/deck-detail';
+import { LoginComponent } from '../login/login';
+import { HomeComponent } from '../home/home';
+import { ProfilePageComponent } from '../profile/profile';
+import { RegisterComponent } from '../account/register/register';
+import { AboutComponent } from '../about/about';
+import { Decks } from '../decks/decks';
+import { DeckDetailComponent } from '../decks/deck-detail/deck-detail';
 
 export const routes: Routes = [
   { path: 'login', component: LoginComponent },
