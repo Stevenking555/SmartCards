@@ -1,0 +1,38 @@
+@if (!registerMode())
+{
+<div class="flex min-h-screen flex-col justify-center px-6 py-12 lg:px-8 bg-base-300 text-base-content transition-colors duration-300">
+  <div class="sm:mx-auto sm:w-full sm:max-w-sm">
+    <img src="SmartcardsIconBlue.png" alt="SmartCards" class="mx-auto h-20 w-auto" />
+    <h2 class="mt-10 text-center text-2xl/9 font-bold tracking-tight text-indigo-500">Sign in to your account</h2>
+  </div>
+
+  <div class="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
+    <form [formGroup]="loginForm" (ngSubmit)="login()" class="space-y-5" autocomplete="off">
+      <app-text-input formControlName="email" type="email" label="Email address" placeholder="example@email.com"></app-text-input>
+
+      <app-text-input formControlName="password" type="password" label="Password" placeholder="Example password"></app-text-input>
+
+      <div>
+        <button type="submit" class="flex w-full cursor-pointer justify-center rounded-md
+        bg-indigo-500 px-3 py-1.5 text-sm/6 font-semibold text-white hover:bg-indigo-600
+        focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500">Sign in</button>
+      </div>
+
+    </form>
+
+
+    <div class="text-center mt-4">
+      <a (click)="showRegister()" class="text-sm cursor-pointer text-base-content/60 hover:text-indigo-500">Don't have an account? Register here ;D</a>
+    </div>
+
+  </div>
+
+</div>
+
+<button type="button" routerLink="/home" class="hidden">sneakyHomebutton</button>
+}<!-- IF the registerMode is true we will get to this else "branch" -->
+@else {
+<app-register (cancelRegister)="cancelRegister()">
+
+</app-register>
+}

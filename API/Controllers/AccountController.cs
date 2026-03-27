@@ -79,7 +79,7 @@ public class AccountController(UserManager<AppUser> userManager, ITokenService t
     {
         var refreshToken = tokenService.GenerateRefreshToken();
         user.RefreshToken = refreshToken;
-        user.RefreshTokenExpiry = DateTime.UtcNow.AddDays(7);
+        user.RefreshTokenExpiry = DateTime.UtcNow.AddDays(15);
         await userManager.UpdateAsync(user);
 
         var cookieOptions = new CookieOptions
@@ -87,7 +87,7 @@ public class AccountController(UserManager<AppUser> userManager, ITokenService t
             HttpOnly = true,
             Secure = true,
             SameSite = SameSiteMode.Strict,
-            Expires = DateTime.UtcNow.AddDays(7)
+            Expires = DateTime.UtcNow.AddDays(15)
         };
 
         Response.Cookies.Append("refreshToken", refreshToken, cookieOptions);

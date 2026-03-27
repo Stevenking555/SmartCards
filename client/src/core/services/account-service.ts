@@ -37,27 +37,19 @@ export class AccountService {
   }
 
   setCurrentUser(user: User) {
-    localStorage.setItem('user', JSON.stringify(user));
     this.currentUser.set(user);
   }
 
   logout() {
     return this.http.post(this.baseUrl + 'account/logout', {}, { withCredentials: true }).pipe(
       tap(() => {
-        localStorage.removeItem('user');
         this.currentUser.set(null);
       })
     );
   }
 
   refreshToken() {
-    return this.http.post<User>(this.baseUrl + 'account/refresh-token', {}, { withCredentials: true }).pipe(
-      tap(user => {
-        if (user) {
-          this.setCurrentUser(user);
-        }
-      })
-    )
+    return this.http.post<User>(this.baseUrl + 'account/refresh-token', {}, { withCredentials: true });
   }
 
   startTokenRefreshInterval() {
