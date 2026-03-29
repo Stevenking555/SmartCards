@@ -37,27 +37,23 @@ export class AccountService {
   }
 
   setCurrentUser(user: User) {
-    localStorage.setItem('user', JSON.stringify(user));
     this.currentUser.set(user);
+  }
+
+  updateUserSignal(user: Partial<User>) {
+    this.currentUser.update(prev => prev ? { ...prev, ...user } : null);
   }
 
   logout() {
     return this.http.post(this.baseUrl + 'account/logout', {}, { withCredentials: true }).pipe(
       tap(() => {
-        localStorage.removeItem('user');
         this.currentUser.set(null);
       })
     );
   }
 
   refreshToken() {
-    return this.http.post<User>(this.baseUrl + 'account/refresh-token', {}, { withCredentials: true }).pipe(
-      tap(user => {
-        if (user) {
-          this.setCurrentUser(user);
-        }
-      })
-    )
+    return this.http.post<User>(this.baseUrl + 'account/refresh-token', {}, { withCredentials: true });
   }
 
   startTokenRefreshInterval() {
@@ -70,7 +66,7 @@ export class AccountService {
   }
 
   changePassword(model: ChangePasswordForm) {
-    return this.http.post(this.baseUrl + 'account/change-password', model, { withCredentials: true, responseType: 'text' });
+    return this.http.post(this.baseUrl + 'account/change-password', model, { withCredentials: true });
   }
 
   updateEmail(model: UpdateEmailForm) {
