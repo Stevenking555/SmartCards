@@ -40,6 +40,10 @@ export class AccountService {
     this.currentUser.set(user);
   }
 
+  updateUserSignal(user: Partial<User>) {
+    this.currentUser.update(prev => prev ? { ...prev, ...user } : null);
+  }
+
   logout() {
     return this.http.post(this.baseUrl + 'account/logout', {}, { withCredentials: true }).pipe(
       tap(() => {
@@ -62,7 +66,7 @@ export class AccountService {
   }
 
   changePassword(model: ChangePasswordForm) {
-    return this.http.post(this.baseUrl + 'account/change-password', model, { withCredentials: true, responseType: 'text' });
+    return this.http.post(this.baseUrl + 'account/change-password', model, { withCredentials: true });
   }
 
   updateEmail(model: UpdateEmailForm) {

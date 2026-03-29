@@ -116,13 +116,27 @@ public class AccountController(UserManager<AppUser> userManager, ITokenService t
         var user = await userManager.FindByIdAsync(User.GetUserId());
         if (user == null) return NotFound();
 
-        // Ez a metódus leellenőrzi a régi jelszót, és ha jó, lecseréli az újra
-        var result = await userManager.ChangePasswordAsync(user,
-            changePasswordDto.OldPassword, changePasswordDto.NewPassword);
+        // 1. Manuális jelszó ellenőrzés, hogy mi kontrolláljuk a hibaüzenetet
+        var passwordCheck = await userManager.CheckPasswordAsync(user, changePasswordDto.OldPassword);
+        if (!passwordCheck)
+        {
+            ModelState.AddModelError("CurrentPassword", "error.password.mismatch");
+            return ValidationProblem();
+        }
 
-        if (!result.Succeeded) return BadRequest(result.Errors);
+        // 2. Ha a régi jó, akkor jöhet a csere (az új jelszó komplexitását még mindig az Identity védi)
+        var result = await userManager.ChangePasswordAsync(user, changePasswordDto.OldPassword, changePasswordDto.NewPassword);
 
-        return Ok("Password changed successfully");
+        if (!result.Succeeded)
+        {
+            foreach (var error in result.Errors)
+            {
+                ModelState.AddModelError("Identity", error.Description);
+            }
+            return ValidationProblem();
+        }
+
+        return Ok(new { message = "Password changed successfully" });
     }
 
     [Authorize]
@@ -134,14 +148,26 @@ public class AccountController(UserManager<AppUser> userManager, ITokenService t
 
         var passwordCheck = await userManager.CheckPasswordAsync(user, updateEmailDto.CurrentPassword);
 
-        if (!passwordCheck) return Unauthorized("Hibás jelszó! Az e-mail módosításhoz meg kell adnod a jelenlegi jelszavadat.");
+        if (!passwordCheck)
+        {
+            ModelState.AddModelError("CurrentPassword", "error.password.mismatch");
+            return ValidationProblem();
+        }
 
         user.Email = updateEmailDto.NewEmail;
         user.UserName = updateEmailDto.NewEmail;
 
         var result = await userManager.UpdateAsync(user);
-        if (!result.Succeeded) return BadRequest(result.Errors);
+        if (!result.Succeeded)
+        {
+            foreach (var error in result.Errors)
+            {
+                ModelState.AddModelError("Email", error.Description);
+            }
+            return ValidationProblem();
+        }
 
+        var tokenService = HttpContext.RequestServices.GetRequiredService<ITokenService>();
         return await user.ToDto(tokenService);
     }
 }

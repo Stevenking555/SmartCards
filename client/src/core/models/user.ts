@@ -29,4 +29,5 @@ export type UpdateEmailForm = {
 
 export type UserUpdateForm = {
     displayName?: string;
+    currentPassword?: string;
 }

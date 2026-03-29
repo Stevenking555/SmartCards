@@ -6,6 +6,7 @@ import { RegisterComponent } from '../features/auth/register/register';
 import { AboutComponent } from '../features/about/about';
 import { Decks } from '../features/decks/decks';
 import { DeckDetailComponent } from '../features/decks/deck-detail/deck-detail';
+import { rootGuard } from '../core/guards/root.guard';
 import { authGuard } from '../core/guards/auth.guard';
 import { NotFoundComponent } from '../shared/errors/not-found/not-found';
 import { ServerErrorComponent } from '../shared/errors/server-error/server-error';
@@ -13,7 +14,9 @@ import { ServerErrorComponent } from '../shared/errors/server-error/server-error
 export const routes: Routes = [
   { path: 'login', component: LoginComponent },
   { path: 'register', component: RegisterComponent },
-  { path: 'about', component: AboutComponent },
+
+  { path: '', component: LoginComponent, canActivate: [rootGuard], pathMatch: 'full' },
+
   {
     path: '',
     runGuardsAndResolvers: 'always',
@@ -22,10 +25,11 @@ export const routes: Routes = [
       { path: 'home', component: HomeComponent },
       { path: 'decks', component: Decks },
       { path: 'decks/:id', component: DeckDetailComponent },
+      { path: 'about', component: AboutComponent },
       { path: 'profile', component: ProfilePageComponent },
-      { path: '', redirectTo: 'home', pathMatch: 'full' }
     ]
   },
+
   { path: 'not-found', component: NotFoundComponent },
   { path: 'server-error', component: ServerErrorComponent },
   { path: '**', component: NotFoundComponent, pathMatch: 'full' },

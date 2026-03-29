@@ -1,5 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
+import { environment } from '../../environments/environment';
 import { User, UserUpdateForm } from '../models/user';
 
 @Injectable({
@@ -7,7 +8,7 @@ import { User, UserUpdateForm } from '../models/user';
 })
 export class UserService {
   private http = inject(HttpClient);
-  baseUrl = 'https://localhost:5001/api/';
+  baseUrl = environment.apiUrl;
 
   getUsers() {
     return this.http.get<User[]>(this.baseUrl + 'user');

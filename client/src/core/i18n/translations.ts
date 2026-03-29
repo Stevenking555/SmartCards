@@ -176,6 +176,16 @@ export const EN: Record<string, string> = {
   'deck_detail.study_mode.no_cards_desc': 'There are no more cards to review in this deck right now.',
   'deck_detail.study_mode.back_btn': 'Back to Deck',
   'deck_detail.alert.finished_studying': 'You have finished studying this deck!',
+  
+  // Errors & Validations
+  'error.password.mismatch': 'Incorrect password',
+  'error.unexpected': 'An unexpected error occurred',
+  'validation.required.username': 'Username is required.',
+  'validation.minlength.username': 'Name must be at least 2 characters.',
+  'validation.required.email': 'Email address is required.',
+  'validation.invalid.email': 'Please enter a valid email address.',
+  'validation.pattern.password': 'New password must be at least 6 characters and contain uppercase, lowercase, and a number.',
+  'validation.required.current_password': 'Current password is required to save changes!'
 };
 //#endregion
 //#region Hungarian Dictionary
@@ -353,6 +363,16 @@ export const HU: Record<string, string> = {
   'deck_detail.study_mode.no_cards_desc': 'Jelenleg nincs több áttekintésre váró kártya ebben a pakliban.',
   'deck_detail.study_mode.back_btn': 'Vissza a Paklihoz',
   'deck_detail.alert.finished_studying': 'Befejezted ennek a paklinak a tanulását!',
+
+  // Errors & Validations
+  'error.password.mismatch': 'Helytelen jelszó!',
+  'error.unexpected': 'Váratlan hiba történt',
+  'validation.required.username': 'A felhasználónév megadása kötelező.',
+  'validation.minlength.username': 'A névnek legalább 2 karakter hosszúnak kell lennie.',
+  'validation.required.email': 'Az e-mail megadása kötelező.',
+  'validation.invalid.email': 'Kérlek, valós e-mail címet adj meg (pl. tartalmazzon "@" jelet).',
+  'validation.pattern.password': 'Az új jelszónak legalább 6 karakterből kell állnia, és tartalmaznia kell kis- és nagybetűt, valamint számot.',
+  'validation.required.current_password': 'A mentéshez kötelező megadni a jelenlegi jelszavadat!'
 };
 //#endregion
 

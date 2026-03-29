@@ -24,7 +24,7 @@
       <div class="bg-base-100 p-6 lg:p-8 rounded-[2rem] shadow-xl border border-base-content/5">
         <div class="flex items-start gap-4 mb-6 pb-6 border-b border-base-content/10">
           <div class="w-16 h-16 rounded-full bg-primary flex items-center justify-center text-primary-content text-2xl font-bold shadow-lg shadow-primary/30">
-            {{ username.charAt(0) | uppercase }}
+            {{ accountService.currentUser()?.displayName?.charAt(0) | uppercase }}
           </div>
           <div>
             <h2 class="text-xl font-bold">{{ 'profile.info' | translate }}</h2>
@@ -36,28 +36,110 @@
           </div>
         </div>
 
-        <form (ngSubmit)="saveProfile()" class="space-y-4 max-w-lg">
-          <div class="form-control w-full">
+        <form [formGroup]="profileForm" (ngSubmit)="saveProfile()" class="space-y-4 max-w-lg">
+          <!-- Felhasználónév (Megjelenített Név) -->
+          <div class="form-control w-full transition-opacity duration-300" [ngClass]="{'opacity-50': activeEditField !== null && activeEditField !== 'displayName'}">
             <label class="label"><span class="label-text font-bold uppercase tracking-wider text-xs">{{ 'profile.username' | translate }}</span></label>
-            <input type="text" [(ngModel)]="username" name="username" class="input input-bordered input-primary w-full bg-base-200" required />
+            <div class="flex gap-2 items-center">
+              <input type="text" formControlName="username" 
+                class="input input-bordered input-primary w-full bg-base-200" 
+                [class.input-error]="usernameControl.invalid && usernameControl.touched" />
+              
+              <button type="button" class="btn btn-square" 
+                [ngClass]="activeEditField === 'displayName' ? 'btn-ghost text-error' : 'btn-ghost'"
+                (click)="activeEditField === 'displayName' ? cancelEdit() : startEdit('displayName')"
+                [disabled]="activeEditField !== null && activeEditField !== 'displayName'">
+                <!-- Mégse Ikon (❌) -->
+                <svg *ngIf="activeEditField === 'displayName'" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+                <!-- Szerkesztés Ikon (✏️) -->
+                <svg *ngIf="activeEditField !== 'displayName'" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" /></svg>
+              </button>
+            </div>
+            @if (usernameControl.hasError('required') && usernameControl.touched) {
+              <div class="text-error text-xs mt-1">{{ 'validation.required.username' | translate }}</div>
+            }
+            @if (usernameControl.hasError('minlength') && usernameControl.touched) {
+              <div class="text-error text-xs mt-1">{{ 'validation.minlength.username' | translate }}</div>
+            }
+            @if (usernameControl.hasError('serverError')) {
+              <div class="text-error text-xs mt-1">{{ usernameControl.getError('serverError') | translate }}</div>
+            }
           </div>
 
-          <div class="form-control w-full">
+          <!-- Email -->
+          <div class="form-control w-full transition-opacity duration-300" [ngClass]="{'opacity-50': activeEditField !== null && activeEditField !== 'email'}">
             <label class="label"><span class="label-text font-bold uppercase tracking-wider text-xs">{{ 'profile.email' | translate }}</span></label>
-            <input type="email" [(ngModel)]="email" name="email" class="input input-bordered input-primary w-full bg-base-200" required />
+            <div class="flex gap-2 items-center">
+              <input type="email" formControlName="email" 
+                class="input input-bordered input-primary w-full bg-base-200" 
+                [class.input-error]="emailControl.invalid && emailControl.touched" />
+              
+              <button type="button" class="btn btn-square" 
+                [ngClass]="activeEditField === 'email' ? 'btn-ghost text-error' : 'btn-ghost'"
+                (click)="activeEditField === 'email' ? cancelEdit() : startEdit('email')"
+                [disabled]="activeEditField !== null && activeEditField !== 'email'">
+                <!-- Mégse Ikon (❌) -->
+                <svg *ngIf="activeEditField === 'email'" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+                <!-- Szerkesztés Ikon (✏️) -->
+                <svg *ngIf="activeEditField !== 'email'" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" /></svg>
+              </button>
+            </div>
+            @if (emailControl.hasError('required') && emailControl.touched) {
+              <div class="text-error text-xs mt-1">{{ 'validation.required.email' | translate }}</div>
+            }
+            @if (emailControl.hasError('email') && emailControl.touched) {
+              <div class="text-error text-xs mt-1">{{ 'validation.invalid.email' | translate }}</div>
+            }
+            @if (emailControl.hasError('serverError')) {
+              <div class="text-error text-xs mt-1">{{ emailControl.getError('serverError') | translate }}</div>
+            }
           </div>
           
-          <div class="form-control w-full">
-            <label class="label"><span class="label-text font-bold uppercase tracking-wider text-xs">{{ 'profile.old_password' | translate }}</span></label>
-            <input type="text" [(ngModel)]="password" name="password" [placeholder]="'profile.password.placeholder' | translate" class="input input-bordered w-full bg-base-200" />
-          </div>
-
-          <div class="form-control w-full">
+          <!-- Új jelszó -->
+          <div class="form-control w-full transition-opacity duration-300" [ngClass]="{'opacity-50': activeEditField !== null && activeEditField !== 'password'}">
             <label class="label"><span class="label-text font-bold uppercase tracking-wider text-xs">{{ 'profile.new_password' | translate }}</span></label>
-            <input type="text" [(ngModel)]="newPassword" name="newPassword" [placeholder]="'profile.password.placeholder' | translate" class="input input-bordered w-full bg-base-200" />
+            <div class="flex gap-2 items-center">
+              <input type="password" formControlName="newPassword" [placeholder]="'profile.password.placeholder' | translate" 
+                class="input input-bordered w-full bg-base-200" 
+                [class.input-error]="newPasswordControl.invalid && newPasswordControl.touched" />
+              
+              <button type="button" class="btn btn-square" 
+                [ngClass]="activeEditField === 'password' ? 'btn-ghost text-error' : 'btn-ghost'"
+                (click)="activeEditField === 'password' ? cancelEdit() : startEdit('password')"
+                [disabled]="activeEditField !== null && activeEditField !== 'password'">
+                <!-- Mégse Ikon (❌) -->
+                <svg *ngIf="activeEditField === 'password'" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+                <!-- Szerkesztés Ikon (✏️) -->
+                <svg *ngIf="activeEditField !== 'password'" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" /></svg>
+              </button>
+            </div>
+            @if (newPasswordControl.hasError('pattern') && newPasswordControl.touched) {
+              <div class="text-error text-xs mt-1">{{ 'validation.pattern.password' | translate }}</div>
+            }
+            @if (newPasswordControl.hasError('serverError')) {
+              <div class="text-error text-xs mt-1">{{ newPasswordControl.getError('serverError') | translate }}</div>
+            }
           </div>
 
-          <button type="submit" class="btn btn-primary w-full mt-6 rounded-xl">{{ 'profile.save' | translate }}</button>
+          <!-- Jelenlegi jelszó (Kell a mentéshez, de nincs mellette ceruza) -->
+          <div class="form-control w-full transition-all duration-300" [ngClass]="{'opacity-50': activeEditField === null}">
+            <label class="label"><span class="label-text font-bold uppercase tracking-wider text-xs">{{ 'profile.old_password' | translate }}</span></label>
+            <div class="flex gap-2 items-center">
+              <input type="password" formControlName="password" [placeholder]="'profile.password.placeholder' | translate" 
+                class="input input-bordered w-full bg-base-200" 
+                [class.input-error]="passwordControl.invalid && passwordControl.touched" />
+              <!-- Láthatatlan kitöltő div, hogy az input ugyanolyan széles maradjon, mint a fenti inputBoxok -->
+              <div class="w-12"></div>
+            </div>
+            @if (passwordControl.hasError('required') && passwordControl.touched) {
+              <div class="text-error text-xs mt-1">{{ 'validation.required.current_password' | translate }}</div>
+            }
+            @if (passwordControl.hasError('serverError')) {
+              <div class="text-error text-xs mt-1">{{ passwordControl.getError('serverError') | translate }}</div>
+            }
+          </div>
+
+          <button type="submit" class="btn btn-primary w-full mt-6 rounded-xl" [disabled]="activeEditField === null">{{ 'profile.save' | translate }}</button>
         </form>
       </div>
 
