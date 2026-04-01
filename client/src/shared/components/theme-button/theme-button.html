@@ -1,0 +1,54 @@
+<div class="relative inline-block">
+  <button (click)="isThemeDropdownOpen = !isThemeDropdownOpen"
+    class="w-9 h-9 rounded-xl bg-base-content/5 hover:bg-base-content/10 border border-base-content/5 flex items-center justify-center text-base-content/60 hover:text-base-content transition-all active:scale-95 cursor-pointer">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-5">
+      <path fill-rule="evenodd"
+        d="M9 2.25a.75.75 0 0 1 .75.75v1.506a49.384 49.384 0 0 1 5.343.371.75.75 0 1 1-.186 1.489c-.66-.083-1.323-.151-1.99-.206a18.67 18.67 0 0 1-2.97 6.323c.318.384.65.753 1 1.107a.75.75 0 0 1-1.07 1.052A18.902 18.902 0 0 1 9 13.687a18.823 18.823 0 0 1-5.656 4.482.75.75 0 0 1-.688-1.333 17.323 17.323 0 0 0 5.396-4.353A18.72 18.72 0 0 1 5.89 8.598a.75.75 0 0 1 1.388-.568A17.21 17.21 0 0 0 9 11.224a17.168 17.168 0 0 0 2.391-5.165 48.04 48.04 0 0 0-8.298.307.75.75 0 0 1-.186-1.489 49.159 49.159 0 0 1 5.343-.371V3A.75.75 0 0 1 9 2.25ZM15.75 9a.75.75 0 0 1 .68.433l5.25 11.25a.75.75 0 1 1-1.36.634l-1.198-2.567h-6.744l-1.198 2.567a.75.75 0 0 1-1.36-.634l5.25-11.25A.75.75 0 0 1 15.75 9Zm-2.672 8.25h5.344l-2.672-5.726-2.672 5.726Z"
+        clip-rule="evenodd" />
+    </svg>
+  </button>
+
+  <div *ngIf="isThemeDropdownOpen"
+    class="absolute right-0 mt-2 w-48 origin-top-right rounded-2xl bg-base-200 border border-base-content/10 shadow-2xl z-50 overflow-hidden animate-in fade-in zoom-in duration-200">
+    <div class="p-2 flex flex-col gap-1">
+
+
+      <nav aria-label="Page navigation example">
+        <div class="inline-flex rounded-base shadow-xs -space-x-px" role="group">
+          <button (click)="prevTheme()" data-tooltip-target="tooltip-previous" type="button"
+            class="inline-flex items-center justify-center text-body bg-neutral-secondary-medium rounded-s-base box-border border border-default-medium hover:bg-neutral-tertiary-medium cursor-pointer hover:text-heading focus:ring-3 focus:ring-neutral-tertiary leading-5 w-9 h-9 focus:outline-none">
+            <svg class="w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+              fill="none" viewBox="0 0 24 24">
+              <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="m15 19-7-7 7-7" />
+            </svg>
+          </button>
+          <div id="tooltip-previous" role="tooltip"
+            class="absolute z-10 invisible inline-block px-3 py-2 text-sm leading-4 font-medium text-white transition-opacity duration-300 bg-dark rounded-base shadow-xs opacity-0 tooltip">
+            Previous
+            <div class="tooltip-arrow" data-popper-arrow></div>
+          </div>
+          <button type="button"
+            class="inline-flex shrink-0 text-sm items-center justify-center text-base-content bg-base-content/5 box-border border border-base-content/10 font-bold capitalize leading-5 px-3 h-9 focus:outline-none pointer-events-none w-32">
+            {{ themes[currentIndex] }}
+          </button>
+          <button (click)="nextTheme()" data-tooltip-target="tooltip-next" type="button"
+            class="inline-flex items-center justify-center text-body bg-neutral-secondary-medium rounded-e-base box-border border border-default-medium hover:bg-neutral-tertiary-medium cursor-pointer hover:text-heading focus:ring-3 focus:ring-neutral-tertiary leading-5 w-9 h-9 focus:outline-none">
+            <svg class="w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+              fill="none" viewBox="0 0 24 24">
+              <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="m9 5 7 7-7 7" />
+            </svg>
+          </button>
+          <div id="tooltip-next" role="tooltip"
+            class="absolute z-10 invisible inline-block px-3 py-2 text-sm leading-4 font-medium text-white transition-opacity duration-300 bg-dark rounded-base shadow-xs opacity-0 tooltip">
+            Next
+            <div class="tooltip-arrow" data-popper-arrow></div>
+          </div>
+        </div>
+      </nav>
+
+
+    </div>
+  </div>
+</div>

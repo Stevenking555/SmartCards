@@ -8,7 +8,7 @@ import { TextInput } from '../../../shared/text-input/text-input';
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [ReactiveFormsModule, RouterLink, RegisterComponent, TextInput],
+  imports: [ReactiveFormsModule, RegisterComponent, TextInput],
   templateUrl: './login.html'
 })
 export class LoginComponent implements OnInit {
@@ -44,7 +44,7 @@ export class LoginComponent implements OnInit {
         },
         error: err => {
           if (err.status === 401) {
-            this.loginForm.get('password')?.setErrors({ serverError: 'Hibás felhasználónév vagy jelszó!' });
+            this.loginForm.get('password')?.setErrors({ serverError: 'Wrong email or password!' });
           }
         }
       });
@@ -63,5 +63,3 @@ export class LoginComponent implements OnInit {
     this.registerMode.set(false);
   }
 }
-
-

@@ -31,6 +31,7 @@ export class Decks implements OnInit {
   newDeck: NewDeck = { title: '', goal: '1 Week' };
 
   ngOnInit() {
+    this.deckService.loadDecks().subscribe();
     this.deckService.decks$.subscribe(decks => {
       this.decks = decks;
     });
@@ -47,12 +48,12 @@ export class Decks implements OnInit {
 
   onCreateDeck(): void {
     if (!this.newDeck.title.trim()) return;
-    this.deckService.addDeck(this.newDeck.title, this.newDeck.goal);
+    this.deckService.addDeck(this.newDeck.title, this.newDeck.goal).subscribe();
     this.closeModal();
   }
 
   onDeleteDeck(title: string): void {
-    this.deckService.deleteDeck(title);
+    this.deckService.deleteDeck(title).subscribe();
   }
 
   // DeLeTe Modal
@@ -83,7 +84,7 @@ export class Decks implements OnInit {
     if (this.deleteValidationText === 'DeLeTe') {
       const title = this.deckToDelete();
       if (title) {
-        this.deckService.deleteDeck(title);
+        this.deckService.deleteDeck(title).subscribe();
       }
       this.cancelDelete();
     } else {

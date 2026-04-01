@@ -12,13 +12,13 @@
             d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
         </svg>
       </div>
-      <h1 class="text-3xl font-black text-error tracking-tight">500 - Szerver Hiba</h1>
-      <p class="text-base-content/70 font-medium">Belső szerverhiba történt. Próbáld újra később!</p>
+      <h1 class="text-3xl font-black text-error tracking-tight">500 - Server error</h1>
+      <p class="text-base-content/70 font-medium">An internal server error has occurred. Please, try again later!</p>
     </div>
 
     @if (error) {
     <div class="mt-8">
-      <h5 class="text-error font-bold mb-2">Hibaüzenet (csak fejlesztőknek):</h5>
+      <h5 class="text-error font-bold mb-2">Error Message: (only for developers):</h5>
       <div class="bg-base-300 rounded-2xl p-4 overflow-x-auto border border-error/10">
         <p class="font-mono text-error/80 text-sm whitespace-pre-wrap">{{ error.message }}</p>
       </div>
@@ -33,7 +33,7 @@
 
     <div class="pt-6 text-center">
       <button routerLink="/" class="btn btn-outline rounded-2xl hover:bg-base-content/10 border-base-content/20 px-8">
-        Vissza a főoldalra
+        Back to the login page
       </button>
     </div>
 

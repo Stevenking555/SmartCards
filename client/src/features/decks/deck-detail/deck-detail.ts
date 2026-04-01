@@ -60,12 +60,12 @@ export class DeckDetailComponent implements OnInit {
     this.deckService.addCardToDeck(this.deckTitle, {
       question: this.newCard.question,
       answer: this.newCard.answer
-    });
+    }).subscribe();
     this.closeModal();
   }
 
   onDeleteCard(id: string): void {
-    this.deckService.deleteCard(this.deckTitle, id);
+    this.deckService.deleteCard(this.deckTitle, id).subscribe();
   }
 
   // â”€â”€ Title Editing â”€â”€
@@ -81,14 +81,16 @@ export class DeckDetailComponent implements OnInit {
     if (this.deck && newTitle && newTitle !== this.deckTitle) {
       const oldTitle = this.deckTitle;
       this.deckTitle = newTitle; // Update local tracker before service triggers observable
-      const success = this.deckService.updateDeckTitle(oldTitle, newTitle);
-      if (success) {
-        this.isEditingTitle.set(false);
-        this.router.navigate(['/decks', newTitle]);
-      } else {
-        this.deckTitle = oldTitle; // Revert if failed
-        alert('Invalid or duplicate deck title!');
-      }
+      this.deckService.updateDeckTitle(oldTitle, newTitle).subscribe({
+        next: () => {
+          this.isEditingTitle.set(false);
+          this.router.navigate(['/decks', newTitle]);
+        },
+        error: () => {
+          this.deckTitle = oldTitle; // Revert if failed
+          alert('Invalid or duplicate deck title!');
+        }
+      });
     } else {
       this.isEditingTitle.set(false);
     }
@@ -111,7 +113,7 @@ export class DeckDetailComponent implements OnInit {
     const q = this.editCardQuestion().trim();
     const a = this.editCardAnswer().trim();
     if (q && a) {
-      this.deckService.updateCard(this.deckTitle, cardId, { question: q, answer: a });
+      this.deckService.updateCard(this.deckTitle, cardId, { question: q, answer: a }).subscribe();
     }
     this.editingCardId.set(null);
   }

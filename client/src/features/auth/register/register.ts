@@ -32,8 +32,8 @@ export class RegisterComponent implements OnInit {
 
   initializeForm() {
     this.registerForm = this.fb.group({
-      email: ['', [Validators.required, Validators.email]],
-      displayName: ['', [Validators.required]],
+      email: ['', [Validators.required, Validators.email, Validators.maxLength(32)]],
+      displayName: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(32)]],
       password: ['', [
         Validators.required, 
         Validators.minLength(6), 
@@ -85,5 +85,3 @@ export class RegisterComponent implements OnInit {
     this.cancelRegister.emit();
   }
 }
-
-

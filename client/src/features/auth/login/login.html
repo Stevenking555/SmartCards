@@ -15,11 +15,10 @@
       <div>
         <button type="submit" class="flex w-full cursor-pointer justify-center rounded-md
         bg-indigo-500 px-3 py-1.5 text-sm/6 font-semibold text-white hover:bg-indigo-600
-        focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500">Sign in</button>
+        focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500">Login</button>
       </div>
 
     </form>
-
 
     <div class="text-center mt-4">
       <a (click)="showRegister()" class="text-sm cursor-pointer text-base-content/60 hover:text-indigo-500">Don't have an account? Register here ;D</a>
@@ -28,8 +27,6 @@
   </div>
 
 </div>
-
-<button type="button" routerLink="/home" class="hidden">sneakyHomebutton</button>
 }<!-- IF the registerMode is true we will get to this else "branch" -->
 @else {
 <app-register (cancelRegister)="cancelRegister()">
