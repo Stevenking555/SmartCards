@@ -62,7 +62,7 @@ export class AccountService {
         next: user => this.setCurrentUser(user),
         error: () => this.logout().subscribe()
       });
-    }, 14 * 24 * 60 * 60 * 1000) // 14 days
+    }, 12 * 60 * 1000) // 12 minutes
   }
 
   changePassword(model: ChangePasswordForm) {
