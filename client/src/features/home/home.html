@@ -13,7 +13,7 @@
         <p class="text-[10px] font-bold uppercase text-base-content/60 tracking-widest">{{ 'home.welcome' | translate }}
         </p>
         <h1 class="text-1xl font-black text-base-content tracking-tight">
-          <p>{{ username || 'Guest' }}</p>
+          <p>{{ username() || 'Guest' }}</p>
         </h1>
       </div>
       <div class="flex items-center gap-3">
@@ -37,7 +37,7 @@
             <p class="text-[11px] font-bold uppercase tracking-widest text-base-content/60">{{ 'home.welcome' |
               translate }}</p>
             <h1 class="text-2xl font-black text-base-content tracking-tight">
-              <p>{{ username || 'Guest' }}</p>
+              <p>{{ username() || 'Guest' }}</p>
             </h1>
           </div>
           <div class="flex items-center gap-3">
