@@ -70,7 +70,7 @@ public class AccountController(UserManager<AppUser> userManager, ITokenService t
 
         if (user == null) return Unauthorized();
 
-        await SetRefreshTokenCookie(user);
+        await UpdateRefreshTokenCookie(user);
 
         return await user.ToDto(tokenService);
     }
@@ -87,10 +87,26 @@ public class AccountController(UserManager<AppUser> userManager, ITokenService t
             HttpOnly = true,
             Secure = true,
             SameSite = SameSiteMode.Strict,
-            Expires = DateTime.UtcNow.AddDays(15)
+            Expires = user.RefreshTokenExpiry.Value
         };
 
         Response.Cookies.Append("refreshToken", refreshToken, cookieOptions);
+    }
+
+    private async Task UpdateRefreshTokenCookie(AppUser user)
+    {
+        user.RefreshTokenExpiry = DateTime.UtcNow.AddDays(15);
+        await userManager.UpdateAsync(user);
+
+        var cookieOptions = new CookieOptions
+        {
+            HttpOnly = true,
+            Secure = true,
+            SameSite = SameSiteMode.Strict,
+            Expires = user.RefreshTokenExpiry.Value
+        };
+
+        Response.Cookies.Append("refreshToken", user.RefreshToken, cookieOptions);
     }
 
     [Authorize]
