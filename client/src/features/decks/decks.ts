@@ -92,5 +92,3 @@ export class Decks implements OnInit {
     }
   }
 }
-
-

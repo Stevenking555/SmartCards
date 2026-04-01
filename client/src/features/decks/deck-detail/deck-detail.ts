@@ -162,6 +162,3 @@ export class DeckDetailComponent implements OnInit {
     return undefined;
   }
 }
-
-
-
