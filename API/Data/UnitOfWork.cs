@@ -7,9 +7,21 @@ namespace API.Data;
 public class UnitOfWork(AppDbContext context) : IUnitOfWork
 {
     private IUserRepository? _userRepository;
+    private IDecksRepository? _decksRepository;
+    private ICardsRepository? _cardsRepository;
+    private IStatsRepository? _statsRepository;
 
     public IUserRepository UserRepository => _userRepository 
         ??= new UserRepository(context);
+        
+    public IDecksRepository DecksRepository => _decksRepository 
+        ??= new DecksRepository(context);
+        
+    public ICardsRepository CardsRepository => _cardsRepository 
+        ??= new CardsRepository(context);
+        
+    public IStatsRepository StatsRepository => _statsRepository 
+        ??= new StatsRepository(context);
 
     public async Task<bool> Complete()
     {

@@ -7,4 +7,9 @@ public class AppUser : IdentityUser
     public string? RefreshToken { get; set; }
     public DateTime? RefreshTokenExpiry { get; set; }
     public DateTime Created { get; set; } = DateTime.UtcNow;
+
+    public ICollection<Deck> Decks { get; set; } = new List<Deck>();
+    public UserStats? UserStats { get; set; }
+    public ICollection<DeckStats> DeckStats { get; set; } = new List<DeckStats>();
+    public ICollection<CardStats> CardStats { get; set; } = new List<CardStats>();
 }

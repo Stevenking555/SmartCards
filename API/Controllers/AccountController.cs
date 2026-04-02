@@ -11,9 +11,11 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
+using AutoMapper;
+
 namespace API.Controllers;
 
-public class AccountController(UserManager<AppUser> userManager, ITokenService tokenService) : BaseApiController
+public class AccountController(UserManager<AppUser> userManager, ITokenService tokenService, IMapper mapper) : BaseApiController
 {
     [HttpPost("register")] // api/account/register
     public async Task<ActionResult<UserDto>> Register(RegisterDto registerDto)
@@ -39,7 +41,7 @@ public class AccountController(UserManager<AppUser> userManager, ITokenService t
 
         await SetRefreshTokenCookie(user);
 
-        return await user.ToDto(tokenService);
+        return await CreateUserDto(user);
     }
 
     [HttpPost("login")]
@@ -55,7 +57,7 @@ public class AccountController(UserManager<AppUser> userManager, ITokenService t
 
         await SetRefreshTokenCookie(user);
 
-        return await user.ToDto(tokenService);
+        return await CreateUserDto(user);
     }
 
     [HttpPost("refresh-token")]
@@ -71,8 +73,8 @@ public class AccountController(UserManager<AppUser> userManager, ITokenService t
         if (user == null) return Unauthorized();
 
         await UpdateRefreshTokenCookie(user);
-
-        return await user.ToDto(tokenService);
+        
+        return await CreateUserDto(user);
     }
 
     private async Task SetRefreshTokenCookie(AppUser user)
@@ -183,7 +185,14 @@ public class AccountController(UserManager<AppUser> userManager, ITokenService t
             return ValidationProblem();
         }
 
-        var tokenService = HttpContext.RequestServices.GetRequiredService<ITokenService>();
-        return await user.ToDto(tokenService);
+        return await CreateUserDto(user);
+    }
+
+    private async Task<UserDto> CreateUserDto(AppUser user)
+    {
+        var dto = mapper.Map<UserDto>(user);
+        dto.Token = await tokenService.CreateToken(user);
+        return dto;
     }
 }
+
