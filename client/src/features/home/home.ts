@@ -26,19 +26,19 @@ export class HomeComponent implements OnInit {
   cardsDueToday = 1;
   masteredCards = 142; // Just some example TODO: Make it real with real DB data
   totalLearningTime = "12.5"; // Just some example TODO: Make it real with real DB data
-  username = 'Guest';
+  username = computed(() => this.accountService.currentUser()?.displayName || 'Guest');
   recentDecks: Deck[] = [];
   randomQuoteIndex = 1;
 
   ngOnInit() {
     this.randomQuoteIndex = Math.floor(Math.random() * 8) + 1;
 
-    // // this.deckService.loadDecks().subscribe();
-    // this.deckService.decks$.subscribe(decks => {
-    //   this.totalDecks = decks.length;
-    //   this.totalCards = decks.reduce((sum, deck) => sum + (deck.cards?.length || 0), 0);
-    //   this.cardsDueToday = decks.reduce((sum, deck) => sum + (deck.due || 0), 0);
-    //   this.recentDecks = decks.slice(0, 3);
-    // });
+    this.deckService.loadDecks().subscribe();
+    this.deckService.decks$.subscribe(decks => {
+      this.totalDecks = decks.length;
+      this.totalCards = decks.reduce((sum, deck) => sum + (deck.cards?.length || 0), 0);
+      this.cardsDueToday = decks.reduce((sum, deck) => sum + (deck.due || 0), 0);
+      this.recentDecks = decks.slice(0, 3);
+    });
   }
 }

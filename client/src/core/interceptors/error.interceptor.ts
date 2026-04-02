@@ -24,39 +24,39 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
             }
             break;
           case 401:
-            //If the user is not logged in, redirect to the login page
-            if (req.url.includes('/login') || req.url.includes('/refresh-token')) {
-              toast.error('A munkamenet lejárt, kérjük jelentkezzen be újra!');
-              accountService.logout().subscribe({
-                next: () => router.navigateByUrl('/login'),
-                error: () => router.navigateByUrl('/login')
-              });
-              return throwError(() => error); // we interrupt the operation
+            // Authentication/Authorization failure
+            const isAuthRequest = req.url.includes('/login') || req.url.includes('/refresh-token') || req.url.includes('/logout');
+
+            if (isAuthRequest) {
+              // If the refresh-token specifically failed, it means the session/cookie is gone.
+              // We only show a toast if the user was actually logged in previously (indicated by current user)
+              // and if we are not already in logout phase.
+              if (req.url.includes('/refresh-token') && accountService.currentUser() !== null) {
+                toast.error('A munkamenet lejárt, kérjük jelentkezzen be újra!');
+              }
+
+              // In any case, we want to clear the local user and redirect to login
+              // Use direct setter if logout() would cause another 401 loop
+              accountService.currentUser.set(null);
+              router.navigateByUrl('/login');
+              return throwError(() => error);
             }
 
-            // If the user is logged in, try to refresh the token
+            // For other requests, attempt to refresh the token
             return accountService.refreshToken().pipe(
               switchMap(user => {
-                // SUCCESS! We got a new token. We copy the old, failed request, but with the NEW token!
                 if (user && user.token) {
                   const clonedReq = req.clone({
-                    setHeaders: {
-                      Authorization: `Bearer ${user.token}`
-                    }
+                    setHeaders: { Authorization: `Bearer ${user.token}` }
                   });
-                  // We resend the modified request. The user notices nothing!
                   return next(clonedReq);
-                } else {
-                  return throwError(() => error);
                 }
+                return throwError(() => error);
               }),
               catchError(refreshError => {
-                // FAILURE: If the refresh also failed (the 15-day cookie expired), we throw it to the Login
                 toast.error('A munkamenet lejárt, kérjük jelentkezzen be újra!');
-                accountService.logout().subscribe({
-                  next: () => router.navigateByUrl('/login'),
-                  error: () => router.navigateByUrl('/login')
-                });
+                accountService.currentUser.set(null);
+                router.navigateByUrl('/login');
                 return throwError(() => refreshError);
               })
             );
