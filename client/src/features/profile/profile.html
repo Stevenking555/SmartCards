@@ -23,9 +23,7 @@
       <!-- Profile form -->
       <div class="bg-base-100 p-6 lg:p-8 rounded-[2rem] shadow-xl border border-base-content/5">
         <div class="flex items-start gap-4 mb-6 pb-6 border-b border-base-content/10">
-          <div class="w-16 h-16 rounded-full bg-primary flex items-center justify-center text-primary-content text-2xl font-bold shadow-lg shadow-primary/30">
-            {{ accountService.currentUser()?.displayName?.charAt(0) | uppercase }}
-          </div>
+
           <div>
             <h2 class="text-xl font-bold">{{ 'profile.info' | translate }}</h2>
             <p class="text-sm text-base-content/60">{{ 'profile.info.desc' | translate }}</p>
@@ -37,7 +35,7 @@
         </div>
 
         <form [formGroup]="profileForm" (ngSubmit)="saveProfile()" class="space-y-4 max-w-lg">
-          <!-- Felhasználónév (Megjelenített Név) -->
+          <!-- DisplayName -->
           <div class="form-control w-full transition-opacity duration-300" [ngClass]="{'opacity-50': activeEditField !== null && activeEditField !== 'displayName'}">
             <label class="label"><span class="label-text font-bold uppercase tracking-wider text-xs">{{ 'profile.username' | translate }}</span></label>
             <div class="flex gap-2 items-center">
@@ -49,9 +47,9 @@
                 [ngClass]="activeEditField === 'displayName' ? 'btn-ghost text-error' : 'btn-ghost'"
                 (click)="activeEditField === 'displayName' ? cancelEdit() : startEdit('displayName')"
                 [disabled]="activeEditField !== null && activeEditField !== 'displayName'">
-                <!-- Mégse Ikon (❌) -->
+                <!-- Cancel X icon -->
                 <svg *ngIf="activeEditField === 'displayName'" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
-                <!-- Szerkesztés Ikon (✏️) -->
+                <!-- Edit (pen) icon -->
                 <svg *ngIf="activeEditField !== 'displayName'" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" /></svg>
               </button>
             </div>
@@ -78,9 +76,9 @@
                 [ngClass]="activeEditField === 'email' ? 'btn-ghost text-error' : 'btn-ghost'"
                 (click)="activeEditField === 'email' ? cancelEdit() : startEdit('email')"
                 [disabled]="activeEditField !== null && activeEditField !== 'email'">
-                <!-- Mégse Ikon (❌) -->
+                <!-- Cancel X icon -->
                 <svg *ngIf="activeEditField === 'email'" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
-                <!-- Szerkesztés Ikon (✏️) -->
+                <!-- Edit (pen) icon -->
                 <svg *ngIf="activeEditField !== 'email'" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" /></svg>
               </button>
             </div>
@@ -95,7 +93,7 @@
             }
           </div>
           
-          <!-- Új jelszó -->
+          <!-- New password -->
           <div class="form-control w-full transition-opacity duration-300" [ngClass]="{'opacity-50': activeEditField !== null && activeEditField !== 'password'}">
             <label class="label"><span class="label-text font-bold uppercase tracking-wider text-xs">{{ 'profile.new_password' | translate }}</span></label>
             <div class="flex gap-2 items-center">
@@ -107,9 +105,9 @@
                 [ngClass]="activeEditField === 'password' ? 'btn-ghost text-error' : 'btn-ghost'"
                 (click)="activeEditField === 'password' ? cancelEdit() : startEdit('password')"
                 [disabled]="activeEditField !== null && activeEditField !== 'password'">
-                <!-- Mégse Ikon (❌) -->
+                <!-- Cancel X icon -->
                 <svg *ngIf="activeEditField === 'password'" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
-                <!-- Szerkesztés Ikon (✏️) -->
+                <!-- Edit (pen) icon -->
                 <svg *ngIf="activeEditField !== 'password'" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" /></svg>
               </button>
             </div>
@@ -121,14 +119,14 @@
             }
           </div>
 
-          <!-- Jelenlegi jelszó (Kell a mentéshez, de nincs mellette ceruza) -->
+          <!-- Current password -->
           <div class="form-control w-full transition-all duration-300" [ngClass]="{'opacity-50': activeEditField === null}">
             <label class="label"><span class="label-text font-bold uppercase tracking-wider text-xs">{{ 'profile.old_password' | translate }}</span></label>
             <div class="flex gap-2 items-center">
               <input type="password" formControlName="password" [placeholder]="'profile.password.placeholder' | translate" 
                 class="input input-bordered w-full bg-base-200" 
                 [class.input-error]="passwordControl.invalid && passwordControl.touched" />
-              <!-- Láthatatlan kitöltő div, hogy az input ugyanolyan széles maradjon, mint a fenti inputBoxok -->
+              <!-- Invisible filler div to keep the input the same width as the inputBoxes above -->
               <div class="w-12"></div>
             </div>
             @if (passwordControl.hasError('required') && passwordControl.touched) {
@@ -153,13 +151,13 @@
           <label class="cursor-pointer">
             <input type="radio" name="lang-radio" class="hidden peer" value="en" [checked]="currentLang === 'en'" (change)="onLanguageChange('en')">
             <div class="border-2 rounded-2xl p-4 text-center border-base-300 bg-base-200 hover:border-primary/50 peer-checked:border-primary peer-checked:bg-primary/10 transition-all">
-              <span class="block font-bold">🇺🇸 {{ 'profile.language.en' | translate }}</span>
+              <span class="block font-bold">uk {{ 'profile.language.en' | translate }}</span>
             </div>
           </label>
           <label class="cursor-pointer">
             <input type="radio" name="lang-radio" class="hidden peer" value="hu" [checked]="currentLang === 'hu'" (change)="onLanguageChange('hu')">
             <div class="border-2 rounded-2xl p-4 text-center border-base-300 bg-base-200 hover:border-primary/50 peer-checked:border-primary peer-checked:bg-primary/10 transition-all">
-              <span class="block font-bold">🇭🇺 {{ 'profile.language.hu' | translate }}</span>
+              <span class="block font-bold">hu {{ 'profile.language.hu' | translate }}</span>
             </div>
           </label>
         </div>

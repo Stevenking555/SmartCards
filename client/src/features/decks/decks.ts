@@ -31,10 +31,10 @@ export class Decks implements OnInit {
   newDeck: NewDeck = { title: '', goal: '1 Week' };
 
   ngOnInit() {
-    this.deckService.loadDecks().subscribe();
-    this.deckService.decks$.subscribe(decks => {
-      this.decks = decks;
-    });
+    // this.deckService.loadDecks().subscribe();
+    // this.deckService.decks$.subscribe(decks => {
+    //   this.decks = decks;
+    // });
   }
 
   openModal(): void {
