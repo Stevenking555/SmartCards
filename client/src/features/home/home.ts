@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { DeckService } from '../../core/services/deck.service';
@@ -33,12 +33,7 @@ export class HomeComponent implements OnInit {
   ngOnInit() {
     this.randomQuoteIndex = Math.floor(Math.random() * 8) + 1;
 
-    const user = this.accountService.currentUser();
-    if (user) {
-      this.username = user.displayName;
-    }
-
-    // this.deckService.loadDecks().subscribe();
+    // // this.deckService.loadDecks().subscribe();
     // this.deckService.decks$.subscribe(decks => {
     //   this.totalDecks = decks.length;
     //   this.totalCards = decks.reduce((sum, deck) => sum + (deck.cards?.length || 0), 0);
