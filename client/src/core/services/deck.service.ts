@@ -20,16 +20,21 @@ export class DeckService {
   private initialLoadCompleted = false;
 
   loadDecks() {
-    if (this.initialLoadCompleted) {
-      return of(this.decksSubject.value);
-    }
-    return this.http.get<Deck[]>(this.baseUrl + 'decks', { withCredentials: true }).pipe(
-      tap(decks => {
-        this.decksSubject.next(decks);
-        this.initialLoadCompleted = true;
-      })
-    );
+  if (this.initialLoadCompleted) {
+    return of(this.decksSubject.value);
   }
+  return this.http.get<Deck[]>(this.baseUrl + 'decks', { withCredentials: true }).pipe(
+    tap(decks => {
+      // BIZTONSÁGI JAVÍTÁS: Ha a backend null-t küldene a cards-ra, legyen üres tömb
+      const safeDecks = decks.map(d => ({
+        ...d,
+        cards: d.cards || []
+      }));
+      this.decksSubject.next(safeDecks);
+      this.initialLoadCompleted = true;
+    })
+  );
+}
 
   getDecks(): Deck[] {
     return this.decksSubject.value;
