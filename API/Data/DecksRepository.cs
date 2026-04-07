@@ -10,6 +10,11 @@ namespace API.Data;
 
 public class DecksRepository(AppDbContext context) : IDecksRepository
 {
+    public async Task<int> GetDeckCountAsync(string userId)
+    {
+        return await context.Decks.CountAsync(d => d.AppUserId == userId);
+    }
+
     public void AddDeck(Deck deck)
     {
         context.Decks.Add(deck);

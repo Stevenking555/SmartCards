@@ -12,6 +12,7 @@ public interface IDecksRepository
     Task<Deck?> GetDeckWithStatsAsync(string userId, Guid deckId);
     Task<Deck?> GetDeckWithCardsAsync(string userId, Guid deckId);
     Task<Deck?> GetDeckForGameAsync(string userId, Guid deckId);
+    Task<int> GetDeckCountAsync(string userId);
     void AddDeck(Deck deck);
     void UpdateDeck(Deck deck);
     void DeleteDeck(Deck deck);

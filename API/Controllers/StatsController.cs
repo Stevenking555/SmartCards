@@ -13,10 +13,10 @@ namespace API.Controllers;
 public class StatsController(IStatsService statsService) : BaseApiController
 {
     [HttpGet("home")]
-    public async Task<ActionResult<HomePageStatsDto>> GetHomePageStats()
+    public async Task<ActionResult<UserStatsDto>> GetHomePageStats()
     {
         var userId = User.GetUserId();
-        var stats = await statsService.GetHomePageStatsAsync(userId);
+        var stats = await statsService.GetUserStatsAsync(userId);
         return Ok(stats);
     }
 

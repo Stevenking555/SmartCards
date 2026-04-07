@@ -7,8 +7,8 @@ namespace API.Interfaces;
 
 public interface IStatsService
 {
-    Task<HomePageStatsDto> GetHomePageStatsAsync(string userId);
-    Task<DeckPageStatsDto> GetDeckPageStatsAsync(string userId, Guid deckId);
-    Task<IEnumerable<GameCardStatsDto>> GetGameCardStatsAsync(string userId, Guid deckId);
+    Task<UserStatsDto> GetUserStatsAsync(string userId);
+    Task<DeckStatsDto> GetDeckStatsAsync(string userId, Guid deckId);
+    Task<IEnumerable<CardStatsDto>> GetCardStatsForDeckAsync(string userId, Guid deckId);
     Task<bool> UpdateSessionStatsAsync(string userId, UpdateSessionStatsDto updateDto);
 }

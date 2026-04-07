@@ -8,24 +8,23 @@ public class AutoMapperProfiles : Profile
 {
     public AutoMapperProfiles()
     {
-        CreateMap<Deck, DeckDto>();
         CreateMap<CreateDeckDto, Deck>();
+        CreateMap<Deck, DeckDto>();
+        CreateMap<Deck, DeckWithStatsDto>();
+        CreateMap<Deck, DeckWithCardsDto>();
+        CreateMap<Deck, DeckForGameDto>();
         
-        CreateMap<Card, CardDto>();
         CreateMap<CreateCardDto, Card>();
+        CreateMap<Card, CardDto>();
+        CreateMap<Card, CardWithStatsDto>();
 
         CreateMap<AppUser, UserDto>()
             .ForMember(dest => dest.Token, opt => opt.Ignore());
 
-        CreateMap<UserStats, HomePageStatsDto>();
+        CreateMap<UserStats, UserStatsDto>();
         
-        CreateMap<DeckStats, DeckPageStatsDto>();
+        CreateMap<DeckStats, DeckStatsDto>();
         
-        CreateMap<CardStats, GameCardStatsDto>();
-
-        CreateMap<Deck, DeckWithStatsDto>();
-        CreateMap<Deck, DeckWithCardsDto>();
-        CreateMap<Card, CardWithStatsDto>();
-        CreateMap<Deck, DeckForGameDto>();
+        CreateMap<CardStats, CardStatsDto>();
     }
 }

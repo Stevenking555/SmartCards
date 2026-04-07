@@ -10,6 +10,11 @@ namespace API.Data;
 
 public class CardsRepository(AppDbContext context) : ICardsRepository
 {
+    public async Task<int> GetCardCountAsync(string userId)
+    {
+        return await context.Cards.CountAsync(c => c.Deck.AppUserId == userId);
+    }
+
     public void AddCard(Card card)
     {
         context.Cards.Add(card);

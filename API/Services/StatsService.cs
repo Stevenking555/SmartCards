@@ -12,32 +12,39 @@ namespace API.Services;
 
 public class StatsService(IUnitOfWork unitOfWork, IMapper mapper) : IStatsService
 {
-    public async Task<DeckPageStatsDto> GetDeckPageStatsAsync(string userId, Guid deckId)
+    public async Task<DeckStatsDto> GetDeckStatsAsync(string userId, Guid deckId)
     {
         var deckStats = await unitOfWork.StatsRepository.GetDeckStatsAsync(userId, deckId);
-        if (deckStats == null) return new DeckPageStatsDto();
+        if (deckStats == null) return new DeckStatsDto();
 
-        return mapper.Map<DeckPageStatsDto>(deckStats);
+        return mapper.Map<DeckStatsDto>(deckStats);
     }
 
-    public async Task<IEnumerable<GameCardStatsDto>> GetGameCardStatsAsync(string userId, Guid deckId)
+    public async Task<IEnumerable<CardStatsDto>> GetCardStatsForDeckAsync(string userId, Guid deckId)
     {
         var cardStats = await unitOfWork.StatsRepository.GetCardStatsForDeckAsync(userId, deckId);
-        return mapper.Map<IEnumerable<GameCardStatsDto>>(cardStats);
+        return mapper.Map<IEnumerable<CardStatsDto>>(cardStats);
     }
 
-    public async Task<HomePageStatsDto> GetHomePageStatsAsync(string userId)
+    public async Task<UserStatsDto> GetUserStatsAsync(string userId)
     {
         var userStats = await unitOfWork.StatsRepository.GetUserStatsAsync(userId);
+        if (userStats == null) throw new Exception("User stats not found");
+
         var lastDecks = await unitOfWork.StatsRepository.GetLastPlayedDecksAsync(userId, 5);
 
-        var dto = new HomePageStatsDto();
-        
-        if (userStats != null)
-        {
-            mapper.Map(userStats, dto);
-        }
+        // Update totals
+        userStats.TotalDecks = await unitOfWork.DecksRepository.GetDeckCountAsync(userId);
+        userStats.TotalCards = await unitOfWork.CardsRepository.GetCardCountAsync(userId);
+        userStats.TotalMasteredCards = await unitOfWork.StatsRepository.GetMasteredCardCountAsync(userId);
 
+        // Save totals
+        await unitOfWork.Complete();
+
+        // Map simple fields from entity to DTO
+        var dto = mapper.Map<UserStatsDto>(userStats);
+
+        // Manually add the data that wasn't in the entity
         dto.LastPlayedDecks = lastDecks.Select(ds => new LastPlayedDeckDto
         {
             DeckId = ds.DeckId,
@@ -61,13 +68,12 @@ public class StatsService(IUnitOfWork unitOfWork, IMapper mapper) : IStatsServic
         userStats.FlippedCardsTotal = updateDto.FlippedCardsTotal;
         userStats.FlippedCardsToday = updateDto.FlippedCardsToday;
 
+
         // Streak logic
         var daysSinceLastFlip = (updateDto.LastFlipAt.Date - userStats.LastFlipAt.Date).Days;
         if (daysSinceLastFlip == 1)
         {
             userStats.LearningStreak++;
-            if (userStats.LearningStreak > userStats.LongestStreak)
-                userStats.LongestStreak = userStats.LearningStreak;
         }
         else if (daysSinceLastFlip > 1)
         {
