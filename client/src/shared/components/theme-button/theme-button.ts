@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ThemeService } from '../../../core/services/theme.service';
 
@@ -11,24 +11,28 @@ import { ThemeService } from '../../../core/services/theme.service';
 export class ThemeButtonComponent implements OnInit {
   private themeService = inject(ThemeService);
 
-  isThemeDropdownOpen = false;
+  isThemeDropdownOpen = signal(false);
   themes: string[] = [];
-  currentIndex = 0;
+  currentIndex = signal(0);
+
+  toggleDropdown() {
+    this.isThemeDropdownOpen.update(v => !v);
+  }
 
   ngOnInit() {
     this.themes = this.themeService.availableThemes;
     const currentTheme = this.themeService.getCurrentTheme();
-    this.currentIndex = this.themes.indexOf(currentTheme);
-    if (this.currentIndex === -1) this.currentIndex = 0;
+    const idx = this.themes.indexOf(currentTheme);
+    this.currentIndex.set(idx === -1 ? 0 : idx);
   }
 
   nextTheme() {
-    this.currentIndex = (this.currentIndex + 1) % this.themes.length;
-    this.themeService.setTheme(this.themes[this.currentIndex]);
+    this.currentIndex.update(v => (v + 1) % this.themes.length);
+    this.themeService.setTheme(this.themes[this.currentIndex()]);
   }
 
   prevTheme() {
-    this.currentIndex = (this.currentIndex - 1 + this.themes.length) % this.themes.length;
-    this.themeService.setTheme(this.themes[this.currentIndex]);
+    this.currentIndex.update(v => (v - 1 + this.themes.length) % this.themes.length);
+    this.themeService.setTheme(this.themes[this.currentIndex()]);
   }
 }

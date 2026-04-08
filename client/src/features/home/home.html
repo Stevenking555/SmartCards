@@ -13,10 +13,15 @@
         <p class="text-[10px] font-bold uppercase text-base-content/60 tracking-widest">{{ 'home.welcome' | translate }}
         </p>
         <h1 class="text-1xl font-black text-base-content tracking-tight">
-          <p>{{ username || 'Guest' }}</p>
+          <p>{{ username() }}</p>
         </h1>
       </div>
-      <div class="flex items-center gap-3">
+      <div class="flex items-center gap-3 relative z-[100]">
+        <button (click)="openHelp()" class="w-9 h-9 rounded-xl bg-info/10 text-info hover:bg-info/20 border border-info/20 flex items-center justify-center transition-all active:scale-95 cursor-pointer">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 5.25h.008v.008H12v-.008Z" />
+          </svg>
+        </button>
         <app-theme-button></app-theme-button>
         <app-language-button></app-language-button>
       </div>
@@ -37,10 +42,15 @@
             <p class="text-[11px] font-bold uppercase tracking-widest text-base-content/60">{{ 'home.welcome' |
               translate }}</p>
             <h1 class="text-2xl font-black text-base-content tracking-tight">
-              <p>{{ username || 'Guest' }}</p>
+              <p>{{ username() }}</p>
             </h1>
           </div>
-          <div class="flex items-center gap-3">
+          <div class="flex items-center gap-3 relative z-[100]">
+            <button (click)="openHelp()" class="w-9 h-9 rounded-xl bg-info/10 text-info hover:bg-info/20 border border-info/20 flex items-center justify-center transition-all active:scale-95 cursor-pointer">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 5.25h.008v.008H12v-.008Z" />
+              </svg>
+            </button>
             <app-theme-button></app-theme-button>
             <app-language-button></app-language-button>
 
@@ -58,17 +68,46 @@
           <div class="lg:col-span-2 flex flex-col gap-8">
 
             <!-- Quote Section -->
-            <div class="bg-primary/10 rounded-3xl p-8 border border-primary/20 relative overflow-hidden">
-              <div class="absolute -left-4 -top-4 w-24 h-24 bg-primary/20 rounded-full opacity-50"></div>
+            <div [class]="'rounded-3xl p-8 border relative overflow-hidden ' + themeClasses.container">
+              <div [class]="'absolute -left-4 -top-4 w-24 h-24 rounded-full opacity-50 ' + themeClasses.circle"></div>
               <div class="relative z-10">
                 <p class="text-xl font-medium text-base-content/90 italic leading-relaxed">
-                  "{{ 'home.quote.' + randomQuoteIndex + '.text' | translate }}"
+                  "{{ 'home.quote.' + dailyData.quoteIndex + '.text' | translate }}"
                 </p>
                 <p
-                  class="text-sm font-bold text-base-content/60 mt-4 uppercase tracking-widest flex items-center gap-2">
+                  class="text-sm font-bold mt-4 uppercase tracking-widest flex items-center gap-2 " [class]="themeClasses.text">
                   <span class="w-8 h-px bg-base-content/20"></span>
-                  {{ 'home.quote.' + randomQuoteIndex + '.author' | translate }}
+                  {{ 'home.quote.' + dailyData.quoteIndex + '.author' | translate }}
                 </p>
+              </div>
+            </div>
+
+            <!-- Weekly Activity Section -->
+            <div class="relative z-50">
+              <div class="flex justify-between items-start mb-6">
+                <div>
+                  <h2 class="text-xl font-black text-base-content tracking-tight">{{ 'home.weekly_activity' | translate }}</h2>
+                  <p class="text-sm font-medium text-base-content/60">{{ 'home.time_spent' | translate }}</p>
+                </div>
+                <div class="px-3 py-1 bg-base-200 text-xs font-bold rounded-lg text-base-content/80">{{ 'home.this_week' | translate }}</div>
+              </div>
+              
+              <div class="h-40 flex items-end gap-2 px-2 border-b border-base-content/10 pb-2 mb-2">
+                @for (day of weeklyActivity; track day.dayKey) {
+                  <div class="flex-1 flex flex-col items-center gap-2 group">
+                    <div class="w-full flex justify-center items-end h-32 relative">
+                      <div class="w-full max-w-[40px] rounded-t-lg transition-all duration-300 {{ day.isToday ? themeClasses.chart : themeClasses.chartBg + ' ' + themeClasses.chartHover }}"
+                           [style.height]="day.heightPercent">
+                        <div class="opacity-0 group-hover:opacity-100 absolute -top-8 left-1/2 -translate-x-1/2 bg-base-300 text-xs py-1 px-2 rounded font-bold transition-opacity whitespace-nowrap shadow-lg">
+                          {{ day.value }}m
+                        </div>
+                      </div>
+                    </div>
+                    <span class="text-xs font-bold transition-colors" [class.text-base-content]="day.isToday" [class.opacity-50]="!day.isToday">
+                      {{ 'home.days.' + day.dayKey | translate }}
+                    </span>
+                  </div>
+                }
               </div>
             </div>
 
@@ -85,17 +124,17 @@
                   <div class="flex-1">
                     <h3 class="font-bold text-base-content text-lg">{{ deck.title }}</h3>
                     <p class="text-xs text-base-content/60 mt-0.5">
-                      {{ deck.cards.length }} {{ 'decks.cards' | translate }} ·
-                      <span [class.text-primary]="deck.due > 0" [class.font-bold]="deck.due > 0">
-                        {{ deck.due > 0 ? deck.due + ' ' + ('decks.due_today' | translate) : ('decks.finished' |
+                      {{ deck.cards?.length || 0 }} {{ 'decks.cards' | translate }} ·
+                      <span [class.text-primary]="(deck.due || 0) > 0" [class.font-bold]="(deck.due || 0) > 0">
+                        {{ (deck.due || 0) > 0 ? (deck.due || 0) + ' ' + ('decks.due_today' | translate) : ('decks.finished' |
                         translate) }}
                       </span>
                     </p>
                   </div>
                   <div class="flex items-center gap-3 mr-4">
-                    <span class="text-sm font-bold" [class.text-primary]="deck.due > 0"
-                      [class.text-success]="deck.due === 0">
-                      {{ deck.progress }}%
+                    <span class="text-sm font-bold" [class.text-primary]="(deck.due || 0) > 0"
+                      [class.text-success]="(deck.due || 0) === 0">
+                      {{ deck.progress || 0 }}%
                     </span>
                   </div>
                 </div>
@@ -137,17 +176,28 @@
               <p class="text-xs text-base-content/50 font-medium">{{ 'home.invested_work' | translate }}</p>
             </div>
 
-            <!-- Total Decks & Cards -->
-            <div
-              class="bg-primary rounded-3xl p-6 border border-primary/30 relative overflow-hidden group shadow-lg shadow-primary/20 transition-colors duration-300">
-              <div
-                class="absolute -right-6 -top-6 w-24 h-24 bg-base-100/10 rounded-full group-hover:scale-150 transition-transform duration-500">
+            <!-- Your Library -->
+            <div class="bg-base-200 rounded-3xl p-6 border border-base-content/5 relative overflow-hidden group transition-colors duration-300 text-base-content shadow-lg shadow-base-200/20">
+              <div class="absolute -right-6 -top-6 w-24 h-24 bg-primary/5 rounded-full group-hover:scale-150 transition-transform duration-500"></div>
+              <!-- Icon Circle -->
+              <div class="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4 relative z-10">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-primary" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6zm16-4H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-1 9H9V9h10v2zm-4 4H9v-2h6v2zm4-8H9V5h10v2z"/>
+                </svg>
               </div>
-              <p class="text-[11px] font-bold uppercase tracking-widest text-primary-content/80 mb-3">{{
-                'home.total_decks'
-                | translate }} / {{ 'home.total_cards' | translate }}</p>
-              <div class="text-4xl font-black text-primary-content mb-2 tracking-tight">{{ totalDecks }} / {{ totalCards
-                }}</div>
+              
+              <div class="text-center font-bold text-lg mb-6 relative z-10">{{ 'home.your_library' | translate }}</div>
+              
+              <div class="flex justify-center gap-8 relative z-10">
+                <div class="text-center">
+                  <div class="text-3xl font-black mb-1">{{ totalDecks }}</div>
+                  <div class="text-[10px] font-bold uppercase tracking-widest text-base-content/60">{{ 'decks.title' | translate }}</div>
+                </div>
+                <div class="text-center">
+                  <div class="text-3xl font-black mb-1">{{ totalCards }}</div>
+                  <div class="text-[10px] font-bold uppercase tracking-widest text-base-content/60">{{ 'decks.cards' | translate }}</div>
+                </div>
+              </div>
             </div>
 
           </div>
@@ -182,27 +232,62 @@
               <p class="text-[10px] font-medium text-base-content/50">{{ 'home.invested_work' | translate }}</p>
             </div>
 
-            <!-- Total Decks & Cards -->
-            <div
-              class="bg-primary text-primary-content p-5 rounded-3xl border border-primary/30 relative overflow-hidden shadow-lg shadow-primary/30">
-              <div class="absolute -right-4 -top-4 w-16 h-16 bg-base-100/10 rounded-full"></div>
-              <div class="flex justify-between items-center mb-1">
-                <p class="text-[9px] font-bold uppercase tracking-widest text-primary-content/80">{{ 'home.total_decks'
-                  | translate }}</p>
+            <!-- Your Library (Mobile) -->
+            <div class="bg-base-200 text-base-content p-5 rounded-3xl border border-base-content/5 relative overflow-hidden shadow-lg shadow-base-200/20">
+              <div class="absolute -right-4 -top-4 w-16 h-16 bg-primary/5 rounded-full"></div>
+              
+              <div class="flex items-center gap-4 mb-4 relative z-10">
+                <div class="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center shrink-0">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-primary" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6zm16-4H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-1 9H9V9h10v2zm-4 4H9v-2h6v2zm4-8H9V5h10v2z"/>
+                  </svg>
+                </div>
+                <div class="font-bold text-[13px] uppercase tracking-widest">{{ 'home.your_library' | translate }}</div>
+              </div>
+
+              <div class="flex justify-between items-center mb-1 relative z-10">
+                <p class="text-[9px] font-bold uppercase tracking-widest text-base-content/60">{{ 'decks.title' | translate }}</p>
                 <div class="text-lg font-black">{{ totalDecks }}</div>
               </div>
-              <div class="flex justify-between items-center mb-1">
-                <p class="text-[9px] font-bold uppercase tracking-widest text-primary-content/80">{{ 'home.total_cards'
-                  | translate }}</p>
+              <div class="flex justify-between items-center mb-1 relative z-10">
+                <p class="text-[9px] font-bold uppercase tracking-widest text-base-content/60">{{ 'decks.cards' | translate }}</p>
                 <div class="text-lg font-black">{{ totalCards }}</div>
               </div>
-              <div class="mt-3 relative z-10 border-t border-primary-content/20 pt-3">
-                <p class="text-[10px] font-medium text-primary-content/90 italic leading-tight">
-                  "{{ 'home.quote.' + randomQuoteIndex + '.text' | translate }}"
+
+              <!-- Extra Quote space -->
+              <div [class]="'mt-3 relative z-10 border-t pt-3 rounded-xl p-3 ' + themeClasses.container">
+                <p class="text-[10px] font-medium text-base-content/90 italic leading-tight">
+                  "{{ 'home.quote.' + dailyData.quoteIndex + '.text' | translate }}"
                 </p>
-                <p class="text-[8px] font-bold text-primary-content/70 mt-1 text-right uppercase tracking-widest">
-                  — {{ 'home.quote.' + randomQuoteIndex + '.author' | translate }}
+                <p [class]="'text-[8px] font-bold mt-1 text-right uppercase tracking-widest ' + themeClasses.text">
+                  — {{ 'home.quote.' + dailyData.quoteIndex + '.author' | translate }}
                 </p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Weekly Activity Mobile -->
+          <div class="mt-8 mb-2">
+            <div class="flex justify-between items-end mb-4">
+              <div>
+                <h2 class="text-[13px] font-bold text-base-content/60 uppercase tracking-widest">{{ 'home.weekly_activity' | translate }}</h2>
+                <p class="text-[10px] text-base-content/50 mt-0.5">{{ 'home.time_spent' | translate }}</p>
+              </div>
+            </div>
+            <div class="bg-base-100 rounded-3xl p-5 border border-base-content/5 shadow-sm">
+              <div class="h-32 flex items-end justify-between gap-1 border-b border-base-content/10 pb-2">
+                @for (day of weeklyActivity; track day.dayKey) {
+                  <div class="w-full flex flex-col items-center gap-2">
+                    <div class="w-full flex justify-center items-end h-24">
+                      <div class="w-full max-w-[24px] rounded-t-md transition-all duration-300 {{ day.isToday ? themeClasses.chart : themeClasses.chartBg }}"
+                           [style.height]="day.heightPercent">
+                      </div>
+                    </div>
+                    <span class="text-[9px] font-bold" [class.text-base-content]="day.isToday" [class.opacity-50]="!day.isToday">
+                      {{ 'home.days.' + day.dayKey | translate }}
+                    </span>
+                  </div>
+                }
               </div>
             </div>
           </div>
@@ -218,9 +303,9 @@
                 <div>
                   <h3 class="font-bold text-base-content">{{ deck.title }}</h3>
                   <p class="text-xs text-base-content/60 font-medium mt-0.5">
-                    {{ deck.cards.length }} {{ 'decks.cards' | translate }} ·
+                    {{ deck.cards?.length || 0 }} {{ 'decks.cards' | translate }} ·
                     <span [class.text-primary]="deck.due > 0" class="font-bold">
-                      {{ deck.due > 0 ? (deck.due + ' ' + ('decks.due_today' | translate)) : ('decks.finished' |
+                      {{ (deck.due || 0) > 0 ? ((deck.due || 0) + ' ' + ('decks.due_today' | translate)) : ('decks.finished' |
                       translate) }}
                     </span>
                   </p>
@@ -245,3 +330,44 @@
 
   </div>
 </div>
+
+<dialog class="modal" [class.modal-open]="isHelpModalOpen()">
+  <div class="modal-box bg-base-100 text-base-content max-w-2xl rounded-3xl p-8">
+    <button (click)="closeHelp()" class="btn btn-sm btn-circle btn-ghost absolute right-4 top-4 hover:bg-base-200">✕</button>
+    <h3 class="font-black text-2xl text-base-content mb-6">{{ 'home.tutorial.title' | translate }}</h3>
+    
+    <div class="space-y-6">
+      <div class="flex gap-4">
+        <div class="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center text-primary shrink-0">
+          <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477-4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" /></svg>
+        </div>
+        <div>
+          <h4 class="font-bold text-lg mb-1">{{ 'home.tutorial.feature1.title' | translate }}</h4>
+          <p class="text-base-content/70 text-sm leading-relaxed">{{ 'home.tutorial.feature1.desc' | translate }}</p>
+        </div>
+      </div>
+      
+      <div class="flex gap-4">
+        <div class="w-12 h-12 rounded-xl bg-info/10 flex items-center justify-center text-info shrink-0">
+          <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" /></svg>
+        </div>
+        <div>
+          <h4 class="font-bold text-lg mb-1">{{ 'home.tutorial.feature2.title' | translate }}</h4>
+          <p class="text-base-content/70 text-sm leading-relaxed">{{ 'home.tutorial.feature2.desc' | translate }}</p>
+        </div>
+      </div>
+      
+      <div class="flex gap-4">
+        <div class="w-12 h-12 rounded-xl bg-success/10 flex items-center justify-center text-success shrink-0">
+          <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+        </div>
+        <div>
+          <h4 class="font-bold text-lg mb-1">{{ 'home.tutorial.feature3.title' | translate }}</h4>
+          <p class="text-base-content/70 text-sm leading-relaxed">{{ 'home.tutorial.feature3.desc' | translate }}</p>
+        </div>
+      </div>
+    </div>
+    
+  </div>
+  <form method="dialog" class="modal-backdrop bg-neutral/90" (click)="closeHelp()"></form>
+</dialog>

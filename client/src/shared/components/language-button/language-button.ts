@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Language, LanguageService } from '../../../core/i18n/language.service';
 import { TranslatePipe } from '../../../core/i18n/translate.pipe';
@@ -12,7 +12,11 @@ import { TranslatePipe } from '../../../core/i18n/translate.pipe';
 export class LanguageButtonComponent {
   languageService = inject(LanguageService);
 
-  isDropdownOpen = false;
+  isDropdownOpen = signal(false);
+
+  toggleDropdown() {
+    this.isDropdownOpen.update(v => !v);
+  }
 
   get currentLang() {
     return this.languageService.currentLang();
@@ -20,6 +24,6 @@ export class LanguageButtonComponent {
 
   onLanguageChange(lang: Language) {
     this.languageService.setLanguage(lang);
-    this.isDropdownOpen = false;
+    this.isDropdownOpen.set(false);
   }
 }
