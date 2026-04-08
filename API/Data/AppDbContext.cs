@@ -9,11 +9,67 @@ namespace API.Data;
 
 public class AppDbContext(DbContextOptions options) : IdentityDbContext<AppUser>(options)
 {
+    public DbSet<Deck> Decks { get; set; }
+    public DbSet<Card> Cards { get; set; }
+    public DbSet<UserStats> UserStats { get; set; }
+    public DbSet<DeckStats> DeckStats { get; set; }
+    public DbSet<CardStats> CardStats { get; set; }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
 
-        // modelBuilder.Entity<AppUser>().ToTable("Users"); //To name the table Users instead of AspNetUsers
+        // AppUser -> Deck
+        modelBuilder.Entity<Deck>()
+            .HasOne(d => d.AppUser)
+            .WithMany(u => u.Decks)
+            .HasForeignKey(d => d.AppUserId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        // Deck -> Card
+        modelBuilder.Entity<Card>()
+            .HasOne(c => c.Deck)
+            .WithMany(d => d.Cards)
+            .HasForeignKey(c => c.DeckId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        // AppUser -> UserStats
+        modelBuilder.Entity<UserStats>()
+            .HasKey(us => us.AppUserId);
+
+        modelBuilder.Entity<UserStats>()
+            .HasOne(us => us.AppUser)
+            .WithOne(u => u.UserStats)
+            .HasForeignKey<UserStats>(us => us.AppUserId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        // AppUser -> DeckStats
+        modelBuilder.Entity<DeckStats>()
+            .HasOne(ds => ds.AppUser)
+            .WithMany(u => u.DeckStats)
+            .HasForeignKey(ds => ds.AppUserId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        // Deck -> DeckStats
+        modelBuilder.Entity<DeckStats>()
+            .HasOne(ds => ds.Deck)
+            .WithMany(d => d.DeckStats)
+            .HasForeignKey(ds => ds.DeckId)
+            .OnDelete(DeleteBehavior.Restrict); // Prevent multiple cascade paths
+
+        // AppUser -> CardStats
+        modelBuilder.Entity<CardStats>()
+            .HasOne(cs => cs.AppUser)
+            .WithMany(u => u.CardStats)
+            .HasForeignKey(cs => cs.AppUserId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        // Card -> CardStats
+        modelBuilder.Entity<CardStats>()
+            .HasOne(cs => cs.Card)
+            .WithMany(c => c.CardStats)
+            .HasForeignKey(cs => cs.CardId)
+            .OnDelete(DeleteBehavior.Restrict); // Prevent multiple cascade paths
 
         var dateTimeConverter = new ValueConverter<DateTime, DateTime>(
             v => v.ToUniversalTime(),

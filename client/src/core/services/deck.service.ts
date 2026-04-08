@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, tap } from 'rxjs';
+import { BehaviorSubject, tap, of } from 'rxjs';
 import { Deck, Card } from '../models/deck.model';
 import { environment } from '../../environments/environment';
 
@@ -11,20 +11,30 @@ export class DeckService {
   private http = inject(HttpClient);
   baseUrl = environment.apiUrl;
 
-  // We will keep decksSubject for components that stilll want to subscribe to local state
-  // However, components should initiate a loadDecks() call first.
+  // Subjects for local state management
   private initialDecks: Deck[] = [];
 
   private decksSubject = new BehaviorSubject<Deck[]>(this.initialDecks);
   public decks$ = this.decksSubject.asObservable();
 
+  private initialLoadCompleted = false;
+
   loadDecks() {
-    return this.http.get<Deck[]>(this.baseUrl + 'decks', { withCredentials: true }).pipe(
-      tap(decks => {
-        this.decksSubject.next(decks);
-      })
-    );
+  if (this.initialLoadCompleted) {
+    return of(this.decksSubject.value);
   }
+  return this.http.get<Deck[]>(this.baseUrl + 'decks', { withCredentials: true }).pipe(
+    tap(decks => {
+      // BIZTONSÁGI JAVÍTÁS: Ha a backend null-t küldene a cards-ra, legyen üres tömb
+      const safeDecks = decks.map(d => ({
+        ...d,
+        cards: d.cards || []
+      }));
+      this.decksSubject.next(safeDecks);
+      this.initialLoadCompleted = true;
+    })
+  );
+}
 
   getDecks(): Deck[] {
     return this.decksSubject.value;
@@ -45,7 +55,6 @@ export class DeckService {
   }
 
   updateDeckTitle(oldTitle: string, newTitle: string) {
-    // We send the old title and new title, or ID. Usually it's by ID.
     const deck = this.getDeckByTitle(oldTitle);
     if (!deck) throw new Error("Deck not found locally.");
 
