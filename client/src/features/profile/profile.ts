@@ -10,6 +10,7 @@ import { UserService } from '../../core/services/user.service';
 import { SidebarComponent } from '../../layout/sidebar/sidebar';
 import { BottomNavComponent } from '../../layout/bottom-nav/bottom-nav';
 import { ToastService } from '../../core/services/toast-service';
+import { HomeService } from '../../core/services/home.service';
 import { Observable, tap } from 'rxjs';
 
 @Component({
@@ -23,12 +24,14 @@ export class ProfilePageComponent implements OnInit {
   langService = inject(LanguageService);
   accountService = inject(AccountService);
   userService = inject(UserService);
+  homeService = inject(HomeService);
   router = inject(Router);
   toast = inject(ToastService);
   fb = inject(FormBuilder);
 
   themes: string[] = [];
   selectedTheme = '';
+  quoteStyle = 'motivational';
 
   activeEditField: 'displayName' | 'email' | 'password' | null = null;
   profileForm: FormGroup = new FormGroup({});
@@ -36,9 +39,13 @@ export class ProfilePageComponent implements OnInit {
   ngOnInit() {
     this.initializeForm();
     this.cancelEdit();
-    
+
     this.themes = this.themeService.availableThemes;
     this.selectedTheme = this.themeService.getCurrentTheme();
+
+    this.homeService.dailyData$.subscribe(data => {
+      this.quoteStyle = data.quoteStyle;
+    });
   }
 
   initializeForm() {
@@ -62,21 +69,21 @@ export class ProfilePageComponent implements OnInit {
     if (field === 'displayName') this.usernameControl.enable();
     if (field === 'email') this.emailControl.enable();
     if (field === 'password') this.newPasswordControl.enable();
-    
+
     this.passwordControl.enable(); // A szerkesztéshez mindig kell az aktuális jelszó
   }
 
   cancelEdit() {
     this.activeEditField = null;
     const user = this.accountService.currentUser();
-    
+
     this.profileForm.patchValue({
       username: user ? user.displayName : '',
       email: user ? user.email : '',
       password: '',
       newPassword: ''
     });
-    
+
     this.profileForm.disable(); // Minden mezőt inaktiválunk
     this.profileForm.markAsUntouched();
   }
@@ -133,8 +140,8 @@ export class ProfilePageComponent implements OnInit {
           if (errors.Email) this.emailControl.setErrors({ serverError: errors.Email[0] });
           if (errors.DisplayName) this.usernameControl.setErrors({ serverError: errors.DisplayName[0] });
           if (errors.Identity) {
-             if (this.activeEditField === 'password') this.newPasswordControl.setErrors({ serverError: errors.Identity[0] });
-             else this.passwordControl.setErrors({ serverError: errors.Identity[0] });
+            if (this.activeEditField === 'password') this.newPasswordControl.setErrors({ serverError: errors.Identity[0] });
+            else this.passwordControl.setErrors({ serverError: errors.Identity[0] });
           }
         } else {
           const errorMessage = typeof err.error === 'string' ? err.error : err.message || this.langService.translate('error.unexpected');
@@ -155,6 +162,10 @@ export class ProfilePageComponent implements OnInit {
 
   onLanguageChange(lang: Language) {
     this.langService.setLanguage(lang);
+  }
+
+  onQuoteStyleChange(style: 'motivational' | 'funny') {
+    this.homeService.setQuoteStyle(style);
   }
 
   logout() {

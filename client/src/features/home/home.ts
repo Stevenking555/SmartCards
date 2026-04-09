@@ -30,11 +30,8 @@ export class HomeComponent implements OnInit {
   totalLearningTime = "12.5"; // Just some example TODO: Make it real with real DB data
   username = computed(() => this.accountService.currentUser()?.displayName || 'Guest');
   recentDecks: Deck[] = [];
-  dailyData: DailyData = { quoteIndex: 1, colorTheme: 'primary' };
-  isHelpModalOpen = signal(false);
+  dailyData: DailyData = { quoteIndex: 1, colorTheme: 'primary', loginStreak: 0, quoteStyle: 'motivational' };
 
-  openHelp() { this.isHelpModalOpen.set(true); }
-  closeHelp() { this.isHelpModalOpen.set(false); }
 
   weeklyActivity: { dayKey: string; value: number; heightPercent: string; isToday: boolean }[] = [];
 
