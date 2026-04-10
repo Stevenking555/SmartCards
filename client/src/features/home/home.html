@@ -13,10 +13,22 @@
         <p class="text-[10px] font-bold uppercase text-base-content/60 tracking-widest">{{ 'home.welcome' | translate }}
         </p>
         <h1 class="text-1xl font-black text-base-content tracking-tight">
-          <p>{{ username() || 'Guest' }}</p>
+          <p>{{ username() }}</p>
         </h1>
       </div>
-      <div class="flex items-center gap-3">
+      <div class="flex items-center gap-3 relative z-[100]">
+        <div
+          class="flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-xl bg-orange-500/10 border border-orange-500/20 text-orange-500 font-black cursor-default transition-all hover:bg-orange-500/20"
+          title="{{ 'home.login_streak' | translate }}">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+            stroke="currentColor" class="size-6">
+            <path stroke-linecap="round" stroke-linejoin="round"
+              d="M15.362 5.214A8.252 8.252 0 0 1 12 21 8.25 8.25 0 0 1 6.038 7.047 8.287 8.287 0 0 0 9 9.601a8.983 8.983 0 0 1 3.361-6.867 8.21 8.21 0 0 0 3 2.48Z" />
+            <path stroke-linecap="round" stroke-linejoin="round"
+              d="M12 18a3.75 3.75 0 0 0 .495-7.468 5.99 5.99 0 0 0-1.925 3.547 5.975 5.975 0 0 1-2.133-1.001A3.75 3.75 0 0 0 12 18Z" />
+          </svg>
+          <span class="text-sm">{{ dailyData.loginStreak }}</span>
+        </div>
         <app-theme-button></app-theme-button>
         <app-language-button></app-language-button>
       </div>
@@ -37,10 +49,19 @@
             <p class="text-[11px] font-bold uppercase tracking-widest text-base-content/60">{{ 'home.welcome' |
               translate }}</p>
             <h1 class="text-2xl font-black text-base-content tracking-tight">
-              <p>{{ username() || 'Guest' }}</p>
+              <p>{{ username() }}</p>
             </h1>
           </div>
-          <div class="flex items-center gap-3">
+          <div class="flex items-center gap-3 relative z-[100]">
+            <div
+              class="flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-xl bg-orange-500/10 border border-orange-500/20 text-orange-500 font-black cursor-default transition-all hover:bg-orange-500/20"
+              title="{{ 'home.login_streak' | translate }}">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6">
+  <path fill-rule="evenodd" d="M12.963 2.286a.75.75 0 0 0-1.071-.136 9.742 9.742 0 0 0-3.539 6.176 7.547 7.547 0 0 1-1.705-1.715.75.75 0 0 0-1.152-.082A9 9 0 1 0 15.68 4.534a7.46 7.46 0 0 1-2.717-2.248ZM15.75 14.25a3.75 3.75 0 1 1-7.313-1.172c.628.465 1.35.81 2.133 1a5.99 5.99 0 0 1 1.925-3.546 3.75 3.75 0 0 1 3.255 3.718Z" clip-rule="evenodd" />
+</svg>
+
+              <span class="text-sm">{{ dailyData.loginStreak }}</span>
+            </div>
             <app-theme-button></app-theme-button>
             <app-language-button></app-language-button>
 
@@ -58,17 +79,51 @@
           <div class="lg:col-span-2 flex flex-col gap-8">
 
             <!-- Quote Section -->
-            <div class="bg-primary/10 rounded-3xl p-8 border border-primary/20 relative overflow-hidden">
-              <div class="absolute -left-4 -top-4 w-24 h-24 bg-primary/20 rounded-full opacity-50"></div>
+            <div [class]="'rounded-3xl p-8 border relative overflow-hidden ' + themeClasses.container">
+              <div [class]="'absolute -left-4 -top-4 w-24 h-24 rounded-full opacity-50 ' + themeClasses.circle"></div>
               <div class="relative z-10">
                 <p class="text-xl font-medium text-base-content/90 italic leading-relaxed">
-                  "{{ 'home.quote.' + randomQuoteIndex + '.text' | translate }}"
+                  "{{ (dailyData.quoteStyle === 'funny' ? 'home.quote_funny.' : 'home.quote.') + dailyData.quoteIndex + '.text' | translate }}"
                 </p>
-                <p
-                  class="text-sm font-bold text-base-content/60 mt-4 uppercase tracking-widest flex items-center gap-2">
+                <p class="text-sm font-bold mt-4 uppercase tracking-widest flex items-center gap-2 "
+                  [class]="themeClasses.text">
                   <span class="w-8 h-px bg-base-content/20"></span>
-                  {{ 'home.quote.' + randomQuoteIndex + '.author' | translate }}
+                  {{ (dailyData.quoteStyle === 'funny' ? 'home.quote_funny.' : 'home.quote.') + dailyData.quoteIndex + '.author' | translate }}
                 </p>
+              </div>
+            </div>
+
+            <!-- Weekly Activity Section -->
+            <div class="relative z-50">
+              <div class="flex justify-between items-start mb-6">
+                <div>
+                  <h2 class="text-xl font-black text-base-content tracking-tight">{{ 'home.weekly_activity' | translate
+                    }}</h2>
+                  <p class="text-sm font-medium text-base-content/60">{{ 'home.time_spent' | translate }}</p>
+                </div>
+                <div class="px-3 py-1 bg-base-200 text-xs font-bold rounded-lg text-base-content/80">{{ 'home.this_week'
+                  | translate }}</div>
+              </div>
+
+              <div class="h-40 flex items-end gap-2 px-2 border-b border-base-content/10 pb-2 mb-2">
+                @for (day of weeklyActivity; track day.dayKey) {
+                <div class="flex-1 flex flex-col items-center gap-2 group">
+                  <div class="w-full flex justify-center items-end h-32 relative">
+                    <div
+                      class="w-full max-w-[40px] rounded-t-lg transition-all duration-300 {{ day.isToday ? themeClasses.chart : themeClasses.chartBg + ' ' + themeClasses.chartHover }}"
+                      [style.height]="day.heightPercent">
+                      <div
+                        class="opacity-0 group-hover:opacity-100 absolute -top-8 left-1/2 -translate-x-1/2 bg-base-300 text-xs py-1 px-2 rounded font-bold transition-opacity whitespace-nowrap shadow-lg">
+                        {{ day.value }}m
+                      </div>
+                    </div>
+                  </div>
+                  <span class="text-xs font-bold transition-colors" [class.text-base-content]="day.isToday"
+                    [class.opacity-50]="!day.isToday">
+                    {{ 'home.days.' + day.dayKey | translate }}
+                  </span>
+                </div>
+                }
               </div>
             </div>
 
@@ -85,17 +140,18 @@
                   <div class="flex-1">
                     <h3 class="font-bold text-base-content text-lg">{{ deck.title }}</h3>
                     <p class="text-xs text-base-content/60 mt-0.5">
-                      {{ deck.cards.length }} {{ 'decks.cards' | translate }} ·
-                      <span [class.text-primary]="deck.due > 0" [class.font-bold]="deck.due > 0">
-                        {{ deck.due > 0 ? deck.due + ' ' + ('decks.due_today' | translate) : ('decks.finished' |
+                      {{ deck.cards?.length || 0 }} {{ 'decks.cards' | translate }} ·
+                      <span [class.text-primary]="(deck.due || 0) > 0" [class.font-bold]="(deck.due || 0) > 0">
+                        {{ (deck.due || 0) > 0 ? (deck.due || 0) + ' ' + ('decks.due_today' | translate) :
+                        ('decks.finished' |
                         translate) }}
                       </span>
                     </p>
                   </div>
                   <div class="flex items-center gap-3 mr-4">
-                    <span class="text-sm font-bold" [class.text-primary]="deck.due > 0"
-                      [class.text-success]="deck.due === 0">
-                      {{ deck.progress }}%
+                    <span class="text-sm font-bold" [class.text-primary]="(deck.due || 0) > 0"
+                      [class.text-success]="(deck.due || 0) === 0">
+                      {{ deck.progress || 0 }}%
                     </span>
                   </div>
                 </div>
@@ -137,17 +193,36 @@
               <p class="text-xs text-base-content/50 font-medium">{{ 'home.invested_work' | translate }}</p>
             </div>
 
-            <!-- Total Decks & Cards -->
+            <!-- Your Library -->
             <div
-              class="bg-primary rounded-3xl p-6 border border-primary/30 relative overflow-hidden group shadow-lg shadow-primary/20 transition-colors duration-300">
+              class="bg-base-200 rounded-3xl p-6 border border-base-content/5 relative overflow-hidden group transition-colors duration-300 text-base-content shadow-lg shadow-base-200/20">
               <div
-                class="absolute -right-6 -top-6 w-24 h-24 bg-base-100/10 rounded-full group-hover:scale-150 transition-transform duration-500">
+                class="absolute -right-6 -top-6 w-24 h-24 bg-primary/5 rounded-full group-hover:scale-150 transition-transform duration-500">
               </div>
-              <p class="text-[11px] font-bold uppercase tracking-widest text-primary-content/80 mb-3">{{
-                'home.total_decks'
-                | translate }} / {{ 'home.total_cards' | translate }}</p>
-              <div class="text-4xl font-black text-primary-content mb-2 tracking-tight">{{ totalDecks }} / {{ totalCards
-                }}</div>
+              <!-- Icon Circle -->
+              <div
+                class="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4 relative z-10">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-primary" viewBox="0 0 24 24"
+                  fill="currentColor">
+                  <path
+                    d="M4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6zm16-4H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-1 9H9V9h10v2zm-4 4H9v-2h6v2zm4-8H9V5h10v2z" />
+                </svg>
+              </div>
+
+              <div class="text-center font-bold text-lg mb-6 relative z-10">{{ 'home.your_library' | translate }}</div>
+
+              <div class="flex justify-center gap-8 relative z-10">
+                <div class="text-center">
+                  <div class="text-3xl font-black mb-1">{{ totalDecks }}</div>
+                  <div class="text-[10px] font-bold uppercase tracking-widest text-base-content/60">{{ 'decks.title' |
+                    translate }}</div>
+                </div>
+                <div class="text-center">
+                  <div class="text-3xl font-black mb-1">{{ totalCards }}</div>
+                  <div class="text-[10px] font-bold uppercase tracking-widest text-base-content/60">{{ 'decks.cards' |
+                    translate }}</div>
+                </div>
+              </div>
             </div>
 
           </div>
@@ -182,27 +257,70 @@
               <p class="text-[10px] font-medium text-base-content/50">{{ 'home.invested_work' | translate }}</p>
             </div>
 
-            <!-- Total Decks & Cards -->
+            <!-- Your Library (Mobile) -->
             <div
-              class="bg-primary text-primary-content p-5 rounded-3xl border border-primary/30 relative overflow-hidden shadow-lg shadow-primary/30">
-              <div class="absolute -right-4 -top-4 w-16 h-16 bg-base-100/10 rounded-full"></div>
-              <div class="flex justify-between items-center mb-1">
-                <p class="text-[9px] font-bold uppercase tracking-widest text-primary-content/80">{{ 'home.total_decks'
-                  | translate }}</p>
+              class="bg-base-200 text-base-content p-5 rounded-3xl border border-base-content/5 relative overflow-hidden shadow-lg shadow-base-200/20">
+              <div class="absolute -right-4 -top-4 w-16 h-16 bg-primary/5 rounded-full"></div>
+
+              <div class="flex items-center gap-4 mb-4 relative z-10">
+                <div class="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center shrink-0">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-primary" viewBox="0 0 24 24"
+                    fill="currentColor">
+                    <path
+                      d="M4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6zm16-4H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-1 9H9V9h10v2zm-4 4H9v-2h6v2zm4-8H9V5h10v2z" />
+                  </svg>
+                </div>
+                <div class="font-bold text-[13px] uppercase tracking-widest">{{ 'home.your_library' | translate }}</div>
+              </div>
+
+              <div class="flex justify-between items-center mb-1 relative z-10">
+                <p class="text-[9px] font-bold uppercase tracking-widest text-base-content/60">{{ 'decks.title' |
+                  translate }}</p>
                 <div class="text-lg font-black">{{ totalDecks }}</div>
               </div>
-              <div class="flex justify-between items-center mb-1">
-                <p class="text-[9px] font-bold uppercase tracking-widest text-primary-content/80">{{ 'home.total_cards'
-                  | translate }}</p>
+              <div class="flex justify-between items-center mb-1 relative z-10">
+                <p class="text-[9px] font-bold uppercase tracking-widest text-base-content/60">{{ 'decks.cards' |
+                  translate }}</p>
                 <div class="text-lg font-black">{{ totalCards }}</div>
               </div>
-              <div class="mt-3 relative z-10 border-t border-primary-content/20 pt-3">
-                <p class="text-[10px] font-medium text-primary-content/90 italic leading-tight">
-                  "{{ 'home.quote.' + randomQuoteIndex + '.text' | translate }}"
+
+              <!-- Extra Quote space -->
+              <div [class]="'mt-3 relative z-10 border-t pt-3 rounded-xl p-3 ' + themeClasses.container">
+                <p class="text-[10px] font-medium text-base-content/90 italic leading-tight">
+                  "{{ (dailyData.quoteStyle === 'funny' ? 'home.quote_funny.' : 'home.quote.') + dailyData.quoteIndex + '.text' | translate }}"
                 </p>
-                <p class="text-[8px] font-bold text-primary-content/70 mt-1 text-right uppercase tracking-widest">
-                  — {{ 'home.quote.' + randomQuoteIndex + '.author' | translate }}
+                <p [class]="'text-[8px] font-bold mt-1 text-right uppercase tracking-widest ' + themeClasses.text">
+                  — {{ (dailyData.quoteStyle === 'funny' ? 'home.quote_funny.' : 'home.quote.') + dailyData.quoteIndex + '.author' | translate }}
                 </p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Weekly Activity Mobile -->
+          <div class="mt-8 mb-2">
+            <div class="flex justify-between items-end mb-4">
+              <div>
+                <h2 class="text-[13px] font-bold text-base-content/60 uppercase tracking-widest">{{
+                  'home.weekly_activity' | translate }}</h2>
+                <p class="text-[10px] text-base-content/50 mt-0.5">{{ 'home.time_spent' | translate }}</p>
+              </div>
+            </div>
+            <div class="bg-base-100 rounded-3xl p-5 border border-base-content/5 shadow-sm">
+              <div class="h-32 flex items-end justify-between gap-1 border-b border-base-content/10 pb-2">
+                @for (day of weeklyActivity; track day.dayKey) {
+                <div class="w-full flex flex-col items-center gap-2">
+                  <div class="w-full flex justify-center items-end h-24">
+                    <div
+                      class="w-full max-w-[24px] rounded-t-md transition-all duration-300 {{ day.isToday ? themeClasses.chart : themeClasses.chartBg }}"
+                      [style.height]="day.heightPercent">
+                    </div>
+                  </div>
+                  <span class="text-[9px] font-bold" [class.text-base-content]="day.isToday"
+                    [class.opacity-50]="!day.isToday">
+                    {{ 'home.days.' + day.dayKey | translate }}
+                  </span>
+                </div>
+                }
               </div>
             </div>
           </div>
@@ -218,9 +336,10 @@
                 <div>
                   <h3 class="font-bold text-base-content">{{ deck.title }}</h3>
                   <p class="text-xs text-base-content/60 font-medium mt-0.5">
-                    {{ deck.cards.length }} {{ 'decks.cards' | translate }} ·
+                    {{ deck.cards?.length || 0 }} {{ 'decks.cards' | translate }} ·
                     <span [class.text-primary]="deck.due > 0" class="font-bold">
-                      {{ deck.due > 0 ? (deck.due + ' ' + ('decks.due_today' | translate)) : ('decks.finished' |
+                      {{ (deck.due || 0) > 0 ? ((deck.due || 0) + ' ' + ('decks.due_today' | translate)) :
+                      ('decks.finished' |
                       translate) }}
                     </span>
                   </p>

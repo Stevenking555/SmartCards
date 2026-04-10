@@ -22,6 +22,13 @@ public class DecksRepository(AppDbContext context) : IDecksRepository
 
     public void DeleteDeck(Deck deck)
     {
+        // Must manually drop related stats because of Restrict delete behavior
+        var deckStats = context.DeckStats.Where(ds => ds.DeckId == deck.Id);
+        context.DeckStats.RemoveRange(deckStats);
+
+        var cardStats = context.CardStats.Where(cs => cs.Card.DeckId == deck.Id);
+        context.CardStats.RemoveRange(cardStats);
+
         context.Decks.Remove(deck);
     }
 

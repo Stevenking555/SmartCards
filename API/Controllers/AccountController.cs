@@ -15,7 +15,7 @@ using AutoMapper;
 
 namespace API.Controllers;
 
-public class AccountController(UserManager<AppUser> userManager, ITokenService tokenService, IMapper mapper) : BaseApiController
+public class AccountController(UserManager<AppUser> userManager, ITokenService tokenService, IMapper mapper, IUnitOfWork unitOfWork) : BaseApiController
 {
     [HttpPost("register")] // api/account/register
     public async Task<ActionResult<UserDto>> Register(RegisterDto registerDto)
@@ -38,6 +38,22 @@ public class AccountController(UserManager<AppUser> userManager, ITokenService t
 
             return ValidationProblem();
         }
+
+        var userStats = new UserStats
+        {
+            AppUserId = user.Id,
+            FlippedCardsTotal = 0,
+            FlippedCardsToday = 0,
+            LearningStreak = 0,
+            TotalDecks = 0,
+            TotalCards = 0,
+            TotalMasteredCards = 0,
+            LastFlipAt = DateTime.UtcNow,
+            WeeklyActivityJson = "[]"
+        };
+
+        unitOfWork.StatsRepository.AddUserStats(userStats);
+        await unitOfWork.Complete();
 
         await SetRefreshTokenCookie(user);
 
@@ -108,7 +124,7 @@ public class AccountController(UserManager<AppUser> userManager, ITokenService t
             Expires = user.RefreshTokenExpiry.Value
         };
 
-        Response.Cookies.Append("refreshToken", user.RefreshToken, cookieOptions);
+        Response.Cookies.Append("refreshToken", user.RefreshToken!, cookieOptions);
     }
 
     [Authorize]

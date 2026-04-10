@@ -2,12 +2,12 @@
   class="hidden lg:flex flex-col w-56 h-screen min-w-[14rem] bg-base-200 border-r border-base-content/5 px-4 py-7 gap-1 transition-colors duration-300">
 
   <!-- Logo -->
-  <div class="px-3 pb-6 text-[19px] font-extrabold tracking-tight text-base-content cursor-pointer" routerLink="/home">
+  <div class="px-3 pb-6 text-[30px] font-extrabold tracking-tight text-base-content cursor-pointer" routerLink="/home">
     {{ 'app.title.smart' | translate }}<span class="text-primary">{{ 'app.title.cards' | translate }}</span>
   </div>
 
   <!-- Nav label -->
-  <p class="px-3 text-[10px] font-bold uppercase tracking-widest text-base-content/40 mb-1">
+  <p class="px-3 text-[12px] font-bold uppercase tracking-widest text-base-content/40 mb-1">
     {{ 'nav.menu' | translate }}</p>
 
   <button class="sidebar-nav-item hover:cursor-pointer" routerLink="/home" routerLinkActive="active">
@@ -42,4 +42,72 @@
     {{ 'nav.profile' | translate }}
   </button>
 
+
+  
+  <div class="mt-auto flex flex-col gap-1" (click)="openHelp()">
+    <button class="sidebar-nav-item hover:cursor-pointer">
+      <svg class="w-[18px] h-[18px]" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+      </svg>
+      {{ 'nav.help' | translate }}
+    </button>
+  
+    <button class="sidebar-nav-item hover:cursor-pointer" (click)="logout()">
+      <svg class="w-[18px] h-[18px]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+      </svg>
+      {{ 'nav.logout' | translate }}
+    </button>
+  </div>
 </aside>
+
+<dialog class="modal" [class.modal-open]="isHelpModalOpen()">
+  <div class="modal-box bg-base-100 text-base-content max-w-2xl rounded-3xl p-8">
+    <button (click)="closeHelp()"
+      class="btn btn-sm btn-circle btn-ghost absolute right-4 top-4 hover:bg-base-200">✕</button>
+    <h3 class="font-black text-2xl text-base-content mb-6">{{ 'home.tutorial.title' | translate }}</h3>
+
+    <div class="space-y-6">
+      <div class="flex gap-4">
+        <div class="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center text-primary shrink-0">
+          <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477-4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+          </svg>
+        </div>
+        <div>
+          <h4 class="font-bold text-lg mb-1">{{ 'home.tutorial.feature1.title' | translate }}</h4>
+          <p class="text-base-content/70 text-sm leading-relaxed">{{ 'home.tutorial.feature1.desc' | translate }}</p>
+        </div>
+      </div>
+
+      <div class="flex gap-4">
+        <div class="w-12 h-12 rounded-xl bg-info/10 flex items-center justify-center text-info shrink-0">
+          <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+          </svg>
+        </div>
+        <div>
+          <h4 class="font-bold text-lg mb-1">{{ 'home.tutorial.feature2.title' | translate }}</h4>
+          <p class="text-base-content/70 text-sm leading-relaxed">{{ 'home.tutorial.feature2.desc' | translate }}</p>
+        </div>
+      </div>
+
+      <div class="flex gap-4">
+        <div class="w-12 h-12 rounded-xl bg-success/10 flex items-center justify-center text-success shrink-0">
+          <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+        </div>
+        <div>
+          <h4 class="font-bold text-lg mb-1">{{ 'home.tutorial.feature3.title' | translate }}</h4>
+          <p class="text-base-content/70 text-sm leading-relaxed">{{ 'home.tutorial.feature3.desc' | translate }}</p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+  <form method="dialog" class="modal-backdrop bg-neutral/90" (click)="closeHelp()"></form>
+</dialog>
