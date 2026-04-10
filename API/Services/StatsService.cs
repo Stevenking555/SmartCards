@@ -29,7 +29,15 @@ public class StatsService(IUnitOfWork unitOfWork, IMapper mapper) : IStatsServic
     public async Task<UserStatsDto> GetUserStatsAsync(string userId)
     {
         var userStats = await unitOfWork.StatsRepository.GetUserStatsAsync(userId);
-        if (userStats == null) throw new Exception("User stats not found");
+        if (userStats == null)
+        {
+            userStats = new UserStats
+            {
+                AppUserId = userId,
+                WeeklyActivityJson = "[0,0,0,0,0,0,0]"
+            };
+            unitOfWork.StatsRepository.AddUserStats(userStats);
+        }
 
         var lastDecks = await unitOfWork.StatsRepository.GetLastPlayedDecksAsync(userId, 5);
 
