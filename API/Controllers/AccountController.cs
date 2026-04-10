@@ -124,7 +124,7 @@ public class AccountController(UserManager<AppUser> userManager, ITokenService t
             Expires = user.RefreshTokenExpiry.Value
         };
 
-        Response.Cookies.Append("refreshToken", user.RefreshToken, cookieOptions);
+        Response.Cookies.Append("refreshToken", user.RefreshToken!, cookieOptions);
     }
 
     [Authorize]
