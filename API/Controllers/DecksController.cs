@@ -72,7 +72,10 @@ public class DecksController(IUnitOfWork unitOfWork, IMapper mapper) : BaseApiCo
         var deckStats = new DeckStats
         {
             AppUserId = deck.AppUserId,
-            Deck = deck
+            Deck = deck,
+            KnowledgePercentage = 0,
+            TimeSpentMinutes = 0,
+            LastPlayedAt = DateTime.UtcNow
         };
         unitOfWork.StatsRepository.AddDeckStats(deckStats);
 
