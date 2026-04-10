@@ -59,6 +59,9 @@ export const EN: Record<string, string> = {
   'home.pride_of_collection': 'The pride of the collection',
   'home.total_learning_time': 'Total Learning Time',
   'home.invested_work': 'Invested work',
+  'home.cards_flipped_today': 'Cards Flipped Today',
+  'home.cards_flipped_all_time': 'Cards Flipped All Time',
+  'home.keep_it_up': 'Keep it up!',
   'home.last_played': 'Last Played',
   'home.your_library': 'Your Library',
   'home.weekly_activity': 'Weekly Activity',
@@ -359,6 +362,9 @@ export const HU: Record<string, string> = {
   'home.pride_of_collection': 'A „gyűjtemény” büszkesége',
   'home.total_learning_time': 'Összes tanulási idő',
   'home.invested_work': 'Befektetett munka',
+  'home.cards_flipped_today': 'Ma megfordított kártyák',
+  'home.cards_flipped_all_time': 'Összes kártya (Mind)',
+  'home.keep_it_up': 'Csak így tovább!',
   'home.last_played': 'Utoljára játszott',
   'home.your_library': 'Saját Könyvtár',
   'home.weekly_activity': 'Heti Aktivitás',
@@ -529,7 +535,7 @@ export const HU: Record<string, string> = {
 
   // Decks
   'decks.title_prefix': 'Kezeld a',
-  'decks.title': 'Paklikat',
+  'decks.title': 'Paklik',
   'decks.new_deck': 'Új Pakli',
   'decks.cards': 'kártya',
   'decks.due_today': 'mai feladat',
@@ -559,7 +565,7 @@ export const HU: Record<string, string> = {
   'decks.alert.type_delete': 'Kérjük, pontosan gépelje be: DeLeTe',
 
   // Deck Detail
-  'deck_detail.title_prefix': 'Pakli',
+  'deck_detail.title_prefix': 'Paklijaid',
   'deck_detail.study': 'Tanulás',
   'deck_detail.desktop_title_prefix': 'Pakli Részletei',
   'deck_detail.add_card': 'Kártya Hozzáadása',
@@ -585,10 +591,10 @@ export const HU: Record<string, string> = {
   'deck_detail.study_mode.good_desc': '1ó',
   'deck_detail.study_mode.easy': 'Könnyű',
   'deck_detail.study_mode.easy_desc': '1n',
-  'deck_detail.study_mode.caught_up': "Mindent befejeztél!",
+  'deck_detail.study_mode.caught_up': "Minden kártyát befejeztél!",
   'deck_detail.study_mode.no_cards_desc': 'Jelenleg nincs több áttekintésre váró kártya ebben a pakliban.',
   'deck_detail.study_mode.back_btn': 'Vissza a Paklihoz',
-  'deck_detail.alert.finished_studying': 'Befejezted ennek a paklinak a tanulását!',
+  'deck_detail.alert.finished_studying': 'Befejezted ennek a paklinak a tanulását! ;D',
 
   // Errors & Validations
   'error.password.mismatch': 'Helytelen jelszó!',

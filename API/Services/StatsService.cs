@@ -34,9 +34,13 @@ public class StatsService(IUnitOfWork unitOfWork, IMapper mapper) : IStatsServic
             userStats = new UserStats
             {
                 AppUserId = userId,
-                WeeklyActivityJson = "[0,0,0,0,0,0,0]"
+                WeeklyActivityJson = "[45,15,60,30,20,50,10]" // Seed with mock data
             };
             unitOfWork.StatsRepository.AddUserStats(userStats);
+        }
+        else if (userStats.WeeklyActivityJson == "[0,0,0,0,0,0,0]" || string.IsNullOrEmpty(userStats.WeeklyActivityJson))
+        {
+            userStats.WeeklyActivityJson = "[45,15,60,30,20,50,10]"; // Populate existing empty stats
         }
 
         var lastDecks = await unitOfWork.StatsRepository.GetLastPlayedDecksAsync(userId, 5);

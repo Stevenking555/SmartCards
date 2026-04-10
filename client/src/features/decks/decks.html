@@ -20,15 +20,15 @@
       <div class="hidden lg:flex flex-col gap-6 p-7">
 
         <!-- Desktop top bar -->
-        <div class="flex justify-between items-center">
+        <div class="flex justify-between items-center border-b border-base-content/10 pb-6">
           <div>
             <p class="text-[11px] font-bold uppercase tracking-widest text-base-content/50">{{ 'decks.title_prefix' | translate }}</p>
-            <h1 class="text-2xl font-black text-base-content tracking-tight">{{ 'decks.title' | translate }}</h1>
+            <h1 class="text-3xl font-black text-base-content tracking-tight">{{ 'decks.title' | translate }}</h1>
           </div>
           <div class="flex items-center gap-3">
             <button (click)="openModal()"
-              class="flex items-center gap-2 px-4 py-2 bg-primary hover:bg-primary/80 rounded-xl text-primary-content text-sm font-semibold transition-colors border border-primary/20">
-              <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
+              class="flex items-center gap-2 px-6 py-2.5 bg-primary hover:brightness-110 rounded-2xl text-primary-content text-sm font-bold shadow-lg shadow-primary/30 transition-all hover:-translate-y-1 active:scale-95">
+              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
               </svg>
               {{ 'decks.new_deck' | translate }}
@@ -36,30 +36,55 @@
           </div>
         </div>
 
-        <div class="max-w-4xl space-y-3">
+        <div class="max-w-4xl space-y-4">
           @for (deck of decks; track deck.title) {
           <div
             [routerLink]="['/decks', deck.title]"
-            class="flex items-center justify-between px-5 py-4 bg-base-100 hover:bg-base-200/80 rounded-2xl shadow-sm hover:-translate-y-1 transition-all cursor-pointer border border-base-content/10">
-            <div class="flex-1">
-              <h3 class="font-bold text-base-content text-lg">{{ deck.title }}</h3>
-              <p class="text-xs text-base-content/60 mt-0.5">
-                {{ deck.cards.length }} {{ 'decks.cards' | translate }} ·
-                <span [class.text-primary]="deck.due > 0" [class.font-bold]="deck.due > 0">
-                  {{ deck.due > 0 ? deck.due + ' ' + ('decks.due_today' | translate) : ('decks.finished' | translate) }}
+            class="group relative flex items-center justify-between p-5 rounded-3xl bg-base-100/60 backdrop-blur-xl border border-base-content/5 shadow-md hover:shadow-xl hover:shadow-primary/5 hover:-translate-y-1 hover:border-primary/20 transition-all duration-300 cursor-pointer overflow-hidden">
+            <!-- Subtle gradient glow in background on hover -->
+            <div class="absolute inset-0 bg-gradient-to-r from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+
+            <div class="relative z-10 flex items-center gap-5 flex-1">
+              <!-- Icon Container -->
+              <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-primary/20 to-primary/5 text-primary flex items-center justify-center shadow-inner">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                </svg>
+              </div>
+
+              <!-- Title & Meta -->
+              <div>
+                <h3 class="font-black text-base-content text-lg mb-1 group-hover:text-primary transition-colors tracking-tight">{{ deck.title }}</h3>
+                <div class="flex items-center gap-2 text-[11px] font-bold text-base-content/60 uppercase tracking-wider">
+                  <span class="px-2 py-0.5 rounded-md bg-base-200 border border-base-content/5">{{ deck.cards?.length || 0 }} {{ 'decks.cards' | translate }}</span>
+                  <span class="w-1 h-1 rounded-full bg-base-content/30"></span>
+                  <span [class.text-primary]="deck.due > 0" [class.bg-primary/10]="deck.due > 0" [class.px-2]="deck.due > 0" [class.py-0.5]="deck.due > 0" [class.rounded-md]="deck.due > 0">
+                    {{ deck.due > 0 ? (deck.due + ' ' + ('decks.due_today' | translate)) : ('decks.finished' | translate) }}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Progress & Actions -->
+            <div class="relative z-10 flex items-center gap-6">
+              
+              <!-- Progress indicator -->
+              <div class="flex flex-col items-end gap-1.5 w-24">
+                <span class="text-sm font-black tracking-tight" [class.text-primary]="deck.due > 0" [class.text-success]="deck.due === 0">
+                  {{ deck.progress || 0 }}%
                 </span>
-              </p>
-            </div>
-            <div class="flex items-center gap-3 mr-4">
-              <span class="text-sm font-bold" [class.text-primary]="deck.due > 0"
-                [class.text-success]="deck.due === 0">
-                {{ deck.progress }}%
-              </span>
-            </div>
-            <div class="flex items-center gap-2">
+                <div class="w-full h-1.5 rounded-full bg-base-200 overflow-hidden shadow-inner">
+                  <div class="h-full rounded-full transition-all duration-1000" [class.bg-primary]="deck.due > 0" [class.bg-success]="deck.due === 0" [style.width]="(deck.progress || 0) + '%'"></div>
+                </div>
+              </div>
+
+              <!-- Divider -->
+              <div class="w-px h-10 bg-base-content/10 hidden sm:block"></div>
+
+              <!-- Delete Button -->
               <button (click)="confirmDeleteDeck(deck.title); $event.stopPropagation()"
-                class="w-8 h-8 rounded-full bg-error/20 text-error flex items-center justify-center hover:bg-error hover:text-error-content transition-colors cursor-pointer">
-                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                class="w-10 h-10 rounded-2xl bg-base-200/50 text-error flex items-center justify-center hover:bg-error hover:text-error-content transition-all shadow-sm hover:shadow-md hover:scale-105 cursor-pointer z-20">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
                 </svg>
               </button>
@@ -67,8 +92,13 @@
           </div>
           }
           @if (decks.length === 0) {
-            <div class="text-center py-12 text-base-content/50">
-              {{ 'decks.empty_state' | translate }}
+            <div class="flex flex-col items-center justify-center py-16 px-4 bg-base-100/30 rounded-3xl border-2 border-dashed border-base-content/10 mt-8">
+              <div class="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mb-4 text-primary">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                </svg>
+              </div>
+              <p class="font-bold text-base-content/60 text-center">{{ 'decks.empty_state' | translate }}</p>
             </div>
           }
         </div>
@@ -80,21 +110,42 @@
           <h2 class="text-[13px] font-bold text-base-content/60 uppercase tracking-widest">{{ 'decks.mobile_title' | translate }}</h2>
         </div>
 
-        <div class="space-y-3">
+        <div class="space-y-4">
           @for (deck of decks; track deck.title) {
-          <div [routerLink]="['/decks', deck.title]" class="flex items-center justify-between p-4 bg-base-100 rounded-3xl shadow-md border border-base-content/5 cursor-pointer">
-            <div>
-              <h3 class="font-bold text-base-content">{{ deck.title }}</h3>
-              <p class="text-xs text-base-content/60 font-medium mt-0.5">
-                {{ deck.cards }} {{ 'decks.cards' | translate }} ·
-                <span [class.text-primary]="deck.due > 0" class="font-bold">
-                  {{ deck.due > 0 ? (deck.due + ' ' + ('decks.due_today' | translate)) : ('decks.finished' | translate) }}
-                </span>
-              </p>
+          <div [routerLink]="['/decks', deck.title]" class="group relative flex items-center justify-between p-4 bg-base-100/60 backdrop-blur-md rounded-3xl shadow-sm border border-base-content/5 hover:border-primary/20 transition-all cursor-pointer overflow-hidden">
+            <div class="absolute inset-0 bg-gradient-to-r from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+            
+            <div class="relative z-10 flex items-center gap-4 flex-1">
+              <!-- Icon Container -->
+              <div class="w-11 h-11 rounded-xl bg-gradient-to-br from-primary/20 to-primary/5 text-primary flex items-center justify-center shrink-0 shadow-inner">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                </svg>
+              </div>
+
+              <div class="flex-1 pr-2">
+                <h3 class="font-bold text-base-content tracking-tight line-clamp-1 mb-1">{{ deck.title }}</h3>
+                <div class="flex items-center gap-1.5 text-[9px] font-bold text-base-content/60 uppercase tracking-wider">
+                  <span class="px-1.5 py-0.5 rounded bg-base-200 border border-base-content/5">{{ deck.cards?.length || 0 }} {{ 'decks.cards' | translate }}</span>
+                  <span [class.text-primary]="deck.due > 0" [class.bg-primary/10]="deck.due > 0" [class.px-1.5]="deck.due > 0" [class.py-0.5]="deck.due > 0" [class.rounded]="deck.due > 0">
+                    {{ deck.due > 0 ? (deck.due + ' ' + ('decks.due_today' | translate)) : ('decks.finished' | translate) }}
+                  </span>
+                </div>
+              </div>
             </div>
-            <div class="flex items-center gap-2">
+
+            <div class="relative z-10 flex items-center gap-3">
+              <!-- Progress Indicator -->
+              <div class="flex flex-col items-end gap-1 w-12">
+                <span class="text-[11px] font-black tracking-tight" [class.text-primary]="deck.due > 0" [class.text-success]="deck.due === 0">{{ deck.progress || 0 }}%</span>
+                <div class="w-full h-1 rounded-full bg-base-200 overflow-hidden shadow-inner">
+                  <div class="h-full rounded-full transition-all" [class.bg-primary]="deck.due > 0" [class.bg-success]="deck.due === 0" [style.width]="(deck.progress || 0) + '%'"></div>
+                </div>
+              </div>
+
+              <!-- Delete Button -->
               <button (click)="confirmDeleteDeck(deck.title); $event.stopPropagation()"
-                class="btn btn-circle btn-sm bg-error/20 text-error hover:bg-error hover:text-error-content border-none">
+                class="w-9 h-9 rounded-xl bg-error/10 text-error flex items-center justify-center hover:bg-error hover:text-error-content transition-all shrink-0 z-20">
                 <svg fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-4 h-4">
                   <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
                 </svg>
@@ -103,8 +154,13 @@
           </div>
           }
           @if (decks.length === 0) {
-            <div class="text-center py-8 text-base-content/50 text-sm">
-              {{ 'decks.mobile_empty_state' | translate }}
+            <div class="flex flex-col items-center justify-center py-12 px-4 bg-base-100/30 rounded-3xl border border-dashed border-base-content/10 mt-4">
+              <div class="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mb-3 text-primary">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                </svg>
+              </div>
+              <p class="font-bold text-sm text-base-content/60 text-center">{{ 'decks.mobile_empty_state' | translate }}</p>
             </div>
           }
         </div>
