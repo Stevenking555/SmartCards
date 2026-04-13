@@ -32,7 +32,7 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
               // We only show a toast if the user was actually logged in previously (indicated by current user)
               // and if we are not already in logout phase.
               if (req.url.includes('/refresh-token') && accountService.currentUser() !== null) {
-                toast.error('A munkamenet lejárt, kérjük jelentkezzen be újra!');
+                toast.error('Your session has expired, please log in again!');
               }
 
               // In any case, we want to clear the local user and redirect to login
@@ -54,7 +54,7 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
                 return throwError(() => error);
               }),
               catchError(refreshError => {
-                toast.error('A munkamenet lejárt, kérjük jelentkezzen be újra!');
+                toast.error('Your session has expired, please log in again!');
                 accountService.currentUser.set(null);
                 router.navigateByUrl('/login');
                 return throwError(() => refreshError);

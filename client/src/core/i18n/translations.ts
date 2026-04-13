@@ -158,12 +158,12 @@ export const EN: Record<string, string> = {
   'home.quote_funny.8.text': 'I\'m one minor inconvenience away from dropping out and becoming a plant.',
   'home.quote_funny.8.author': 'Typical Gen Z',
   'home.quote_funny.9.text': 'Can I put \'survived this semester\' on my resume?',
-  'home.quote_funny.9.author': 'Everyone',
+  'home.quote_funny.9.author': 'Every collage student',
   'home.quote_funny.10.text': 'Error 404: Motivation not found.',
   'home.quote_funny.10.author': 'IT Student',
   'home.quote_funny.11.text': 'I need a 6-month vacation, twice a year.',
   'home.quote_funny.11.author': 'Tired Student',
-  'home.quote_funny.12.text': 'Just winging it: life, exams, everything.',
+  'home.quote_funny.12.text': '100% Jesus',
   'home.quote_funny.12.author': 'Anonymous',
 
   // About
@@ -461,12 +461,12 @@ export const HU: Record<string, string> = {
   'home.quote_funny.8.text': 'Egyetlen apró kellemetlenségre vagyok attól, hogy otthagyjam a sulit és növény legyek.',
   'home.quote_funny.8.author': 'Átlag Z Gen',
   'home.quote_funny.9.text': 'Beírhatom az önéletrajzomba, hogy túléltem ezt a félévet?',
-  'home.quote_funny.9.author': 'Mindenki',
+  'home.quote_funny.9.author': 'Minden egyetemista...',
   'home.quote_funny.10.text': 'Error 404: Motiváció nem található.',
   'home.quote_funny.10.author': 'IT Diák',
   'home.quote_funny.11.text': 'Szükségem lenne egy 6 hónapos nyaralásra. Évente kétszer.',
   'home.quote_funny.11.author': 'Fáradt Diák',
-  'home.quote_funny.12.text': 'Csak rögtönzök: az életben, a vizsgákon, mindenben.',
+  'home.quote_funny.12.text': '100% Jézus',
   'home.quote_funny.12.author': 'Ismeretlen',
 
   // About

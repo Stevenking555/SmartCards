@@ -120,12 +120,14 @@
                 <div class="flex-1 flex flex-col items-center gap-2 group">
                   <div class="w-full flex justify-center items-end h-32 relative">
                     <div
-                      class="w-full max-w-[40px] rounded-t-lg transition-all duration-300 {{ day.isToday ? themeClasses.chart : themeClasses.chartBg + ' ' + themeClasses.chartHover }}"
-                      [style.height]="day.heightPercent">
-                      <div
-                        class="opacity-0 group-hover:opacity-100 absolute -top-8 left-1/2 -translate-x-1/2 bg-base-300 text-xs py-1 px-2 rounded font-bold transition-opacity whitespace-nowrap shadow-lg">
+                      class="w-full max-w-[40px] rounded-t-lg transition-all duration-300 flex justify-center items-start pt-1.5 overflow-hidden {{ day.isToday ? themeClasses.chart : themeClasses.chartBg + ' ' + themeClasses.chartHover }}"
+                      [style.height]="day.heightPercent"
+                      [style.minHeight]="day.value > 0 ? '28px' : '0'">
+                      @if (day.value > 0) {
+                      <span class="text-[10px] font-bold" [class.text-base-100]="day.isToday" [class.text-base-content]="!day.isToday" [class.opacity-80]="!day.isToday">
                         {{ day.value }}m
-                      </div>
+                      </span>
+                      }
                     </div>
                   </div>
                   <span class="text-xs font-bold transition-colors" [class.text-base-content]="day.isToday"
@@ -385,8 +387,14 @@
                 <div class="w-full flex flex-col items-center gap-2">
                   <div class="w-full flex justify-center items-end h-24">
                     <div
-                      class="w-full max-w-[24px] rounded-t-md transition-all duration-300 {{ day.isToday ? themeClasses.chart : themeClasses.chartBg }}"
-                      [style.height]="day.heightPercent">
+                      class="w-full max-w-[24px] rounded-t-md transition-all duration-300 flex justify-center items-start pt-1 overflow-hidden {{ day.isToday ? themeClasses.chart : themeClasses.chartBg }}"
+                      [style.height]="day.heightPercent"
+                      [style.minHeight]="day.value > 0 ? '24px' : '0'">
+                      @if (day.value > 0) {
+                      <span class="text-[9px] font-bold" [class.text-base-100]="day.isToday" [class.text-base-content]="!day.isToday" [class.opacity-80]="!day.isToday" style="line-height:1.2;">
+                        {{ day.value }}
+                      </span>
+                      }
                     </div>
                   </div>
                   <span class="text-[10px] font-bold" [class.text-base-content]="day.isToday"
