@@ -6,9 +6,11 @@
   <div class="flex-1 flex flex-col overflow-hidden">
 
     <!-- Mobile header -->
-    <header class="flex lg:hidden justify-between items-center p-4 bg-base-200/50 backdrop-blur-md border-b border-base-content/5">
+    <header
+      class="flex lg:hidden justify-between items-center p-4 bg-base-200/50 backdrop-blur-md border-b border-base-content/5">
       <div>
-        <p class="text-[10px] font-bold uppercase text-base-content/60 tracking-widest">{{ 'decks.title_prefix' | translate }}</p>
+        <p class="text-[10px] font-bold uppercase text-base-content/60 tracking-widest">{{ 'decks.title_prefix' |
+          translate }}</p>
         <h1 class="text-1xl font-black text-base-content tracking-tight">{{ 'decks.title' | translate }}</h1>
       </div>
     </header>
@@ -22,7 +24,8 @@
         <!-- Desktop top bar -->
         <div class="flex justify-between items-center border-b border-base-content/10 pb-6">
           <div>
-            <p class="text-[11px] font-bold uppercase tracking-widest text-base-content/50">{{ 'decks.title_prefix' | translate }}</p>
+            <p class="text-[11px] font-bold uppercase tracking-widest text-base-content/50">{{ 'decks.title_prefix' |
+              translate }}</p>
             <h1 class="text-3xl font-black text-base-content tracking-tight">{{ 'decks.title' | translate }}</h1>
           </div>
           <div class="flex items-center gap-3">
@@ -38,68 +41,20 @@
 
         <div class="max-w-4xl space-y-4">
           @for (deck of decks; track deck.title) {
-          <div
-            [routerLink]="['/decks', deck.title]"
-            class="group relative flex items-center justify-between p-5 rounded-3xl bg-base-100/60 backdrop-blur-xl border border-base-content/5 shadow-md hover:shadow-xl hover:shadow-primary/5 hover:-translate-y-1 hover:border-primary/20 transition-all duration-300 cursor-pointer overflow-hidden">
-            <!-- Subtle gradient glow in background on hover -->
-            <div class="absolute inset-0 bg-gradient-to-r from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-
-            <div class="relative z-10 flex items-center gap-5 flex-1">
-              <!-- Icon Container -->
-              <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-primary/20 to-primary/5 text-primary flex items-center justify-center shadow-inner">
-                <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
-                </svg>
-              </div>
-
-              <!-- Title & Meta -->
-              <div>
-                <h3 class="font-black text-base-content text-lg mb-1 group-hover:text-primary transition-colors tracking-tight">{{ deck.title }}</h3>
-                <div class="flex items-center gap-2 text-[11px] font-bold text-base-content/60 uppercase tracking-wider">
-                  <span class="px-2 py-0.5 rounded-md bg-base-200 border border-base-content/5">{{ deck.cards?.length || 0 }} {{ 'decks.cards' | translate }}</span>
-                  <span class="w-1 h-1 rounded-full bg-base-content/30"></span>
-                  <span [class.text-primary]="deck.due > 0" [class.bg-primary/10]="deck.due > 0" [class.px-2]="deck.due > 0" [class.py-0.5]="deck.due > 0" [class.rounded-md]="deck.due > 0">
-                    {{ deck.due > 0 ? (deck.due + ' ' + ('decks.due_today' | translate)) : ('decks.finished' | translate) }}
-                  </span>
-                </div>
-              </div>
-            </div>
-
-            <!-- Progress & Actions -->
-            <div class="relative z-10 flex items-center gap-6">
-              
-              <!-- Progress indicator -->
-              <div class="flex flex-col items-end gap-1.5 w-24">
-                <span class="text-sm font-black tracking-tight" [class.text-primary]="deck.due > 0" [class.text-success]="deck.due === 0">
-                  {{ deck.progress || 0 }}%
-                </span>
-                <div class="w-full h-1.5 rounded-full bg-base-200 overflow-hidden shadow-inner">
-                  <div class="h-full rounded-full transition-all duration-1000" [class.bg-primary]="deck.due > 0" [class.bg-success]="deck.due === 0" [style.width]="(deck.progress || 0) + '%'"></div>
-                </div>
-              </div>
-
-              <!-- Divider -->
-              <div class="w-px h-10 bg-base-content/10 hidden sm:block"></div>
-
-              <!-- Delete Button -->
-              <button (click)="confirmDeleteDeck(deck.title); $event.stopPropagation()"
-                class="w-10 h-10 rounded-2xl bg-base-200/50 text-error flex items-center justify-center hover:bg-error hover:text-error-content transition-all shadow-sm hover:shadow-md hover:scale-105 cursor-pointer z-20">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              </button>
-            </div>
-          </div>
+          <app-deck-card [deck]="deck" layout="desktop" (delete)="confirmDeleteDeck($event)"></app-deck-card>
           }
           @if (decks.length === 0) {
-            <div class="flex flex-col items-center justify-center py-16 px-4 bg-base-100/30 rounded-3xl border-2 border-dashed border-base-content/10 mt-8">
-              <div class="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mb-4 text-primary">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
-                </svg>
-              </div>
-              <p class="font-bold text-base-content/60 text-center">{{ 'decks.empty_state' | translate }}</p>
+          <div
+            class="flex flex-col items-center justify-center py-16 px-4 bg-base-100/30 rounded-3xl border-2 border-dashed border-base-content/10 mt-8">
+            <div class="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mb-4 text-primary">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24"
+                stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+              </svg>
             </div>
+            <p class="font-bold text-base-content/60 text-center">{{ 'decks.empty_state' | translate }}</p>
+          </div>
           }
         </div>
       </div>
@@ -107,61 +62,27 @@
       <!-- Mobile layout -->
       <div class="lg:hidden max-w-md mx-auto pb-36 px-4 mt-6">
         <div class="flex justify-between items-center mb-4">
-          <h2 class="text-[13px] font-bold text-base-content/60 uppercase tracking-widest">{{ 'decks.mobile_title' | translate }}</h2>
+          <h2 class="text-[13px] font-bold text-base-content/60 uppercase tracking-widest">{{ 'decks.mobile_title' |
+            translate }}</h2>
         </div>
 
         <div class="space-y-4">
           @for (deck of decks; track deck.title) {
-          <div [routerLink]="['/decks', deck.title]" class="group relative flex items-center justify-between p-4 bg-base-100/60 backdrop-blur-md rounded-3xl shadow-sm border border-base-content/5 hover:border-primary/20 transition-all cursor-pointer overflow-hidden">
-            <div class="absolute inset-0 bg-gradient-to-r from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
-            
-            <div class="relative z-10 flex items-center gap-4 flex-1">
-              <!-- Icon Container -->
-              <div class="w-11 h-11 rounded-xl bg-gradient-to-br from-primary/20 to-primary/5 text-primary flex items-center justify-center shrink-0 shadow-inner">
-                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
-                </svg>
-              </div>
-
-              <div class="flex-1 pr-2">
-                <h3 class="font-bold text-base-content tracking-tight line-clamp-1 mb-1">{{ deck.title }}</h3>
-                <div class="flex items-center gap-1.5 text-[9px] font-bold text-base-content/60 uppercase tracking-wider">
-                  <span class="px-1.5 py-0.5 rounded bg-base-200 border border-base-content/5">{{ deck.cards?.length || 0 }} {{ 'decks.cards' | translate }}</span>
-                  <span [class.text-primary]="deck.due > 0" [class.bg-primary/10]="deck.due > 0" [class.px-1.5]="deck.due > 0" [class.py-0.5]="deck.due > 0" [class.rounded]="deck.due > 0">
-                    {{ deck.due > 0 ? (deck.due + ' ' + ('decks.due_today' | translate)) : ('decks.finished' | translate) }}
-                  </span>
-                </div>
-              </div>
-            </div>
-
-            <div class="relative z-10 flex items-center gap-3">
-              <!-- Progress Indicator -->
-              <div class="flex flex-col items-end gap-1 w-12">
-                <span class="text-[11px] font-black tracking-tight" [class.text-primary]="deck.due > 0" [class.text-success]="deck.due === 0">{{ deck.progress || 0 }}%</span>
-                <div class="w-full h-1 rounded-full bg-base-200 overflow-hidden shadow-inner">
-                  <div class="h-full rounded-full transition-all" [class.bg-primary]="deck.due > 0" [class.bg-success]="deck.due === 0" [style.width]="(deck.progress || 0) + '%'"></div>
-                </div>
-              </div>
-
-              <!-- Delete Button -->
-              <button (click)="confirmDeleteDeck(deck.title); $event.stopPropagation()"
-                class="w-9 h-9 rounded-xl bg-error/10 text-error flex items-center justify-center hover:bg-error hover:text-error-content transition-all shrink-0 z-20">
-                <svg fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-4 h-4">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              </button>
-            </div>
-          </div>
+          <app-deck-card [deck]="deck" layout="mobile" (delete)="confirmDeleteDeck($event)"></app-deck-card>
           }
           @if (decks.length === 0) {
-            <div class="flex flex-col items-center justify-center py-12 px-4 bg-base-100/30 rounded-3xl border border-dashed border-base-content/10 mt-4">
-              <div class="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mb-3 text-primary">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
-                </svg>
-              </div>
-              <p class="font-bold text-sm text-base-content/60 text-center">{{ 'decks.mobile_empty_state' | translate }}</p>
+          <div
+            class="flex flex-col items-center justify-center py-12 px-4 bg-base-100/30 rounded-3xl border border-dashed border-base-content/10 mt-4">
+            <div class="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mb-3 text-primary">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+                stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+              </svg>
             </div>
+            <p class="font-bold text-sm text-base-content/60 text-center">{{ 'decks.mobile_empty_state' | translate }}
+            </p>
+          </div>
           }
         </div>
       </div>
@@ -177,20 +98,23 @@
 <div class="modal" [class.modal-open]="isModalOpen()">
   <div class="modal-box bg-base-100 text-base-content border border-base-content/10 max-w-sm rounded-[2.5rem] p-8">
     <div class="flex justify-between items-center mb-8">
-      <button (click)="closeModal()" class="btn btn-ghost btn-sm text-primary">✕ {{ 'decks.modal.cancel' | translate }}</button>
+      <button (click)="closeModal()" class="btn btn-ghost btn-sm text-primary">✕ {{ 'decks.modal.cancel' | translate
+        }}</button>
       <h3 class="font-bold text-lg">{{ 'decks.modal.title' | translate }}</h3>
       <div class="w-16"></div>
     </div>
 
     <div class="space-y-6">
       <div>
-        <label class="block text-[10px] font-bold uppercase text-base-content/50 mb-2">{{ 'decks.modal.deck_title' | translate }}</label>
+        <label class="block text-[10px] font-bold uppercase text-base-content/50 mb-2">{{ 'decks.modal.deck_title' |
+          translate }}</label>
         <input type="text" [(ngModel)]="newDeck.title" [placeholder]="'decks.modal.deck_title_placeholder' | translate"
           class="input input-bordered w-full bg-base-200 border-base-content/20 focus:border-primary rounded-2xl text-base-content" />
       </div>
 
       <div>
-        <label class="block text-[10px] font-bold uppercase text-base-content/50 mb-3">{{ 'decks.modal.study_goal' | translate }}</label>
+        <label class="block text-[10px] font-bold uppercase text-base-content/50 mb-3">{{ 'decks.modal.study_goal' |
+          translate }}</label>
         <div class="space-y-3">
 
           <label class="flex items-center justify-between p-4 rounded-xl border cursor-pointer transition-all"
@@ -254,7 +178,8 @@
         </div>
       </div>
 
-      <button (click)="onCreateDeck()" class="btn btn-primary w-full rounded-2xl border-none text-base hover:bg-primary/80 text-primary-content transition-colors">
+      <button (click)="onCreateDeck()"
+        class="btn btn-primary w-full rounded-2xl border-none text-base hover:bg-primary/80 text-primary-content transition-colors">
         {{ 'decks.modal.create_btn' | translate }}
       </button>
     </div>
@@ -265,12 +190,17 @@
 <!-- Deletetion confirmation Modal -->
 <div class="modal" [class.modal-open]="isDeleteConfirmOpen()">
   <div class="modal-box bg-base-100 border border-base-content/10 max-w-sm rounded-[2.5rem] p-8 relative shadow-xl">
-    <button (click)="cancelDelete()" class="btn btn-sm btn-circle btn-ghost absolute right-4 top-4 text-base-content/50 hover:text-base-content">✕</button>
+    <button (click)="cancelDelete()"
+      class="btn btn-sm btn-circle btn-ghost absolute right-4 top-4 text-base-content/50 hover:text-base-content">✕</button>
     <h3 class="font-bold text-lg text-base-content mb-4">{{ 'decks.delete_confirm.title' | translate }}</h3>
     <p class="text-base-content/60 text-sm mb-6">{{ 'decks.delete_confirm.desc' | translate }}</p>
     <div class="flex gap-3">
-      <button (click)="cancelDelete()" class="btn flex-1 rounded-2xl bg-base-300 hover:bg-base-200 border-none text-base-content">{{ 'decks.delete_confirm.cancel' | translate }}</button>
-      <button (click)="proceedToDeleteValidation()" class="btn flex-1 rounded-2xl bg-error hover:bg-error/80 border-none text-error-content">{{ 'decks.delete_confirm.confirm' | translate }}</button>
+      <button (click)="cancelDelete()"
+        class="btn flex-1 rounded-2xl bg-base-300 hover:bg-base-200 border-none text-base-content">{{
+        'decks.delete_confirm.cancel' | translate }}</button>
+      <button (click)="proceedToDeleteValidation()"
+        class="btn flex-1 rounded-2xl bg-error hover:bg-error/80 border-none text-error-content">{{
+        'decks.delete_confirm.confirm' | translate }}</button>
     </div>
   </div>
   <div class="modal-backdrop bg-neutral/70" (click)="cancelDelete()"></div>
@@ -278,12 +208,17 @@
 
 <!-- DeLeTe validation Modal -->
 <div class="modal" [class.modal-open]="isDeleteValidateOpen()">
-  <div class="modal-box bg-base-100 border border-error/50 max-w-sm rounded-[2.5rem] p-8 relative shadow-xl shadow-error/10">
-    <button (click)="cancelDelete()" class="btn btn-sm btn-circle btn-ghost absolute right-4 top-4 text-base-content/50 hover:text-base-content">✕</button>
+  <div
+    class="modal-box bg-base-100 border border-error/50 max-w-sm rounded-[2.5rem] p-8 relative shadow-xl shadow-error/10">
+    <button (click)="cancelDelete()"
+      class="btn btn-sm btn-circle btn-ghost absolute right-4 top-4 text-base-content/50 hover:text-base-content">✕</button>
     <h3 class="font-bold text-lg text-error mb-4">{{ 'decks.delete_validate.title' | translate }}</h3>
     <p class="text-base-content/70 text-sm mb-6">{{ 'decks.delete_validate.desc' | translate }}</p>
-    <input type="text" [(ngModel)]="deleteValidationText" placeholder="DeLeTe" class="input input-bordered w-full bg-base-200 border-error/50 focus:border-error rounded-xl text-base-content mb-6" />
-    <button (click)="executeDeleteDeck()" class="btn w-full rounded-2xl bg-error hover:bg-error/80 border-none text-error-content">{{ 'decks.delete_validate.confirm' | translate }}</button>
+    <input type="text" [(ngModel)]="deleteValidationText" placeholder="DeLeTe"
+      class="input input-bordered w-full bg-base-200 border-error/50 focus:border-error rounded-xl text-base-content mb-6" />
+    <button (click)="executeDeleteDeck()"
+      class="btn w-full rounded-2xl bg-error hover:bg-error/80 border-none text-error-content">{{
+      'decks.delete_validate.confirm' | translate }}</button>
   </div>
   <div class="modal-backdrop bg-neutral/70" (click)="cancelDelete()"></div>
 </div>

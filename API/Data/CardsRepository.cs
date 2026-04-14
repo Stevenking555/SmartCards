@@ -15,6 +15,11 @@ public class CardsRepository(AppDbContext context) : ICardsRepository
         return await context.Cards.CountAsync(c => c.Deck.AppUserId == userId);
     }
 
+    public async Task<int> GetCardCountForDeckAsync(Guid deckId)
+    {
+        return await context.Cards.CountAsync(c => c.DeckId == deckId);
+    }
+
     public void AddCard(Card card)
     {
         context.Cards.Add(card);

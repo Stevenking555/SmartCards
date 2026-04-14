@@ -19,5 +19,6 @@ public interface IStatsRepository
     void AddCardStats(CardStats cardStats);
     void AddCardStatsRange(IEnumerable<CardStats> cardStats);
     Task<int> GetMasteredCardCountAsync(string userId);
+    Task<int> GetMasteredCountForDeckAsync(string userId, Guid deckId);
     void UpdateCardStats(CardStats cardStats);
 }

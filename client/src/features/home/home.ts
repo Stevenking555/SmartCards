@@ -9,12 +9,13 @@ import { BottomNavComponent } from '../../layout/bottom-nav/bottom-nav';
 import { AccountService } from '../../core/services/account-service';
 import { LanguageButtonComponent } from '../../shared/components/language-button/language-button';
 import { ThemeButtonComponent } from '../../shared/components/theme-button/theme-button';
+import { DeckCardComponent } from '../../shared/components/deck-card/deck-card';
 import { Deck } from '../../core/models/deck.model';
 
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [CommonModule, RouterLink, TranslatePipe, SidebarComponent, BottomNavComponent, LanguageButtonComponent, ThemeButtonComponent],
+  imports: [CommonModule, RouterLink, TranslatePipe, SidebarComponent, BottomNavComponent, LanguageButtonComponent, ThemeButtonComponent, DeckCardComponent],
   templateUrl: './home.html',
   styleUrl: './home.css',
 })
@@ -23,14 +24,13 @@ export class HomeComponent implements OnInit {
   accountService = inject(AccountService);
   homeService = inject(HomeService);
 
-  totalDecks = 2;
-  totalCards = 21;
-  cardsDueToday = 1;
+  totalDecks = 0;
+  totalCards = 0;
   masteredCards = 142; // Just some example TODO: Make it real with real DB data
   flippedCardsToday = 0;
   flippedCardsTotal = 0;
   username = computed(() => this.accountService.currentUser()?.displayName || 'Guest');
-  recentDecks: Deck[] = [];
+  recentDecks: any[] = [];
   dailyData: DailyData = { quoteIndex: 1, colorTheme: 'primary', loginStreak: 0, quoteStyle: 'motivational' };
 
 
@@ -51,8 +51,6 @@ export class HomeComponent implements OnInit {
     this.deckService.loadDecks().subscribe();
     this.deckService.decks$.subscribe(decks => {
       this.totalDecks = decks.length;
-      this.totalCards = decks.reduce((sum, deck) => sum + (deck.cards?.length || 0), 0);
-      this.cardsDueToday = decks.reduce((sum, deck) => sum + (deck.due || 0), 0);
     });
 
     this.homeService.loadStats().subscribe();
@@ -62,7 +60,8 @@ export class HomeComponent implements OnInit {
         this.masteredCards = stats.totalMasteredCards;
         this.flippedCardsToday = stats.flippedCardsToday;
         this.flippedCardsTotal = stats.flippedCardsTotal;
-        this.recentDecks = stats.lastPlayedDecks as any; // Map to any since LastPlayedDeck differs slightly from Deck but UI mostly just uses title/due
+        this.recentDecks = stats.lastPlayedDecks.map(d => ({ ...d, id: d.deckId }));
+        this.totalCards = stats.totalCards;
 
         const weeklyData: number[] = JSON.parse(stats.weeklyActivityJson || '[0,0,0,0,0,0,0]');
         const maxVal = Math.max(...weeklyData, 1);

@@ -71,6 +71,11 @@ public class StatsRepository(AppDbContext context) : IStatsRepository
         return await context.CardStats.CountAsync(cs => cs.AppUserId == userId && cs.IsMastered);
     }
 
+    public async Task<int> GetMasteredCountForDeckAsync(string userId, Guid deckId)
+    {
+        return await context.CardStats.CountAsync(cs => cs.AppUserId == userId && cs.Card.DeckId == deckId && cs.IsMastered);
+    }
+
     public void UpdateCardStats(CardStats cardStats)
     {
         context.Entry(cardStats).State = EntityState.Modified;

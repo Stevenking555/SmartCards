@@ -21,10 +21,10 @@ public class StatsController(IStatsService statsService) : BaseApiController
     }
 
     [HttpPost("session")]
-    public async Task<ActionResult> UpdateSessionStats(UpdateSessionStatsDto updateDto)
+    public async Task<ActionResult> SaveStudySession(UpdateSessionStatsDto updateDto)
     {
         var userId = User.GetUserId();
-        var success = await statsService.UpdateSessionStatsAsync(userId, updateDto);
+        var success = await statsService.SaveStudySessionAsync(userId, updateDto);
         
         if (success) return Ok();
         

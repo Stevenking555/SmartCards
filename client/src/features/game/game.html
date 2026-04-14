@@ -1,0 +1,115 @@
+<div class="h-screen w-full bg-base-300 text-base-content flex flex-col transition-all overflow-hidden">
+  <!-- Header -->
+  <div class="flex justify-between items-center p-6 border-b border-base-content/10 bg-base-200/50 backdrop-blur-md">
+    <div class="flex items-center gap-4">
+      <button (click)="closeGame()"
+        class="w-10 h-10 rounded-xl bg-base-content/5 hover:bg-error/20 text-base-content/60 hover:text-error flex items-center justify-center transition-colors">
+        <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+      <div>
+        <p class="text-[10px] uppercase tracking-widest text-primary font-bold mb-0.5">
+          {{ 'deck_detail.study_mode.title' | translate }}</p>
+        <h2 class="text-base-content font-bold">{{ deck?.title }}</h2>
+      </div>
+    </div>
+    <div class="text-base-content/50 font-mono text-sm">
+      <span class="text-base-content font-bold">{{ currentStudyCardIndex() + 1 }}</span> / {{ deck?.cards?.length }}
+    </div>
+  </div>
+
+  <!-- Main Card Area -->
+  <div class="flex-1 flex flex-col items-center justify-center p-6 sm:p-12 overflow-y-auto">
+    @if (currentStudyCard) {
+    <div class="w-full max-w-2xl min-h-[400px] perspective-1000 cursor-pointer group" (click)="flipCard()">
+      <div class="relative w-full h-full transition-transform duration-500 preserve-3d"
+        [class.rotate-y-180]="isCardFlipped()">
+
+        <!-- Front of Card -->
+        <div class="absolute inset-0 backface-hidden bg-base-100 border-2 border-primary/30 rounded-[2rem]
+          p-10 flex flex-col items-center justify-center text-center shadow-lg shadow-primary/10
+          group-hover:border-primary/50 transition-colors">
+
+          <span class="absolute top-6 text-[10px] uppercase tracking-widest text-base-content/50 font-bold">
+            {{ 'deck_detail.question' | translate }}
+          </span>
+
+          <h3 class="text-3xl lg:text-4xl text-base-content font-bold leading-relaxed">
+            {{ currentStudyCard.question }}</h3>
+          <p class="absolute bottom-6 text-sm text-primary font-medium opacity-50 flex items-center gap-2">
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round"
+                d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122" />
+            </svg>
+            {{ 'deck_detail.study_mode.click_flip' | translate }}
+          </p>
+        </div>
+
+        <!-- Back of Card -->
+        <div class="absolute inset-0 backface-hidden bg-primary/5 border-2 border-primary rounded-[2rem]
+          p-10 flex flex-col items-center justify-center text-center shadow-xl shadow-primary/20 rotate-y-180">
+
+          <span class="absolute top-6 text-[10px] uppercase tracking-widest text-primary font-bold">
+            {{ 'deck_detail.answer' | translate }}
+          </span>
+
+          <div class="text-2xl lg:text-3xl text-base-content font-medium leading-relaxed">{{ currentStudyCard.answer }}
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- Choosing actions -->
+    <div class="mt-8 w-full max-w-2xl transition-all duration-300" [class.opacity-0]="!isCardFlipped()"
+      [class.pointer-events-none]="!isCardFlipped()">
+      <p class="text-center text-base-content/60 text-sm font-medium mb-6">{{ 'deck_detail.study_mode.rate_title' |
+        translate }}</p>
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+
+        <button (click)="rateCard('again'); $event.stopPropagation()" class="flex flex-col items-center
+          gap-2 p-4 bg-error/10 hover:bg-error/20 border border-error/20 rounded-2xl transition-colors">
+          <span class="text-error font-bold">{{ 'deck_detail.study_mode.again' | translate }}</span>
+          <span class="text-xs text-error/60">{{ 'deck_detail.study_mode.again_desc' | translate }}</span>
+        </button>
+
+        <button (click)="rateCard('hard'); $event.stopPropagation()" class="flex flex-col items-center
+          gap-2 p-4 bg-warning/10 hover:bg-warning/20 border border-warning/20 rounded-2xl transition-colors">
+          <span class="text-warning font-bold">{{ 'deck_detail.study_mode.hard' | translate }}</span>
+          <span class="text-xs text-warning/60">{{ 'deck_detail.study_mode.hard_desc' | translate }}</span>
+        </button>
+
+        <button (click)="rateCard('good'); $event.stopPropagation()" class="flex flex-col items-center
+          gap-2 p-4 bg-success/10 hover:bg-success/20 border border-success/20 rounded-2xl transition-colors">
+          <span class="text-success font-bold">{{ 'deck_detail.study_mode.good' | translate }}</span>
+          <span class="text-xs text-success/60">{{ 'deck_detail.study_mode.good_desc' | translate }}</span>
+        </button>
+
+        <button (click)="rateCard('easy'); $event.stopPropagation()" class="flex flex-col items-center
+          gap-2 p-4 bg-info/10 hover:bg-info/20 border border-info/20 rounded-2xl transition-colors">
+          <span class="text-info font-bold">{{ 'deck_detail.study_mode.easy' | translate }}</span>
+          <span class="text-xs text-info/60">{{ 'deck_detail.study_mode.easy_desc' | translate }}</span>
+        </button>
+
+      </div>
+    </div>
+    } @else {
+    <!-- Empty State -->
+    <div class="text-center">
+      <div class="w-20 h-20 rounded-full bg-primary/20 text-primary flex items-center justify-center mx-auto mb-6">
+        <svg class="w-10 h-10" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+        </svg>
+      </div>
+
+      <h3 class="text-2xl text-base-content font-bold mb-2">{{ 'deck_detail.study_mode.caught_up' | translate }}</h3>
+      <p class="text-base-content/60 mb-8">{{ 'deck_detail.study_mode.no_cards_desc' | translate }}</p>
+      <button (click)="closeGame()" class="px-8 py-3 bg-base-content/10
+        hover:bg-base-content/20 rounded-xl text-base-content font-bold transition-colors">
+        {{ 'deck_detail.study_mode.back_btn' | translate }}
+      </button>
+    </div>
+    }
+  </div>
+</div>

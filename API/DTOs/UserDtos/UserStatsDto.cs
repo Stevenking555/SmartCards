@@ -22,4 +22,6 @@ public class LastPlayedDeckDto
     public Guid DeckId { get; set; }
     public string Title { get; set; } = null!;
     public DateTime LastPlayedAt { get; set; }
+    public double Progress { get; set; }
+    public int TimeSpentMinutes { get; set; }
 }

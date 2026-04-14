@@ -41,6 +41,7 @@ public class DecksRepository(AppDbContext context) : IDecksRepository
     {
         return await context.Decks
             .Where(d => d.AppUserId == userId)
+            .Include(d => d.DeckStats.Where(ds => ds.AppUserId == userId))
             .ToListAsync();
     }
 

@@ -9,7 +9,7 @@ export interface Deck {
   id: string;
   title: string;
   description?: string;
-  due: number;
   progress: number;
+  timeSpentMinutes: number;
   cards: Card[];
 }

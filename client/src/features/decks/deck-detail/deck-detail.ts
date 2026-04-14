@@ -8,19 +8,20 @@ import { TranslatePipe } from '../../../core/i18n/translate.pipe';
 import { LanguageService } from '../../../core/i18n/language.service';
 import { SidebarComponent } from '../../../layout/sidebar/sidebar';
 import { BottomNavComponent } from '../../../layout/bottom-nav/bottom-nav';
+import { FlashcardComponent } from '../../../shared/components/flashcard/flashcard';
 
 @Component({
   selector: 'app-deck-detail',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink, TranslatePipe, SidebarComponent, BottomNavComponent],
+  imports: [CommonModule, FormsModule, RouterLink, TranslatePipe, SidebarComponent, BottomNavComponent, FlashcardComponent],
   templateUrl: './deck-detail.html',
 })
 export class DeckDetailComponent implements OnInit {
   route = inject(ActivatedRoute);
   deckService = inject(DeckService);
   langService = inject(LanguageService);
-  
-  deckTitle = this.route.snapshot.paramMap.get('id') || 'Deck';
+
+  deckId = this.route.snapshot.paramMap.get('id') || '';
   deck: Deck | undefined;
 
   isModalOpen = signal(false);
@@ -29,20 +30,13 @@ export class DeckDetailComponent implements OnInit {
   // Edit mode
   router = inject(Router);
   isEditingTitle = signal(false);
-  editTitleValue = signal('');
-  
-  editingCardId = signal<string | null>(null);
-  editCardQuestion = signal('');
-  editCardAnswer = signal('');
-
-  // Study mode
-  isStudyModeOpen = signal(false);
-  currentStudyCardIndex = signal(0);
-  isCardFlipped = signal(false);
+  editTitleValue = '';
 
   ngOnInit() {
-    this.deckService.decks$.subscribe(() => {
-      this.deck = this.deckService.getDeckByTitle(this.deckTitle);
+    this.deckService.loadDecks().subscribe(() => {
+      this.deckService.loadDeckWithCards(this.deckId).subscribe(() => {
+        this.deck = this.deckService.getDeckById(this.deckId);
+      });
     });
   }
 
@@ -56,38 +50,38 @@ export class DeckDetailComponent implements OnInit {
   }
 
   onCreateCard(): void {
-    if (!this.newCard.question.trim() || !this.newCard.answer.trim()) return;
-    this.deckService.addCardToDeck(this.deckTitle, {
-      question: this.newCard.question,
-      answer: this.newCard.answer
-    }).subscribe();
+    if (this.deck) {
+      this.deckService.addCardToDeck(this.deckId, {
+        question: this.newCard.question,
+        answer: this.newCard.answer
+      }).subscribe();
+    }
     this.closeModal();
   }
 
   onDeleteCard(id: string): void {
-    this.deckService.deleteCard(this.deckTitle, id).subscribe();
+    if (this.deck) {
+      this.deckService.deleteCard(this.deckId, id).subscribe();
+    }
   }
 
   // â”€â”€ Title Editing â”€â”€
   startEditTitle(): void {
     if (this.deck) {
-      this.editTitleValue.set(this.deck.title);
+      this.editTitleValue = this.deck.title;
       this.isEditingTitle.set(true);
     }
   }
 
   saveTitle(): void {
-    const newTitle = this.editTitleValue().trim();
-    if (this.deck && newTitle && newTitle !== this.deckTitle) {
-      const oldTitle = this.deckTitle;
-      this.deckTitle = newTitle; // Update local tracker before service triggers observable
-      this.deckService.updateDeckTitle(oldTitle, newTitle).subscribe({
+    const newTitle = this.editTitleValue.trim();
+    if (this.deck && newTitle && newTitle !== this.deck.title) {
+      this.deckService.updateDeckTitle(this.deckId, newTitle).subscribe({
         next: () => {
+          if (this.deck) this.deck.title = newTitle;
           this.isEditingTitle.set(false);
-          this.router.navigate(['/decks', newTitle]);
         },
         error: () => {
-          this.deckTitle = oldTitle; // Revert if failed
           alert('Invalid or duplicate deck title!');
         }
       });
@@ -100,65 +94,10 @@ export class DeckDetailComponent implements OnInit {
     this.isEditingTitle.set(false);
   }
 
-  // â”€â”€ Card Editing â”€â”€
-  startEditCard(card: Card, event: Event): void {
-    event.stopPropagation();
-    this.editingCardId.set(card.id);
-    this.editCardQuestion.set(card.question);
-    this.editCardAnswer.set(card.answer);
-  }
-
-  saveCard(cardId: string, event: Event): void {
-    event.stopPropagation();
-    const q = this.editCardQuestion().trim();
-    const a = this.editCardAnswer().trim();
-    if (q && a) {
-      this.deckService.updateCard(this.deckTitle, cardId, { question: q, answer: a }).subscribe();
-    }
-    this.editingCardId.set(null);
-  }
-
-  cancelEditCard(event: Event): void {
-    event.stopPropagation();
-    this.editingCardId.set(null);
-  }
-
-  // â”€â”€ Study Mode logic â”€â”€
-  openStudyMode(): void {
-    if (this.deck && this.deck.cards.length > 0) {
-      this.currentStudyCardIndex.set(0);
-      this.isCardFlipped.set(false);
-      this.isStudyModeOpen.set(true);
-    }
-  }
-
-  closeStudyMode(): void {
-    this.isStudyModeOpen.set(false);
-  }
-
-  flipCard(): void {
-    this.isCardFlipped.set(!this.isCardFlipped());
-  }
-
-  rateCard(rating: string): void {
-    // Basic logic to move to the next card after rating
+  // â”€â”€ Card Editing (Via FlashcardComponent) â”€â”€
+  onUpdateCard(cardId: string, updatedData: { question: string, answer: string }): void {
     if (this.deck) {
-      const nextIndex = this.currentStudyCardIndex() + 1;
-      if (nextIndex < this.deck.cards.length) {
-        this.currentStudyCardIndex.set(nextIndex);
-        this.isCardFlipped.set(false);
-      } else {
-        // Study session complete
-        this.closeStudyMode();
-        alert(this.langService.translate('deck_detail.alert.finished_studying'));
-      }
+      this.deckService.updateCard(this.deckId, cardId, updatedData).subscribe();
     }
-  }
-
-  get currentStudyCard(): Card | undefined {
-    if (this.deck && this.deck.cards.length > 0) {
-      return this.deck.cards[this.currentStudyCardIndex()];
-    }
-    return undefined;
   }
 }

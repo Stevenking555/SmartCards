@@ -14,6 +14,8 @@ export interface LastPlayedDeck {
   deckId: string;
   title: string;
   lastPlayedAt: string;
+  progress: number;
+  timeSpentMinutes: number;
 }
 
 export interface UserStats {
@@ -40,7 +42,7 @@ export class HomeService {
 
   private statsSubject = new BehaviorSubject<UserStats | null>(null);
   public stats$ = this.statsSubject.asObservable();
-  
+
   private initialLoadCompleted = false;
 
   private readonly COLORS = ['primary', 'secondary', 'accent', 'info', 'success', 'warning'];
@@ -70,15 +72,15 @@ export class HomeService {
     const storedColorTheme = localStorage.getItem('dailyColorTheme');
     const storedStreakStr = localStorage.getItem('loginStreak');
     const storedQuoteStyle = (localStorage.getItem('dailyQuoteStyle') as 'motivational' | 'funny') || 'motivational';
-    
+
     let currentStreak = storedStreakStr ? parseInt(storedStreakStr, 10) : 0;
-    
+
     if (storedDate) {
       if (storedDate !== today) {
         const yesterday = new Date();
         yesterday.setDate(yesterday.getDate() - 1);
         const yesterdayStr = yesterday.toLocaleDateString('en-CA');
-        
+
         if (storedDate === yesterdayStr) {
           currentStreak++;
         } else {
@@ -88,11 +90,11 @@ export class HomeService {
     } else {
       currentStreak = 1;
     }
-    
+
     localStorage.setItem('loginStreak', currentStreak.toString());
-    
+
     if (storedDate === today && storedQuoteIndex && storedColorTheme) {
-      this.dailyDataSubject.next({ 
+      this.dailyDataSubject.next({
         quoteIndex: parseInt(storedQuoteIndex, 10),
         colorTheme: storedColorTheme,
         loginStreak: currentStreak,
@@ -102,13 +104,13 @@ export class HomeService {
       const maxQuotes = storedQuoteStyle === 'funny' ? this.TOTAL_FUNNY_QUOTES : this.TOTAL_MOTIVATIONAL_QUOTES;
       const newQuoteIndex = Math.floor(Math.random() * maxQuotes) + 1;
       const newColorTheme = this.COLORS[Math.floor(Math.random() * this.COLORS.length)];
-      
+
       localStorage.setItem('lastLoginDate', today);
       localStorage.setItem('dailyQuoteIndex', newQuoteIndex.toString());
       localStorage.setItem('dailyColorTheme', newColorTheme);
       localStorage.setItem('dailyQuoteStyle', storedQuoteStyle);
-      
-      this.dailyDataSubject.next({ 
+
+      this.dailyDataSubject.next({
         quoteIndex: newQuoteIndex,
         colorTheme: newColorTheme,
         loginStreak: currentStreak,

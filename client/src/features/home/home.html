@@ -121,10 +121,10 @@
                   <div class="w-full flex justify-center items-end h-32 relative">
                     <div
                       class="w-full max-w-[40px] rounded-t-lg transition-all duration-300 flex justify-center items-start pt-1.5 overflow-hidden {{ day.isToday ? themeClasses.chart : themeClasses.chartBg + ' ' + themeClasses.chartHover }}"
-                      [style.height]="day.heightPercent"
-                      [style.minHeight]="day.value > 0 ? '28px' : '0'">
+                      [style.height]="day.heightPercent" [style.minHeight]="day.value > 0 ? '28px' : '0'">
                       @if (day.value > 0) {
-                      <span class="text-[10px] font-bold" [class.text-base-100]="day.isToday" [class.text-base-content]="!day.isToday" [class.opacity-80]="!day.isToday">
+                      <span class="text-[10px] font-bold" [class.text-base-100]="day.isToday"
+                        [class.text-base-content]="!day.isToday" [class.opacity-80]="!day.isToday">
                         {{ day.value }}m
                       </span>
                       }
@@ -147,26 +147,7 @@
               </div>
               <div class="space-y-3">
                 @for (deck of recentDecks; track deck.title) {
-                <div [routerLink]="['/decks', deck.title]"
-                  class="flex items-center justify-between px-5 py-4 bg-base-100 hover:bg-base-200/80 rounded-2xl shadow-sm hover:-translate-y-1 transition-all cursor-pointer border border-base-content/10">
-                  <div class="flex-1">
-                    <h3 class="font-bold text-base-content text-lg">{{ deck.title }}</h3>
-                    <p class="text-xs text-base-content/60 mt-0.5">
-                      {{ deck.cards?.length || 0 }} {{ 'decks.cards' | translate }} ·
-                      <span [class.text-primary]="(deck.due || 0) > 0" [class.font-bold]="(deck.due || 0) > 0">
-                        {{ (deck.due || 0) > 0 ? (deck.due || 0) + ' ' + ('decks.due_today' | translate) :
-                        ('decks.finished' |
-                        translate) }}
-                      </span>
-                    </p>
-                  </div>
-                  <div class="flex items-center gap-3 mr-4">
-                    <span class="text-sm font-bold" [class.text-primary]="(deck.due || 0) > 0"
-                      [class.text-success]="(deck.due || 0) === 0">
-                      {{ deck.progress || 0 }}%
-                    </span>
-                  </div>
-                </div>
+                <app-deck-card [deck]="deck" layout="desktop" [showDelete]="false"></app-deck-card>
                 }
                 @if (recentDecks.length === 0) {
                 <div class="text-center py-6 text-base-content/50">
@@ -200,7 +181,8 @@
                 <div
                   class="absolute -right-4 -top-4 w-16 h-16 bg-info/10 rounded-full group-hover:scale-150 transition-transform duration-500">
                 </div>
-                <p class="text-[11px] font-bold uppercase tracking-widest text-info mb-2">{{ 'home.cards_flipped_today' |
+                <p class="text-[11px] font-bold uppercase tracking-widest text-info mb-2">{{ 'home.cards_flipped_today'
+                  |
                   translate }}</p>
                 <div class="text-4xl font-black text-base-content mb-1 tracking-tight">{{ flippedCardsToday }}</div>
                 <p class="text-xs font-medium text-base-content/50">{{ 'home.keep_it_up' | translate }}</p>
@@ -349,20 +331,7 @@
               | translate }}</h2>
             <div class="space-y-3">
               @for (deck of recentDecks; track deck.title) {
-              <div [routerLink]="['/decks', deck.title]"
-                class="flex items-center justify-between p-4 bg-base-100 rounded-3xl shadow-md border border-base-content/5 cursor-pointer">
-                <div>
-                  <h3 class="font-bold text-base-content text-base mb-1">{{ deck.title }}</h3>
-                  <p class="text-sm text-base-content/60 font-medium mt-0.5">
-                    {{ deck.cards?.length || 0 }} {{ 'decks.cards' | translate }} ·
-                    <span [class.text-primary]="deck.due > 0" class="font-bold">
-                      {{ (deck.due || 0) > 0 ? ((deck.due || 0) + ' ' + ('decks.due_today' | translate)) :
-                      ('decks.finished' |
-                      translate) }}
-                    </span>
-                  </p>
-                </div>
-              </div>
+              <app-deck-card [deck]="deck" layout="mobile" [showDelete]="false"></app-deck-card>
               }
               @if (recentDecks.length === 0) {
               <div class="text-center py-6 text-base-content/50 text-sm">
@@ -388,10 +357,11 @@
                   <div class="w-full flex justify-center items-end h-24">
                     <div
                       class="w-full max-w-[24px] rounded-t-md transition-all duration-300 flex justify-center items-start pt-1 overflow-hidden {{ day.isToday ? themeClasses.chart : themeClasses.chartBg }}"
-                      [style.height]="day.heightPercent"
-                      [style.minHeight]="day.value > 0 ? '24px' : '0'">
+                      [style.height]="day.heightPercent" [style.minHeight]="day.value > 0 ? '24px' : '0'">
                       @if (day.value > 0) {
-                      <span class="text-[9px] font-bold" [class.text-base-100]="day.isToday" [class.text-base-content]="!day.isToday" [class.opacity-80]="!day.isToday" style="line-height:1.2;">
+                      <span class="text-[9px] font-bold" [class.text-base-100]="day.isToday"
+                        [class.text-base-content]="!day.isToday" [class.opacity-80]="!day.isToday"
+                        style="line-height:1.2;">
                         {{ day.value }}
                       </span>
                       }

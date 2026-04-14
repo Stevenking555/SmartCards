@@ -31,27 +31,38 @@ public class StatsService(IUnitOfWork unitOfWork, IMapper mapper) : IStatsServic
         var userStats = await unitOfWork.StatsRepository.GetUserStatsAsync(userId);
         if (userStats == null)
         {
-            userStats = new UserStats
-            {
-                AppUserId = userId,
-                WeeklyActivityJson = "[45,15,60,30,20,50,10]" // Seed with mock data
-            };
+            userStats = new UserStats { AppUserId = userId };
             unitOfWork.StatsRepository.AddUserStats(userStats);
-        }
-        else if (userStats.WeeklyActivityJson == "[0,0,0,0,0,0,0]" || string.IsNullOrEmpty(userStats.WeeklyActivityJson))
-        {
-            userStats.WeeklyActivityJson = "[45,15,60,30,20,50,10]"; // Populate existing empty stats
         }
 
         var lastDecks = await unitOfWork.StatsRepository.GetLastPlayedDecksAsync(userId, 5);
 
-        // Update totals
-        userStats.TotalDecks = await unitOfWork.DecksRepository.GetDeckCountAsync(userId);
-        userStats.TotalCards = await unitOfWork.CardsRepository.GetCardCountAsync(userId);
-        userStats.TotalMasteredCards = await unitOfWork.StatsRepository.GetMasteredCardCountAsync(userId);
+        // Check daily streak
+        var lastFlipDate = userStats.LastFlipAt.Date;
+        var today = DateTime.UtcNow.Date;
+        var daysSinceLastFlip = (today - lastFlipDate).Days;
+        
+        bool modified = false;
 
-        // Save totals
-        await unitOfWork.Complete();
+        // If user logged in today, do nothing. If yesterday, keep streak. 
+        // But if more than 1 day has passed, streak is broken. We reset it to 0. 
+        if (daysSinceLastFlip > 1 && userStats.LearningStreak > 0)
+        {
+            userStats.LearningStreak = 0;
+            modified = true;
+        }
+
+        // Reset daily flips if it's a new day
+        if (daysSinceLastFlip >= 1 && userStats.FlippedCardsToday > 0)
+        {
+            userStats.FlippedCardsToday = 0;
+            modified = true;
+        }
+
+        if (modified)
+        {
+            await unitOfWork.Complete();
+        }
 
         // Map simple fields from entity to DTO
         var dto = mapper.Map<UserStatsDto>(userStats);
@@ -61,13 +72,15 @@ public class StatsService(IUnitOfWork unitOfWork, IMapper mapper) : IStatsServic
         {
             DeckId = ds.DeckId,
             Title = ds.Deck.Title,
-            LastPlayedAt = ds.LastPlayedAt
+            LastPlayedAt = ds.LastPlayedAt,
+            Progress = ds.KnowledgePercentage,
+            TimeSpentMinutes = ds.TimeSpentMinutes
         }).ToList();
 
         return dto;
     }
 
-    public async Task<bool> UpdateSessionStatsAsync(string userId, UpdateSessionStatsDto updateDto)
+    public async Task<bool> SaveStudySessionAsync(string userId, UpdateSessionStatsDto updateDto)
     {
         // 1. Update UserStats
         var userStats = await unitOfWork.StatsRepository.GetUserStatsAsync(userId);
@@ -77,20 +90,31 @@ public class StatsService(IUnitOfWork unitOfWork, IMapper mapper) : IStatsServic
             unitOfWork.StatsRepository.AddUserStats(userStats);
         }
 
-        userStats.FlippedCardsTotal = updateDto.FlippedCardsTotal;
-        userStats.FlippedCardsToday = updateDto.FlippedCardsToday;
-
-
-        // Streak logic
         var daysSinceLastFlip = (updateDto.LastFlipAt.Date - userStats.LastFlipAt.Date).Days;
-        if (daysSinceLastFlip == 1)
+
+        if (daysSinceLastFlip >= 1)
         {
-            userStats.LearningStreak++;
+            // New calendar day, reset the daily counter before adding new flips
+            userStats.FlippedCardsToday = 0;
+            
+            // Streak logic
+            if (daysSinceLastFlip == 1)
+            {
+                userStats.LearningStreak++;
+            }
+            else
+            {
+                userStats.LearningStreak = 1;
+            }
         }
-        else if (daysSinceLastFlip > 1)
+        else if (userStats.LearningStreak == 0)
         {
+            // First time ever or recovered from 0
             userStats.LearningStreak = 1;
         }
+
+        userStats.FlippedCardsTotal += updateDto.FlippedCardsTotal;
+        userStats.FlippedCardsToday += updateDto.FlippedCardsToday;
         userStats.LastFlipAt = updateDto.LastFlipAt;
 
         // 2. Fetch/Create DeckStats first to calculate the delta for Weekly Activity
@@ -103,10 +127,10 @@ public class StatsService(IUnitOfWork unitOfWork, IMapper mapper) : IStatsServic
             unitOfWork.StatsRepository.AddDeckStats(deckStats);
         }
 
-        int sessionTimeDelta = updateDto.TimeSpentMinutes - oldTimeSpent;
-        if (sessionTimeDelta < 0) sessionTimeDelta = 0;
+        int sessionTimeDelta = updateDto.TimeSpentMinutes; 
+        if (sessionTimeDelta < 0) sessionTimeDelta = 0; // Defensive check for malformed data
 
-        deckStats.TimeSpentMinutes = updateDto.TimeSpentMinutes;
+        deckStats.TimeSpentMinutes += sessionTimeDelta;
         deckStats.LastPlayedAt = updateDto.LastPlayedAt;
 
         // Weekly Activity JSON Logic uses the calculated delta
@@ -118,12 +142,7 @@ public class StatsService(IUnitOfWork unitOfWork, IMapper mapper) : IStatsServic
         weeklyActivity[dayOfWeekIndex] += sessionTimeDelta;
         userStats.WeeklyActivityJson = JsonSerializer.Serialize(weeklyActivity);
 
-        // Knowledge percentage calculation (e.g. based on mastered cards over total update cards)
-        if (updateDto.Cards.Any())
-        {
-            int masteredCount = updateDto.Cards.Count(c => c.IsMastered);
-            deckStats.KnowledgePercentage = (int)((double)masteredCount / updateDto.Cards.Count() * 100);
-        }
+        int netMasteredChange = 0;
 
         // 3. Update CardStats
         var existingCardStats = await unitOfWork.StatsRepository.GetCardStatsForDeckAsync(userId, updateDto.DeckId);
@@ -142,7 +161,22 @@ public class StatsService(IUnitOfWork unitOfWork, IMapper mapper) : IStatsServic
             
             stat.BatchIndex = incomingCardStat.BatchIndex;
             stat.RotationPoints = incomingCardStat.RotationPoints;
-            stat.IsMastered = incomingCardStat.IsMastered;
+
+            if (stat.IsMastered != incomingCardStat.IsMastered)
+            {
+                netMasteredChange += incomingCardStat.IsMastered ? 1 : -1;
+                stat.IsMastered = incomingCardStat.IsMastered;
+            }
+        }
+
+        userStats.TotalMasteredCards += netMasteredChange;
+
+        // Knowledge percentage calculation (Mastered / Total)
+        var totalCards = await unitOfWork.CardsRepository.GetCardCountForDeckAsync(updateDto.DeckId);
+        if (totalCards > 0)
+        {
+            var masteredInDeck = await unitOfWork.StatsRepository.GetMasteredCountForDeckAsync(userId, updateDto.DeckId);
+            deckStats.KnowledgePercentage = (int)Math.Round((double)masteredInDeck / totalCards * 100);
         }
 
         return await unitOfWork.Complete();

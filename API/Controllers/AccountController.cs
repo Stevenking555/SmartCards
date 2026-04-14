@@ -39,20 +39,7 @@ public class AccountController(UserManager<AppUser> userManager, ITokenService t
             return ValidationProblem();
         }
 
-        var userStats = new UserStats
-        {
-            AppUserId = user.Id,
-            FlippedCardsTotal = 0,
-            FlippedCardsToday = 0,
-            LearningStreak = 0,
-            TotalDecks = 0,
-            TotalCards = 0,
-            TotalMasteredCards = 0,
-            LastFlipAt = DateTime.UtcNow,
-            WeeklyActivityJson = "[]"
-        };
-
-        unitOfWork.StatsRepository.AddUserStats(userStats);
+        unitOfWork.StatsRepository.AddUserStats(new UserStats { AppUserId = user.Id });
         await unitOfWork.Complete();
 
         await SetRefreshTokenCookie(user);

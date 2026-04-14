@@ -12,12 +12,12 @@ public class UserStats
     public string AppUserId { get; set; } = null!;
     public AppUser AppUser { get; set; } = null!;
 
-    public long FlippedCardsTotal { get; set; }
-    public int FlippedCardsToday { get; set; }
-    public int LearningStreak { get; set; }
-    public int TotalDecks { get; set; }
-    public long TotalCards { get; set; }
-    public long TotalMasteredCards { get; set; }
-    public DateTime LastFlipAt { get; set; }
-    public string WeeklyActivityJson { get; set; } = "[]";
+    public long FlippedCardsTotal { get; set; } = 0;
+    public int FlippedCardsToday { get; set; } = 0;
+    public int LearningStreak { get; set; } = 0;
+    public int TotalDecks { get; set; } = 0;
+    public long TotalCards { get; set; } = 0;
+    public long TotalMasteredCards { get; set; } = 0;
+    public DateTime LastFlipAt { get; set; } = DateTime.UtcNow;
+    public string WeeklyActivityJson { get; set; } = "[0,0,0,0,0,0,0]";
 }

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using API.DTOs;
 using API.Entities;
@@ -79,9 +80,80 @@ public class DecksController(IUnitOfWork unitOfWork, IMapper mapper) : BaseApiCo
         };
         unitOfWork.StatsRepository.AddDeckStats(deckStats);
 
+        var userStats = await unitOfWork.StatsRepository.GetUserStatsAsync(deck.AppUserId);
+        if (userStats != null) userStats.TotalDecks++;
+
         if (await unitOfWork.Complete()) return Ok(mapper.Map<DeckDto>(deck));
 
         return BadRequest("Failed to create deck");
+    }
+
+    [HttpPost("sync")]
+    public async Task<ActionResult<IEnumerable<DeckDto>>> SyncDecks(SyncDecksDto syncDecksDto)
+    {
+        var userId = User.GetUserId();
+        var userStats = await unitOfWork.StatsRepository.GetUserStatsAsync(userId);
+        if (userStats == null)
+        {
+            userStats = new UserStats { AppUserId = userId };
+            unitOfWork.StatsRepository.AddUserStats(userStats);
+        }
+
+        var results = new List<Deck>();
+        int netDeckChange = 0;
+
+        foreach (var newDeck in syncDecksDto.AddedDecks)
+        {
+            var deck = mapper.Map<Deck>(newDeck);
+            deck.AppUserId = userId;
+            unitOfWork.DecksRepository.AddDeck(deck);
+
+            var deckStats = new DeckStats
+            {
+                AppUserId = userId,
+                Deck = deck,
+                LastPlayedAt = DateTime.UtcNow
+            };
+            unitOfWork.StatsRepository.AddDeckStats(deckStats);
+            
+            results.Add(deck);
+            netDeckChange++;
+        }
+
+        foreach (var updateDeck in syncDecksDto.UpdatedDecks)
+        {
+            var deck = await unitOfWork.DecksRepository.GetDeckByIdAsync(updateDeck.Id);
+            if (deck != null && deck.AppUserId == userId)
+            {
+                mapper.Map(updateDeck, deck);
+                unitOfWork.DecksRepository.UpdateDeck(deck);
+                results.Add(deck);
+            }
+        }
+
+        foreach (var deletedId in syncDecksDto.DeletedDeckIds)
+        {
+            var deck = await unitOfWork.DecksRepository.GetDeckByIdAsync(deletedId);
+            if (deck != null && deck.AppUserId == userId)
+            {
+                unitOfWork.DecksRepository.DeleteDeck(deck);
+                netDeckChange--;
+            }
+        }
+
+        userStats.TotalDecks += netDeckChange;
+
+        if (await unitOfWork.Complete())
+        {
+            return Ok(mapper.Map<IEnumerable<DeckDto>>(results));
+        }
+
+        if (netDeckChange == 0 && !syncDecksDto.UpdatedDecks.Any())
+        {
+            return Ok(new List<DeckDto>());
+        }
+
+        return BadRequest("Failed to sync decks");
     }
 
     [HttpPut("{id}")]
@@ -107,6 +179,9 @@ public class DecksController(IUnitOfWork unitOfWork, IMapper mapper) : BaseApiCo
         if (deck.AppUserId != User.GetUserId()) return NotFound();
 
         unitOfWork.DecksRepository.DeleteDeck(deck);
+
+        var userStats = await unitOfWork.StatsRepository.GetUserStatsAsync(deck.AppUserId);
+        if (userStats != null) userStats.TotalDecks--;
 
         if (await unitOfWork.Complete()) return Ok();
 
