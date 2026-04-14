@@ -59,6 +59,9 @@ export const EN: Record<string, string> = {
   'home.pride_of_collection': 'The pride of the collection',
   'home.total_learning_time': 'Total Learning Time',
   'home.invested_work': 'Invested work',
+  'home.cards_flipped_today': 'Cards Flipped Today',
+  'home.cards_flipped_all_time': 'Cards Flipped All Time',
+  'home.keep_it_up': 'Keep it up!',
   'home.last_played': 'Last Played',
   'home.your_library': 'Your Library',
   'home.weekly_activity': 'Weekly Activity',
@@ -155,12 +158,12 @@ export const EN: Record<string, string> = {
   'home.quote_funny.8.text': 'I\'m one minor inconvenience away from dropping out and becoming a plant.',
   'home.quote_funny.8.author': 'Typical Gen Z',
   'home.quote_funny.9.text': 'Can I put \'survived this semester\' on my resume?',
-  'home.quote_funny.9.author': 'Everyone',
+  'home.quote_funny.9.author': 'Every collage student',
   'home.quote_funny.10.text': 'Error 404: Motivation not found.',
   'home.quote_funny.10.author': 'IT Student',
   'home.quote_funny.11.text': 'I need a 6-month vacation, twice a year.',
   'home.quote_funny.11.author': 'Tired Student',
-  'home.quote_funny.12.text': 'Just winging it: life, exams, everything.',
+  'home.quote_funny.12.text': '100% Jesus',
   'home.quote_funny.12.author': 'Anonymous',
 
   // About
@@ -359,6 +362,9 @@ export const HU: Record<string, string> = {
   'home.pride_of_collection': 'A „gyűjtemény” büszkesége',
   'home.total_learning_time': 'Összes tanulási idő',
   'home.invested_work': 'Befektetett munka',
+  'home.cards_flipped_today': 'Ma megfordított kártyák',
+  'home.cards_flipped_all_time': 'Összes kártya (Mind)',
+  'home.keep_it_up': 'Csak így tovább!',
   'home.last_played': 'Utoljára játszott',
   'home.your_library': 'Saját Könyvtár',
   'home.weekly_activity': 'Heti Aktivitás',
@@ -455,12 +461,12 @@ export const HU: Record<string, string> = {
   'home.quote_funny.8.text': 'Egyetlen apró kellemetlenségre vagyok attól, hogy otthagyjam a sulit és növény legyek.',
   'home.quote_funny.8.author': 'Átlag Z Gen',
   'home.quote_funny.9.text': 'Beírhatom az önéletrajzomba, hogy túléltem ezt a félévet?',
-  'home.quote_funny.9.author': 'Mindenki',
+  'home.quote_funny.9.author': 'Minden egyetemista...',
   'home.quote_funny.10.text': 'Error 404: Motiváció nem található.',
   'home.quote_funny.10.author': 'IT Diák',
   'home.quote_funny.11.text': 'Szükségem lenne egy 6 hónapos nyaralásra. Évente kétszer.',
   'home.quote_funny.11.author': 'Fáradt Diák',
-  'home.quote_funny.12.text': 'Csak rögtönzök: az életben, a vizsgákon, mindenben.',
+  'home.quote_funny.12.text': '100% Jézus',
   'home.quote_funny.12.author': 'Ismeretlen',
 
   // About
@@ -529,7 +535,7 @@ export const HU: Record<string, string> = {
 
   // Decks
   'decks.title_prefix': 'Kezeld a',
-  'decks.title': 'Paklikat',
+  'decks.title': 'Paklik',
   'decks.new_deck': 'Új Pakli',
   'decks.cards': 'kártya',
   'decks.due_today': 'mai feladat',
@@ -559,7 +565,7 @@ export const HU: Record<string, string> = {
   'decks.alert.type_delete': 'Kérjük, pontosan gépelje be: DeLeTe',
 
   // Deck Detail
-  'deck_detail.title_prefix': 'Pakli',
+  'deck_detail.title_prefix': 'Paklijaid',
   'deck_detail.study': 'Tanulás',
   'deck_detail.desktop_title_prefix': 'Pakli Részletei',
   'deck_detail.add_card': 'Kártya Hozzáadása',
@@ -585,10 +591,10 @@ export const HU: Record<string, string> = {
   'deck_detail.study_mode.good_desc': '1ó',
   'deck_detail.study_mode.easy': 'Könnyű',
   'deck_detail.study_mode.easy_desc': '1n',
-  'deck_detail.study_mode.caught_up': "Mindent befejeztél!",
+  'deck_detail.study_mode.caught_up': "Minden kártyát befejeztél!",
   'deck_detail.study_mode.no_cards_desc': 'Jelenleg nincs több áttekintésre váró kártya ebben a pakliban.',
   'deck_detail.study_mode.back_btn': 'Vissza a Paklihoz',
-  'deck_detail.alert.finished_studying': 'Befejezted ennek a paklinak a tanulását!',
+  'deck_detail.alert.finished_studying': 'Befejezted ennek a paklinak a tanulását! ;D',
 
   // Errors & Validations
   'error.password.mismatch': 'Helytelen jelszó!',

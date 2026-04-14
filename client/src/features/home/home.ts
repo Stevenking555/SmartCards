@@ -27,7 +27,8 @@ export class HomeComponent implements OnInit {
   totalCards = 21;
   cardsDueToday = 1;
   masteredCards = 142; // Just some example TODO: Make it real with real DB data
-  totalLearningTime = "12.5"; // Just some example TODO: Make it real with real DB data
+  flippedCardsToday = 0;
+  flippedCardsTotal = 0;
   username = computed(() => this.accountService.currentUser()?.displayName || 'Guest');
   recentDecks: Deck[] = [];
   dailyData: DailyData = { quoteIndex: 1, colorTheme: 'primary', loginStreak: 0, quoteStyle: 'motivational' };
@@ -59,6 +60,8 @@ export class HomeComponent implements OnInit {
       if (stats) {
         // We still map mock fields for UI that aren't provided fully yet, but we will use stats where we can
         this.masteredCards = stats.totalMasteredCards;
+        this.flippedCardsToday = stats.flippedCardsToday;
+        this.flippedCardsTotal = stats.flippedCardsTotal;
         this.recentDecks = stats.lastPlayedDecks as any; // Map to any since LastPlayedDeck differs slightly from Deck but UI mostly just uses title/due
 
         const weeklyData: number[] = JSON.parse(stats.weeklyActivityJson || '[0,0,0,0,0,0,0]');

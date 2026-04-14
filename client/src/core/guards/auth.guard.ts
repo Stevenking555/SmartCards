@@ -10,7 +10,7 @@ export const authGuard: CanActivateFn = () => {
 
   if (accountService.currentUser()) return true;
 
-  toast.error('Kérlek, jelentkezz be a folytatáshoz!'); //TODO: rewrite this sentence
+  toast.error('Please log in or register to continue!');
   router.navigateByUrl('/login');
   return false;
 };
