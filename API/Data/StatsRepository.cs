@@ -50,16 +50,6 @@ public class StatsRepository(AppDbContext context) : IStatsRepository
             .FirstOrDefaultAsync(ds => ds.AppUserId == userId && ds.DeckId == deckId);
     }
 
-    public async Task<IEnumerable<DeckStats>> GetLastPlayedDecksAsync(string userId, int limit)
-    {
-        return await context.DeckStats
-            .Include(ds => ds.Deck)
-            .Where(ds => ds.AppUserId == userId)
-            .OrderByDescending(ds => ds.LastPlayedAt)
-            .Take(limit)
-            .ToListAsync();
-    }
-
     public async Task<UserStats?> GetUserStatsAsync(string userId)
     {
         return await context.UserStats

@@ -64,12 +64,12 @@ public class AppDbContext(DbContextOptions options) : IdentityDbContext<AppUser>
             .HasForeignKey(cs => cs.AppUserId)
             .OnDelete(DeleteBehavior.Cascade);
 
-        // Card -> CardStats
+        // Card -> CardStats (Cascade: SQLite supports multiple cascade paths, unlike SQL Server)
         modelBuilder.Entity<CardStats>()
             .HasOne(cs => cs.Card)
             .WithMany(c => c.CardStats)
             .HasForeignKey(cs => cs.CardId)
-            .OnDelete(DeleteBehavior.Restrict); // Prevent multiple cascade paths
+            .OnDelete(DeleteBehavior.Cascade);
 
         var dateTimeConverter = new ValueConverter<DateTime, DateTime>(
             v => v.ToUniversalTime(),

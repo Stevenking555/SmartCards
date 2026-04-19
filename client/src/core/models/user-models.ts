@@ -31,3 +31,13 @@ export type UserUpdateForm = {
     displayName?: string;
     currentPassword?: string;
 }
+
+export interface UserStats {
+    flippedCardsTotal: number;
+    flippedCardsToday: number;
+    learningStreak: number;
+    totalDecks: number;
+    totalCards: number;
+    totalMasteredCards: number;
+    weeklyActivityJson: string;
+}

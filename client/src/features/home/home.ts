@@ -1,8 +1,8 @@
 import { Component, inject, OnInit, computed, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
-import { DeckService } from '../../core/services/deck.service';
-import { HomeService, DailyData } from '../../core/services/home.service';
+import { DeckService } from '../../core/services/deck-service';
+import { HomeService, DailyData } from '../../core/services/home-service';
 import { TranslatePipe } from '../../core/i18n/translate.pipe';
 import { SidebarComponent } from '../../layout/sidebar/sidebar';
 import { BottomNavComponent } from '../../layout/bottom-nav/bottom-nav';
@@ -10,7 +10,7 @@ import { AccountService } from '../../core/services/account-service';
 import { LanguageButtonComponent } from '../../shared/components/language-button/language-button';
 import { ThemeButtonComponent } from '../../shared/components/theme-button/theme-button';
 import { DeckCardComponent } from '../../shared/components/deck-card/deck-card';
-import { Deck } from '../../core/models/deck.model';
+import { DeckForUser } from '../../core/models/deck-models';
 
 @Component({
   selector: 'app-home',
@@ -24,20 +24,29 @@ export class HomeComponent implements OnInit {
   accountService = inject(AccountService);
   homeService = inject(HomeService);
 
-  totalDecks = 0;
-  totalCards = 0;
-  masteredCards = 142; // Just some example TODO: Make it real with real DB data
-  flippedCardsToday = 0;
-  flippedCardsTotal = 0;
   username = computed(() => this.accountService.currentUser()?.displayName || 'Guest');
-  recentDecks: any[] = [];
-  dailyData: DailyData = { quoteIndex: 1, colorTheme: 'primary', loginStreak: 0, quoteStyle: 'motivational' };
+  dailyData = this.homeService.dailyData;
+  userStats = this.homeService.stats;
+  lastPlayedDecks = this.deckService.lastPlayedDecks;
 
+  weeklyActivity = computed(() => {
+    const weeklyData: number[] = JSON.parse(this.userStats()?.weeklyActivityJson || '[0,0,0,0,0,0,0]');
+    const maxVal = Math.max(...weeklyData, 1);
+    const currentDayIndex = new Date().getDay();
 
-  weeklyActivity: { dayKey: string; value: number; heightPercent: string; isToday: boolean }[] = [];
+    const daysOrder = [1, 2, 3, 4, 5, 6, 0];
+    const dayKeys = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'];
+
+    return daysOrder.map((dayIdx, i) => ({
+      dayKey: dayKeys[i],
+      value: weeklyData[dayIdx],
+      heightPercent: (weeklyData[dayIdx] / maxVal * 100) + '%',
+      isToday: currentDayIndex === dayIdx
+    }));
+  });
 
   get themeClasses() {
-    switch (this.dailyData.colorTheme) {
+    switch (this.dailyData().colorTheme) {
       case 'secondary': return { container: 'bg-secondary/10 border-secondary/20', circle: 'bg-secondary/20', text: 'text-secondary/80', chart: 'bg-secondary', chartBg: 'bg-secondary/20', chartHover: 'hover:bg-secondary/80' };
       case 'accent': return { container: 'bg-accent/10 border-accent/20', circle: 'bg-accent/20', text: 'text-accent/80', chart: 'bg-accent', chartBg: 'bg-accent/20', chartHover: 'hover:bg-accent/80' };
       case 'info': return { container: 'bg-info/10 border-info/20', circle: 'bg-info/20', text: 'text-info/80', chart: 'bg-info', chartBg: 'bg-info/20', chartHover: 'hover:bg-info/80' };
@@ -48,41 +57,8 @@ export class HomeComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.deckService.loadDecks().subscribe();
-    this.deckService.decks$.subscribe(decks => {
-      this.totalDecks = decks.length;
-    });
-
     this.homeService.loadStats().subscribe();
-    this.homeService.stats$.subscribe(stats => {
-      if (stats) {
-        // We still map mock fields for UI that aren't provided fully yet, but we will use stats where we can
-        this.masteredCards = stats.totalMasteredCards;
-        this.flippedCardsToday = stats.flippedCardsToday;
-        this.flippedCardsTotal = stats.flippedCardsTotal;
-        this.recentDecks = stats.lastPlayedDecks.map(d => ({ ...d, id: d.deckId }));
-        this.totalCards = stats.totalCards;
-
-        const weeklyData: number[] = JSON.parse(stats.weeklyActivityJson || '[0,0,0,0,0,0,0]');
-        const maxVal = Math.max(...weeklyData, 1);
-        const currentDayIndex = new Date().getDay(); // 0 is Sunday
-
-        const daysOrder = [1, 2, 3, 4, 5, 6, 0];
-        const dayKeys = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'];
-
-        this.weeklyActivity = daysOrder.map((dayIdx, i) => {
-          return {
-            dayKey: dayKeys[i],
-            value: weeklyData[dayIdx],
-            heightPercent: (weeklyData[dayIdx] / maxVal * 100) + '%',
-            isToday: currentDayIndex === dayIdx
-          };
-        });
-      }
-    });
-
-    this.homeService.dailyData$.subscribe(data => {
-      this.dailyData = data;
-    });
+    this.deckService.loadDecks().subscribe(); // Background load all decks
   }
 }
+

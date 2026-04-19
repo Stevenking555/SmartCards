@@ -1,34 +1,17 @@
-import { Injectable, inject } from '@angular/core';
+import { Injectable, inject, signal, computed } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, Observable, of, tap } from 'rxjs';
+import { Observable, of, tap } from 'rxjs';
+import { DeckForUser } from '../models/deck-models';
+import { UserStats } from '../models/user-models';
 import { environment } from '../../environments/environment';
 
 export interface DailyData {
   quoteIndex: number;
   colorTheme: string;
-  loginStreak: number;
   quoteStyle: 'motivational' | 'funny';
 }
 
-export interface LastPlayedDeck {
-  deckId: string;
-  title: string;
-  lastPlayedAt: string;
-  progress: number;
-  timeSpentMinutes: number;
-}
 
-export interface UserStats {
-  flippedCardsTotal: number;
-  flippedCardsToday: number;
-  learningStreak: number;
-  totalDecks: number;
-  totalCards: number;
-  totalMasteredCards: number;
-  lastFlipAt: string;
-  weeklyActivityJson: string;
-  lastPlayedDecks: LastPlayedDeck[];
-}
 
 @Injectable({
   providedIn: 'root'
@@ -37,11 +20,13 @@ export class HomeService {
   private http = inject(HttpClient);
   baseUrl = environment.apiUrl;
 
-  private dailyDataSubject = new BehaviorSubject<DailyData>({ quoteIndex: 1, colorTheme: 'primary', loginStreak: 0, quoteStyle: 'motivational' });
-  public dailyData$ = this.dailyDataSubject.asObservable();
+  // Internal Writable Signals
+  private _dailyData = signal<DailyData>({ quoteIndex: 1, colorTheme: 'primary', quoteStyle: 'motivational' });
+  private _stats = signal<UserStats | null>(null);
 
-  private statsSubject = new BehaviorSubject<UserStats | null>(null);
-  public stats$ = this.statsSubject.asObservable();
+  // Public Read-only Signals
+  public dailyData = this._dailyData.asReadonly();
+  public stats = this._stats.asReadonly();
 
   private initialLoadCompleted = false;
 
@@ -54,15 +39,23 @@ export class HomeService {
   }
 
   loadStats(): Observable<UserStats> {
-    if (this.initialLoadCompleted && this.statsSubject.value) {
-      return of(this.statsSubject.value);
+    if (this.initialLoadCompleted && this._stats()) {
+      return of(this._stats()!);
     }
     return this.http.get<UserStats>(`${this.baseUrl}stats/home`, { withCredentials: true }).pipe(
-      tap(stats => {
-        this.statsSubject.next(stats);
+      tap(data => {
+        this._stats.set(data);
         this.initialLoadCompleted = true;
       })
     );
+  }
+
+  updateDeckCount(delta: number) {
+    this._stats.update(s => s ? { ...s, totalDecks: s.totalDecks + delta } : s);
+  }
+
+  updateCardCount(delta: number) {
+    this._stats.update(s => s ? { ...s, totalCards: s.totalCards + delta } : s);
   }
 
   private initDailyData() {
@@ -70,34 +63,12 @@ export class HomeService {
     const storedDate = localStorage.getItem('lastLoginDate');
     const storedQuoteIndex = localStorage.getItem('dailyQuoteIndex');
     const storedColorTheme = localStorage.getItem('dailyColorTheme');
-    const storedStreakStr = localStorage.getItem('loginStreak');
     const storedQuoteStyle = (localStorage.getItem('dailyQuoteStyle') as 'motivational' | 'funny') || 'motivational';
 
-    let currentStreak = storedStreakStr ? parseInt(storedStreakStr, 10) : 0;
-
-    if (storedDate) {
-      if (storedDate !== today) {
-        const yesterday = new Date();
-        yesterday.setDate(yesterday.getDate() - 1);
-        const yesterdayStr = yesterday.toLocaleDateString('en-CA');
-
-        if (storedDate === yesterdayStr) {
-          currentStreak++;
-        } else {
-          currentStreak = 1;
-        }
-      }
-    } else {
-      currentStreak = 1;
-    }
-
-    localStorage.setItem('loginStreak', currentStreak.toString());
-
     if (storedDate === today && storedQuoteIndex && storedColorTheme) {
-      this.dailyDataSubject.next({
+      this._dailyData.set({
         quoteIndex: parseInt(storedQuoteIndex, 10),
         colorTheme: storedColorTheme,
-        loginStreak: currentStreak,
         quoteStyle: storedQuoteStyle
       });
     } else {
@@ -110,17 +81,16 @@ export class HomeService {
       localStorage.setItem('dailyColorTheme', newColorTheme);
       localStorage.setItem('dailyQuoteStyle', storedQuoteStyle);
 
-      this.dailyDataSubject.next({
+      this._dailyData.set({
         quoteIndex: newQuoteIndex,
         colorTheme: newColorTheme,
-        loginStreak: currentStreak,
         quoteStyle: storedQuoteStyle
       });
     }
   }
 
   setQuoteStyle(style: 'motivational' | 'funny') {
-    const current = this.dailyDataSubject.value;
+    const current = this._dailyData();
     if (current.quoteStyle === style) return;
 
     const maxQuotes = style === 'funny' ? this.TOTAL_FUNNY_QUOTES : this.TOTAL_MOTIVATIONAL_QUOTES;
@@ -129,7 +99,7 @@ export class HomeService {
     localStorage.setItem('dailyQuoteStyle', style);
     localStorage.setItem('dailyQuoteIndex', newQuoteIndex.toString());
 
-    this.dailyDataSubject.next({
+    this._dailyData.set({
       ...current,
       quoteStyle: style,
       quoteIndex: newQuoteIndex

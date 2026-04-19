@@ -11,7 +11,6 @@ public interface IStatsRepository
     void AddUserStats(UserStats userStats);
     
     Task<DeckStats?> GetDeckStatsAsync(string userId, Guid deckId);
-    Task<IEnumerable<DeckStats>> GetLastPlayedDecksAsync(string userId, int limit);
     void AddDeckStats(DeckStats deckStats);
     
     Task<IEnumerable<CardStats>> GetCardStatsForDeckAsync(string userId, Guid deckId);

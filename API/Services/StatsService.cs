@@ -35,8 +35,6 @@ public class StatsService(IUnitOfWork unitOfWork, IMapper mapper) : IStatsServic
             unitOfWork.StatsRepository.AddUserStats(userStats);
         }
 
-        var lastDecks = await unitOfWork.StatsRepository.GetLastPlayedDecksAsync(userId, 5);
-
         // Check daily streak
         var lastFlipDate = userStats.LastFlipAt.Date;
         var today = DateTime.UtcNow.Date;
@@ -66,16 +64,6 @@ public class StatsService(IUnitOfWork unitOfWork, IMapper mapper) : IStatsServic
 
         // Map simple fields from entity to DTO
         var dto = mapper.Map<UserStatsDto>(userStats);
-
-        // Manually add the data that wasn't in the entity
-        dto.LastPlayedDecks = lastDecks.Select(ds => new LastPlayedDeckDto
-        {
-            DeckId = ds.DeckId,
-            Title = ds.Deck.Title,
-            LastPlayedAt = ds.LastPlayedAt,
-            Progress = ds.KnowledgePercentage,
-            TimeSpentMinutes = ds.TimeSpentMinutes
-        }).ToList();
 
         return dto;
     }
@@ -161,6 +149,7 @@ public class StatsService(IUnitOfWork unitOfWork, IMapper mapper) : IStatsServic
             
             stat.BatchIndex = incomingCardStat.BatchIndex;
             stat.RotationPoints = incomingCardStat.RotationPoints;
+            stat.RotationIndex = incomingCardStat.RotationIndex;
 
             if (stat.IsMastered != incomingCardStat.IsMastered)
             {

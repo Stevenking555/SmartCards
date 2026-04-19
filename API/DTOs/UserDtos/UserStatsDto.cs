@@ -11,17 +11,5 @@ public class UserStatsDto
     public int TotalDecks { get; set; }
     public long TotalCards { get; set; }
     public long TotalMasteredCards { get; set; }
-    public DateTime LastFlipAt { get; set; }
     public string WeeklyActivityJson { get; set; } = "[]";
-
-    public IEnumerable<LastPlayedDeckDto> LastPlayedDecks { get; set; } = new List<LastPlayedDeckDto>();
-}
-
-public class LastPlayedDeckDto
-{
-    public Guid DeckId { get; set; }
-    public string Title { get; set; } = null!;
-    public DateTime LastPlayedAt { get; set; }
-    public double Progress { get; set; }
-    public int TimeSpentMinutes { get; set; }
-}
+}

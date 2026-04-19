@@ -19,5 +19,6 @@ public class CardStats
 
     public int BatchIndex { get; set; }
     public int RotationPoints { get; set; }
+    public int RotationIndex { get; set; }
     public bool IsMastered { get; set; }
 }

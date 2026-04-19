@@ -3,6 +3,7 @@ using System;
 using API.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace API.Data.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260418225212_CascadeCardStats")]
+    partial class CascadeCardStats
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "9.0.0");
@@ -137,9 +140,6 @@ namespace API.Data.Migrations
                     b.Property<bool>("IsMastered")
                         .HasColumnType("INTEGER");
 
-                    b.Property<int>("RotationIndex")
-                        .HasColumnType("INTEGER");
-
                     b.Property<int>("RotationPoints")
                         .HasColumnType("INTEGER");
 
@@ -191,10 +191,6 @@ namespace API.Data.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<Guid>("DeckId")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Goal")
-                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<int>("KnowledgePercentage")

@@ -2,7 +2,7 @@ import { HttpInterceptorFn } from '@angular/common/http';
 import { inject } from '@angular/core';
 import { catchError, switchMap, throwError } from 'rxjs';
 import { ToastService } from '../services/toast-service';
-import { User } from '../models/user';
+import { User } from '../models/user-models';
 import { NavigationExtras, Router } from '@angular/router';
 import { AccountService } from '../services/account-service';
 

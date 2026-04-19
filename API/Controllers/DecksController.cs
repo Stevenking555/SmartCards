@@ -22,6 +22,20 @@ public class DecksController(IUnitOfWork unitOfWork, IMapper mapper) : BaseApiCo
         return Ok(mapper.Map<IEnumerable<DeckDto>>(decks));
     }
 
+    [HttpGet("with-stats")]
+    public async Task<ActionResult<IEnumerable<DeckWithStatsDto>>> GetDecksWithStats()
+    {
+        var decks = await unitOfWork.DecksRepository.GetDecksAsync(User.GetUserId());
+        return Ok(mapper.Map<IEnumerable<DeckWithStatsDto>>(decks));
+    }
+
+    [HttpGet("last-played")]
+    public async Task<ActionResult<IEnumerable<DeckForGameDto>>> GetLastPlayedDecks([FromQuery] int limit = 5)
+    {
+        var decks = await unitOfWork.DecksRepository.GetLastPlayedDecksAsync(User.GetUserId(), limit);
+        return Ok(mapper.Map<IEnumerable<DeckForGameDto>>(decks));
+    }
+
     [HttpGet("{id}")]
     public async Task<ActionResult<DeckDto>> GetDeck(Guid id)
     {
@@ -76,7 +90,8 @@ public class DecksController(IUnitOfWork unitOfWork, IMapper mapper) : BaseApiCo
             Deck = deck,
             KnowledgePercentage = 0,
             TimeSpentMinutes = 0,
-            LastPlayedAt = DateTime.UtcNow
+            LastPlayedAt = DateTime.UtcNow,
+            Goal = createDeckDto.Goal
         };
         unitOfWork.StatsRepository.AddDeckStats(deckStats);
 
@@ -112,7 +127,8 @@ public class DecksController(IUnitOfWork unitOfWork, IMapper mapper) : BaseApiCo
             {
                 AppUserId = userId,
                 Deck = deck,
-                LastPlayedAt = DateTime.UtcNow
+                LastPlayedAt = DateTime.UtcNow,
+                Goal = newDeck.Goal
             };
             unitOfWork.StatsRepository.AddDeckStats(deckStats);
             

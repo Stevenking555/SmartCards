@@ -50,6 +50,7 @@ public class CardImportService(IUnitOfWork unitOfWork) : ICardImportService
                 Card = card,
                 BatchIndex = 0,
                 RotationPoints = 0,
+                RotationIndex = 0,
                 IsMastered = false
             };
             cardStatsToAdd.Add(cardStats);

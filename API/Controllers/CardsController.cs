@@ -13,10 +13,11 @@ using Microsoft.AspNetCore.Mvc;
 namespace API.Controllers;
 
 [Authorize]
+[Route("api/decks/{deckId}/[controller]")]
 public class CardsController(IUnitOfWork unitOfWork, IMapper mapper, ICardImportService importService) : BaseApiController
 {
     [HttpGet("{id}")]
-    public async Task<ActionResult<CardDto>> GetCard(Guid id)
+    public async Task<ActionResult<CardDto>> GetCard(Guid deckId, Guid id)
     {
         var card = await unitOfWork.CardsRepository.GetCardByIdAsync(id);
         if (card == null) return NotFound();
@@ -28,22 +29,23 @@ public class CardsController(IUnitOfWork unitOfWork, IMapper mapper, ICardImport
     }
 
     [HttpPost]
-    public async Task<ActionResult<CardDto>> CreateCard(CreateCardDto createCardDto)
+    public async Task<ActionResult<CardWithStatsDto>> CreateCard(Guid deckId, CreateCardDto createCardDto)
     {
-        var deck = await unitOfWork.DecksRepository.GetDeckByIdAsync(createCardDto.DeckId);
+        var deck = await unitOfWork.DecksRepository.GetDeckByIdAsync(deckId);
         if (deck == null) return NotFound("Deck not found");
         if (deck.AppUserId != User.GetUserId()) return NotFound();
 
         var card = mapper.Map<Card>(createCardDto);
+        card.DeckId = deckId;
         unitOfWork.CardsRepository.AddCard(card);
 
-        // Automatically initialize CardStats for the creator
         var cardStats = new CardStats
         {
             AppUserId = User.GetUserId(),
             Card = card,
             BatchIndex = 0,
             RotationPoints = 0,
+            RotationIndex = 0,
             IsMastered = false
         };
         unitOfWork.StatsRepository.AddCardStats(cardStats);
@@ -51,12 +53,12 @@ public class CardsController(IUnitOfWork unitOfWork, IMapper mapper, ICardImport
         var userStats = await unitOfWork.StatsRepository.GetUserStatsAsync(User.GetUserId());
         if (userStats != null) userStats.TotalCards++;
 
-        if (await unitOfWork.Complete()) return Ok(mapper.Map<CardDto>(card));
+        if (await unitOfWork.Complete()) return Ok(mapper.Map<CardWithStatsDto>(card));
 
         return BadRequest("Failed to create card");
     }
 
-    [HttpPost("import/{deckId}")]
+    [HttpPost("import")]
     public async Task<ActionResult<ImportResultDto>> ImportCards(Guid deckId, ImportCardsDto importDto)
     {
         var deck = await unitOfWork.DecksRepository.GetDeckByIdAsync(deckId);
@@ -85,7 +87,7 @@ public class CardsController(IUnitOfWork unitOfWork, IMapper mapper, ICardImport
         return Ok(result);
     }
 
-    [HttpPost("sync/{deckId}")]
+    [HttpPost("sync")]
     public async Task<ActionResult<IEnumerable<CardDto>>> SyncCards(Guid deckId, SyncCardsDto syncCardsDto)
     {
         var deck = await unitOfWork.DecksRepository.GetDeckByIdAsync(deckId);
@@ -113,7 +115,8 @@ public class CardsController(IUnitOfWork unitOfWork, IMapper mapper, ICardImport
             var cardStats = new CardStats
             {
                 AppUserId = userId,
-                Card = card
+                Card = card,
+                RotationIndex = 0
             };
             unitOfWork.StatsRepository.AddCardStats(cardStats);
 
@@ -161,7 +164,7 @@ public class CardsController(IUnitOfWork unitOfWork, IMapper mapper, ICardImport
     }
 
     [HttpPut("{id}")]
-    public async Task<ActionResult> UpdateCard(Guid id, CreateCardDto updateCardDto)
+    public async Task<ActionResult<CardDto>> UpdateCard(Guid deckId, Guid id, CreateCardDto updateCardDto)
     {
         var card = await unitOfWork.CardsRepository.GetCardByIdAsync(id);
         if (card == null) return NotFound();
@@ -172,13 +175,13 @@ public class CardsController(IUnitOfWork unitOfWork, IMapper mapper, ICardImport
         mapper.Map(updateCardDto, card);
         unitOfWork.CardsRepository.UpdateCard(card);
 
-        if (await unitOfWork.Complete()) return NoContent();
+        if (await unitOfWork.Complete()) return Ok(mapper.Map<CardDto>(card));
 
         return BadRequest("Failed to update card");
     }
 
     [HttpDelete("{id}")]
-    public async Task<ActionResult> DeleteCard(Guid id)
+    public async Task<ActionResult> DeleteCard(Guid deckId, Guid id)
     {
         var card = await unitOfWork.CardsRepository.GetCardByIdAsync(id);
         if (card == null) return NotFound();

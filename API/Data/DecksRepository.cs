@@ -22,13 +22,11 @@ public class DecksRepository(AppDbContext context) : IDecksRepository
 
     public void DeleteDeck(Deck deck)
     {
-        // Must manually drop related stats because of Restrict delete behavior
+        // DeckStats must still be removed manually (no cascade from Deck→DeckStats)
         var deckStats = context.DeckStats.Where(ds => ds.DeckId == deck.Id);
         context.DeckStats.RemoveRange(deckStats);
 
-        var cardStats = context.CardStats.Where(cs => cs.Card.DeckId == deck.Id);
-        context.CardStats.RemoveRange(cardStats);
-
+        // CardStats are now auto-deleted by the DB cascade (Card→CardStats: Cascade)
         context.Decks.Remove(deck);
     }
 
@@ -42,6 +40,19 @@ public class DecksRepository(AppDbContext context) : IDecksRepository
         return await context.Decks
             .Where(d => d.AppUserId == userId)
             .Include(d => d.DeckStats.Where(ds => ds.AppUserId == userId))
+            .ToListAsync();
+    }
+
+    public async Task<IEnumerable<Deck>> GetLastPlayedDecksAsync(string userId, int limit)
+    {
+        return await context.Decks
+            .Include(d => d.DeckStats.Where(ds => ds.AppUserId == userId))
+            .Include(d => d.Cards)
+                .ThenInclude(c => c.CardStats.Where(cs => cs.AppUserId == userId))
+            .Where(d => d.AppUserId == userId && d.DeckStats.Any(ds => ds.AppUserId == userId))
+            .OrderByDescending(d => d.DeckStats.Where(ds => ds.AppUserId == userId).Max(ds => ds.LastPlayedAt))
+            .Take(limit)
+            .AsSplitQuery()
             .ToListAsync();
     }
 
@@ -63,6 +74,7 @@ public class DecksRepository(AppDbContext context) : IDecksRepository
     public async Task<Deck?> GetDeckForGameAsync(string userId, Guid deckId)
     {
         return await context.Decks
+            .Include(d => d.DeckStats.Where(ds => ds.AppUserId == userId))
             .Include(d => d.Cards)
                 .ThenInclude(c => c.CardStats.Where(cs => cs.AppUserId == userId))
             .AsSplitQuery()

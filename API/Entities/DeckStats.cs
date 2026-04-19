@@ -20,4 +20,7 @@ public class DeckStats
     public int KnowledgePercentage { get; set; }
     public int TimeSpentMinutes { get; set; }
     public DateTime LastPlayedAt { get; set; }
+    
+    [Required]
+    public string Goal { get; set; } = "weeks";
 }

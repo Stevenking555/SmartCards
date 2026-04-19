@@ -2,7 +2,7 @@ import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { TranslatePipe } from '../../../core/i18n/translate.pipe';
-import { Deck } from '../../../core/models/deck.model';
+import { DeckForUser } from '../../../core/models/deck-models';
 
 @Component({
   selector: 'app-deck-card',
@@ -11,7 +11,7 @@ import { Deck } from '../../../core/models/deck.model';
   templateUrl: './deck-card.html',
 })
 export class DeckCardComponent {
-  @Input({ required: true }) deck!: Deck;
+  @Input({ required: true }) item!: DeckForUser;
   @Input() layout: 'mobile' | 'desktop' = 'desktop';
   @Input() showDelete: boolean = true;
   @Input() showProgress: boolean = true;
@@ -20,6 +20,6 @@ export class DeckCardComponent {
 
   onDelete(event: Event) {
     event.stopPropagation();
-    this.delete.emit(this.deck.id);
+    this.delete.emit(this.item.info.id);
   }
 }

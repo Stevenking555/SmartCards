@@ -209,7 +209,7 @@
         <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
           <label class="cursor-pointer">
             <input type="radio" name="quote-style-radio" class="hidden peer" value="motivational"
-              [checked]="quoteStyle === 'motivational'" (change)="onQuoteStyleChange('motivational')">
+              [checked]="quoteStyle() === 'motivational'" (change)="onQuoteStyleChange('motivational')">
             <div
               class="border-2 rounded-2xl p-4 text-center border-base-300 bg-base-200 hover:border-primary/50 peer-checked:border-primary peer-checked:bg-primary/10 transition-all">
               <span class="block font-bold">{{ 'profile.quote_style.motivational' | translate }}</span>
@@ -217,7 +217,7 @@
           </label>
           <label class="cursor-pointer">
             <input type="radio" name="quote-style-radio" class="hidden peer" value="funny"
-              [checked]="quoteStyle === 'funny'" (change)="onQuoteStyleChange('funny')">
+              [checked]="quoteStyle() === 'funny'" (change)="onQuoteStyleChange('funny')">
             <div
               class="border-2 rounded-2xl p-4 text-center border-base-300 bg-base-200 hover:border-primary/50 peer-checked:border-primary peer-checked:bg-primary/10 transition-all">
               <span class="block font-bold">{{ 'profile.quote_style.funny' | translate }}</span>
@@ -251,3 +251,4 @@
     <app-bottom-nav></app-bottom-nav>
   </div>
 </div>
+

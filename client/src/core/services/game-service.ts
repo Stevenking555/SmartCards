@@ -6,6 +6,7 @@ export interface CardSessionUpdateDto {
   cardId: string;
   batchIndex: number;
   rotationPoints: number;
+  rotationIndex: number;
   isMastered: boolean;
 }
 
@@ -22,7 +23,7 @@ export interface UpdateSessionStatsDto {
 @Injectable({
   providedIn: 'root'
 })
-export class StudySessionService implements OnDestroy {
+export class GameService implements OnDestroy {
   private http = inject(HttpClient);
   baseUrl = environment.apiUrl;
 
@@ -62,26 +63,70 @@ export class StudySessionService implements OnDestroy {
   }
 
   /**
-   * Records a card flip and rating.
+   * Records a card flip and rating based on the new game logic.
    */
-  recordCardInteraction(cardId: string, rating: 'again' | 'hard' | 'good' | 'easy') {
+  recordCardInteraction(
+    cardId: string, 
+    rating: 'again' | 'hard' | 'good' | 'later' | 'mastered' | 'manual',
+    currentStats: { batchIndex: number, rotationPoints: number, rotationIndex: number, isMastered: boolean }
+  ) {
     if (!this.activeDeckId) return;
 
     this.flippedCardsTotal++;
     this.flippedCardsToday++;
 
-    // Base logic for mastering a card. A real spaced repetition algorithm would be more complex.
-    const isMastered = rating === 'easy' || rating === 'good';
-
-    // Add or update card in map
-    const existing = this.cardUpdates.get(cardId);
-
-    // Simplistic rotation/batch track for demo purposes
-    this.cardUpdates.set(cardId, {
+    // Start with existing recorded updates or provided current state
+    const existing = this.cardUpdates.get(cardId) || {
       cardId: cardId,
-      batchIndex: existing ? existing.batchIndex : 0,
-      rotationPoints: existing ? existing.rotationPoints + 1 : 1,
-      isMastered: isMastered
+      batchIndex: currentStats.batchIndex,
+      rotationPoints: currentStats.rotationPoints,
+      rotationIndex: currentStats.rotationIndex,
+      isMastered: currentStats.isMastered
+    };
+
+    let { batchIndex, rotationPoints, rotationIndex, isMastered } = existing;
+
+    if (rating === 'mastered') {
+      isMastered = true;
+    } else if (rating === 'later') {
+      rotationPoints = 0;
+      rotationIndex = 0;
+      batchIndex += 2; // Move far ahead
+    } else if (rating === 'manual') {
+      // Stats already assigned from currentStats/existing, just recording the flip
+    } else {
+      // Numerical ratings
+      // "Nem tudtam" -> again (1), "Nehezen" -> hard (2), "Könnyen" -> good (3)
+      const pointsToAdd = rating === 'again' ? 1 : (rating === 'hard' ? 2 : 3);
+      
+      const oldThreshold = Math.floor(rotationPoints / 10);
+      rotationPoints += pointsToAdd;
+      const newThreshold = Math.floor(rotationPoints / 10);
+
+      // Rule: If rotationPoints crosses a 10-count boundary (10, 20...), increase rotationIndex
+      if (newThreshold > oldThreshold) {
+        rotationIndex += (newThreshold - oldThreshold);
+      }
+    }
+
+    this.cardUpdates.set(cardId, {
+      cardId,
+      batchIndex,
+      rotationPoints,
+      rotationIndex,
+      isMastered
+    });
+
+    return { batchIndex, rotationPoints, rotationIndex, isMastered };
+  }
+
+  /**
+   * Manually updates a card's statistics in the sync queue.
+   */
+  updateCardStats(cardId: string, stats: { batchIndex: number, rotationPoints: number, rotationIndex: number, isMastered: boolean }) {
+    this.cardUpdates.set(cardId, {
+      cardId,
+      ...stats
     });
   }
 

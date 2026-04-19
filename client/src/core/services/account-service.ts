@@ -1,6 +1,6 @@
 import { Injectable, inject, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { ChangePasswordForm, LoginCreds, RegisterCreds, UpdateEmailForm, User } from '../models/user';
+import { ChangePasswordForm, LoginCreds, RegisterCreds, UpdateEmailForm, User } from '../models/user-models';
 import { tap } from 'rxjs';
 import { environment } from '../../environments/environment';
 

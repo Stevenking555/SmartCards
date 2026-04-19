@@ -40,10 +40,10 @@
         </div>
 
         <div class="max-w-4xl space-y-4">
-          @for (deck of decks; track deck.title) {
-          <app-deck-card [deck]="deck" layout="desktop" (delete)="confirmDeleteDeck($event)"></app-deck-card>
+          @for (deck of decks(); track deck.info.title) {
+          <app-deck-card [item]="deck" layout="desktop" (delete)="confirmDeleteDeck($event)"></app-deck-card>
           }
-          @if (decks.length === 0) {
+          @if (decks().length === 0) {
           <div
             class="flex flex-col items-center justify-center py-16 px-4 bg-base-100/30 rounded-3xl border-2 border-dashed border-base-content/10 mt-8">
             <div class="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mb-4 text-primary">
@@ -67,10 +67,10 @@
         </div>
 
         <div class="space-y-4">
-          @for (deck of decks; track deck.title) {
-          <app-deck-card [deck]="deck" layout="mobile" (delete)="confirmDeleteDeck($event)"></app-deck-card>
+          @for (deck of decks(); track deck.info.title) {
+          <app-deck-card [item]="deck" layout="mobile" (delete)="confirmDeleteDeck($event)"></app-deck-card>
           }
-          @if (decks.length === 0) {
+          @if (decks().length === 0) {
           <div
             class="flex flex-col items-center justify-center py-12 px-4 bg-base-100/30 rounded-3xl border border-dashed border-base-content/10 mt-4">
             <div class="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mb-3 text-primary">
@@ -118,8 +118,8 @@
         <div class="space-y-3">
 
           <label class="flex items-center justify-between p-4 rounded-xl border cursor-pointer transition-all"
-            [class.border-primary]="newDeck.goal === '1 Day'" [class.bg-primary/10]="newDeck.goal === '1 Day'"
-            [class.border-base-content/10]="newDeck.goal !== '1 Day'">
+            [class.border-primary]="newDeck.goal === 'days'" [class.bg-primary/10]="newDeck.goal === 'days'"
+            [class.border-base-content/10]="newDeck.goal !== 'days'">
             <div class="flex items-center gap-3">
               <span class="p-2 bg-warning/20 rounded-lg text-warning">
                 <svg viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5">
@@ -133,13 +133,13 @@
                 <p class="text-xs text-base-content/50">{{ 'decks.modal.1day_desc' | translate }}</p>
               </div>
             </div>
-            <input type="radio" name="goal" value="1 Day" [(ngModel)]="newDeck.goal"
+            <input type="radio" name="goal" value="days" [(ngModel)]="newDeck.goal"
               class="radio radio-primary radio-sm" />
           </label>
 
           <label class="flex items-center justify-between p-4 rounded-xl border cursor-pointer transition-all"
-            [class.border-primary]="newDeck.goal === '1 Week'" [class.bg-primary/10]="newDeck.goal === '1 Week'"
-            [class.border-base-content/10]="newDeck.goal !== '1 Week'">
+            [class.border-primary]="newDeck.goal === 'weeks'" [class.bg-primary/10]="newDeck.goal === 'weeks'"
+            [class.border-base-content/10]="newDeck.goal !== 'weeks'">
             <div class="flex items-center gap-3">
               <span class="p-2 bg-primary/20 rounded-lg text-primary">
                 <svg viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5">
@@ -152,13 +152,13 @@
                 <p class="text-xs text-base-content/50">{{ 'decks.modal.1week_desc' | translate }}</p>
               </div>
             </div>
-            <input type="radio" name="goal" value="1 Week" [(ngModel)]="newDeck.goal"
+            <input type="radio" name="goal" value="weeks" [(ngModel)]="newDeck.goal"
               class="radio radio-primary radio-sm" />
           </label>
 
           <label class="flex items-center justify-between p-4 rounded-xl border cursor-pointer transition-all"
-            [class.border-primary]="newDeck.goal === '1 Month'" [class.bg-primary/10]="newDeck.goal === '1 Month'"
-            [class.border-base-content/10]="newDeck.goal !== '1 Month'">
+            [class.border-primary]="newDeck.goal === 'months'" [class.bg-primary/10]="newDeck.goal === 'months'"
+            [class.border-base-content/10]="newDeck.goal !== 'months'">
             <div class="flex items-center gap-3">
               <span class="p-2 bg-success/20 rounded-lg text-success">
                 <svg viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5">
@@ -172,7 +172,7 @@
                 <p class="text-xs text-base-content/50">{{ 'decks.modal.1month_desc' | translate }}</p>
               </div>
             </div>
-            <input type="radio" name="goal" value="1 Month" [(ngModel)]="newDeck.goal"
+            <input type="radio" name="goal" value="months" [(ngModel)]="newDeck.goal"
               class="radio radio-primary radio-sm" />
           </label>
         </div>
@@ -222,3 +222,4 @@
   </div>
   <div class="modal-backdrop bg-neutral/70" (click)="cancelDelete()"></div>
 </div>
+

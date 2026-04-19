@@ -6,9 +6,6 @@ namespace API.DTOs;
 public class CreateCardDto
 {
     [Required]
-    public Guid DeckId { get; set; }
-    
-    [Required]
     public string Question { get; set; } = null!;
 
     [Required]
