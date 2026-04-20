@@ -236,6 +236,7 @@ export class GameComponent implements OnInit, OnDestroy {
   }
 
   closeGame(): void {
+    this.gameService.syncNow();
     this.router.navigate(['/decks', this.deckId]);
   }
 

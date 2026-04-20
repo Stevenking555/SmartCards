@@ -38,8 +38,8 @@ export class HomeService {
     this.initDailyData();
   }
 
-  loadStats(): Observable<UserStats> {
-    if (this.initialLoadCompleted && this._stats()) {
+  loadStats(force: boolean = false): Observable<UserStats> {
+    if (!force && this.initialLoadCompleted && this._stats()) {
       return of(this._stats()!);
     }
     return this.http.get<UserStats>(`${this.baseUrl}stats/home`, { withCredentials: true }).pipe(
@@ -50,12 +50,25 @@ export class HomeService {
     );
   }
 
+  updateStats(stats: UserStats) {
+    this._stats.set(stats);
+    this.initialLoadCompleted = true;
+  }
+
   updateDeckCount(delta: number) {
     this._stats.update(s => s ? { ...s, totalDecks: s.totalDecks + delta } : s);
   }
 
   updateCardCount(delta: number) {
     this._stats.update(s => s ? { ...s, totalCards: s.totalCards + delta } : s);
+  }
+
+  incrementFlippedStats() {
+    this._stats.update(s => s ? { 
+      ...s, 
+      flippedCardsToday: s.flippedCardsToday + 1, 
+      flippedCardsTotal: s.flippedCardsTotal + 1 
+    } : s);
   }
 
   private initDailyData() {

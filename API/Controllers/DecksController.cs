@@ -88,8 +88,6 @@ public class DecksController(IUnitOfWork unitOfWork, IMapper mapper) : BaseApiCo
         {
             AppUserId = deck.AppUserId,
             Deck = deck,
-            KnowledgePercentage = 0,
-            TimeSpentMinutes = 0,
             LastPlayedAt = DateTime.UtcNow,
             Goal = createDeckDto.Goal
         };

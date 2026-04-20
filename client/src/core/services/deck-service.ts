@@ -44,12 +44,12 @@ export class DeckService {
     });
   }
 
-  loadDecks(): Observable<DeckForUser[]> {
-    if (this.initialLoadCompleted) {
+  loadDecks(force: boolean = false): Observable<DeckForUser[]> {
+    if (!force && this.initialLoadCompleted) {
       return of(this._decks());
     }
 
-    this.loadLastPlayedDecks().subscribe();
+    this.loadLastPlayedDecks(5, force).subscribe();
 
     return this.http.get<DeckForUser[]>(this.baseUrl + 'decks/with-stats', { withCredentials: true }).pipe(
       tap(data => {
@@ -59,8 +59,8 @@ export class DeckService {
     );
   }
 
-  loadLastPlayedDecks(limit: number = 5): Observable<DeckForUser[]> {
-    if (this._lastPlayedDecks().length > 0) {
+  loadLastPlayedDecks(limit: number = 5, force: boolean = false): Observable<DeckForUser[]> {
+    if (!force && this._lastPlayedDecks().length > 0) {
       return of(this._lastPlayedDecks());
     }
     return this.http.get<DeckForUser[]>(`${this.baseUrl}decks/last-played?limit=${limit}`, { withCredentials: true }).pipe(
@@ -171,6 +171,13 @@ export class DeckService {
         }
       })
     );
+  }
+
+  updateDeckStats(deckId: string, stats: DeckStats) {
+    const updateFn = (d: DeckForUser) => {
+      d.stats = stats;
+    };
+    this.updateItemInSignals(deckId, updateFn);
   }
 
   private updateItemInSignals(deckId: string, updateFn: (deck: DeckForUser) => void, isCardOp: boolean = false) {

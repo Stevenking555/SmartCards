@@ -1,6 +1,9 @@
 import { Injectable, inject, OnDestroy } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../environments/environment';
+import { HomeService } from './home-service';
+import { DeckService } from './deck-service';
+import { UserStats } from '../models/user-models';
 
 export interface CardSessionUpdateDto {
   cardId: string;
@@ -25,6 +28,8 @@ export interface UpdateSessionStatsDto {
 })
 export class GameService implements OnDestroy {
   private http = inject(HttpClient);
+  private homeService = inject(HomeService);
+  private deckService = inject(DeckService);
   baseUrl = environment.apiUrl;
 
   private activeDeckId: string | null = null;
@@ -51,6 +56,12 @@ export class GameService implements OnDestroy {
     this.flippedCardsToday = 0;
     this.cardUpdates.clear();
 
+    // Locally move to top of last played list
+    const deck = this.deckService.getDeckById(deckId);
+    if (deck) {
+      this.deckService.addToLastPlayed(deck);
+    }
+
     // Clear existing interval if any
     if (this.autoSaveInterval) {
       clearInterval(this.autoSaveInterval);
@@ -66,7 +77,7 @@ export class GameService implements OnDestroy {
    * Records a card flip and rating based on the new game logic.
    */
   recordCardInteraction(
-    cardId: string, 
+    cardId: string,
     rating: 'again' | 'hard' | 'good' | 'later' | 'mastered' | 'manual',
     currentStats: { batchIndex: number, rotationPoints: number, rotationIndex: number, isMastered: boolean }
   ) {
@@ -74,6 +85,7 @@ export class GameService implements OnDestroy {
 
     this.flippedCardsTotal++;
     this.flippedCardsToday++;
+    this.homeService.incrementFlippedStats();
 
     // Start with existing recorded updates or provided current state
     const existing = this.cardUpdates.get(cardId) || {
@@ -98,7 +110,7 @@ export class GameService implements OnDestroy {
       // Numerical ratings
       // "Nem tudtam" -> again (1), "Nehezen" -> hard (2), "Könnyen" -> good (3)
       const pointsToAdd = rating === 'again' ? 1 : (rating === 'hard' ? 2 : 3);
-      
+
       const oldThreshold = Math.floor(rotationPoints / 10);
       rotationPoints += pointsToAdd;
       const newThreshold = Math.floor(rotationPoints / 10);
@@ -183,8 +195,18 @@ export class GameService implements OnDestroy {
     const payload = this.preparePayload();
     if (!payload) return;
 
-    this.http.post(`${this.baseUrl}stats/session`, payload, { withCredentials: true }).subscribe({
-      next: () => this.resetCounters(),
+    const deckIdSyncing = this.activeDeckId; // Capture the current deck ID
+
+    this.http.post<any>(`${this.baseUrl}stats/session`, payload, { withCredentials: true }).subscribe({
+      next: (result) => {
+        this.resetCounters();
+        if (result && result.userStats) {
+          this.homeService.updateStats(result.userStats);
+        }
+        if (result && result.updatedDeckStats && deckIdSyncing) {
+          this.deckService.updateDeckStats(deckIdSyncing, result.updatedDeckStats);
+        }
+      },
       error: (err) => console.error('Failed to sync study session', err)
     });
   }

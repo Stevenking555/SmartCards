@@ -42,11 +42,7 @@ public class CardsController(IUnitOfWork unitOfWork, IMapper mapper, ICardImport
         var cardStats = new CardStats
         {
             AppUserId = User.GetUserId(),
-            Card = card,
-            BatchIndex = 0,
-            RotationPoints = 0,
-            RotationIndex = 0,
-            IsMastered = false
+            Card = card
         };
         unitOfWork.StatsRepository.AddCardStats(cardStats);
 
@@ -115,8 +111,7 @@ public class CardsController(IUnitOfWork unitOfWork, IMapper mapper, ICardImport
             var cardStats = new CardStats
             {
                 AppUserId = userId,
-                Card = card,
-                RotationIndex = 0
+                Card = card
             };
             unitOfWork.StatsRepository.AddCardStats(cardStats);
 

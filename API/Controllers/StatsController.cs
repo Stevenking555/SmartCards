@@ -21,12 +21,12 @@ public class StatsController(IStatsService statsService) : BaseApiController
     }
 
     [HttpPost("session")]
-    public async Task<ActionResult> SaveStudySession(UpdateSessionStatsDto updateDto)
+    public async Task<ActionResult<StudySessionResultDto>> SaveStudySession(UpdateSessionStatsDto updateDto)
     {
         var userId = User.GetUserId();
-        var success = await statsService.SaveStudySessionAsync(userId, updateDto);
+        var result = await statsService.SaveStudySessionAsync(userId, updateDto);
         
-        if (success) return Ok();
+        if (result != null) return Ok(result);
         
         return BadRequest("Failed to update session stats");
     }

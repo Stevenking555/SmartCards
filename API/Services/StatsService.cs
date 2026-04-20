@@ -68,7 +68,7 @@ public class StatsService(IUnitOfWork unitOfWork, IMapper mapper) : IStatsServic
         return dto;
     }
 
-    public async Task<bool> SaveStudySessionAsync(string userId, UpdateSessionStatsDto updateDto)
+    public async Task<StudySessionResultDto?> SaveStudySessionAsync(string userId, UpdateSessionStatsDto updateDto)
     {
         // 1. Update UserStats
         var userStats = await unitOfWork.StatsRepository.GetUserStatsAsync(userId);
@@ -161,13 +161,25 @@ public class StatsService(IUnitOfWork unitOfWork, IMapper mapper) : IStatsServic
         userStats.TotalMasteredCards += netMasteredChange;
 
         // Knowledge percentage calculation (Mastered / Total)
+        // Computed in-memory using the already-fetched card stats + applied changes
+        // to avoid reading stale data from the DB before Complete() is called.
         var totalCards = await unitOfWork.CardsRepository.GetCardCountForDeckAsync(updateDto.DeckId);
         if (totalCards > 0)
         {
-            var masteredInDeck = await unitOfWork.StatsRepository.GetMasteredCountForDeckAsync(userId, updateDto.DeckId);
+            // Count mastered from the in-memory collection (already updated above)
+            var masteredInDeck = existingCardStats.Count(cs => cs.IsMastered);
             deckStats.KnowledgePercentage = (int)Math.Round((double)masteredInDeck / totalCards * 100);
         }
 
-        return await unitOfWork.Complete();
+        if (await unitOfWork.Complete())
+        {
+            return new StudySessionResultDto
+            {
+                UserStats = mapper.Map<UserStatsDto>(userStats),
+                UpdatedDeckStats = mapper.Map<DeckStatsDto>(deckStats)
+            };
+        }
+
+        return null;
     }
 }
