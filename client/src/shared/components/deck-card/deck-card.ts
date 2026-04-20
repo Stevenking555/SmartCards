@@ -7,7 +7,7 @@ import { DeckForUser } from '../../../core/models/deck-models';
 @Component({
   selector: 'app-deck-card',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, RouterLink, TranslatePipe],
   templateUrl: './deck-card.html',
 })
 export class DeckCardComponent {

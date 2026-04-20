@@ -125,7 +125,7 @@
                       @if (day.value > 0) {
                       <span class="text-[10px] font-bold" [class.text-base-100]="day.isToday"
                         [class.text-base-content]="!day.isToday" [class.opacity-80]="!day.isToday">
-                        {{ day.value }}m
+                        {{ day.value }}{{ 'chart.minutes_short' | translate }}
                       </span>
                       }
                     </div>
@@ -362,7 +362,7 @@
                       <span class="text-[9px] font-bold" [class.text-base-100]="day.isToday"
                         [class.text-base-content]="!day.isToday" [class.opacity-80]="!day.isToday"
                         style="line-height:1.2;">
-                        {{ day.value }}
+                        {{ day.value }}{{ 'chart.minutes_short' | translate }}
                       </span>
                       }
                     </div>

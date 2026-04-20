@@ -230,6 +230,9 @@ export const EN: Record<string, string> = {
   'auth.alert.wrong_credentials': 'Wrong credentials!',
   'auth.alert.reset_sent': 'If an account with that email exists, a reset link has been sent.',
 
+  'deck_card.minutes': 'minutes',
+  'chart.minutes_short': 'm',
+
   // Decks
   'decks.title_prefix': 'Manage your',
   'decks.title': 'Decks',
@@ -647,5 +650,8 @@ export const HU: Record<string, string> = {
   'game.selection.desc': 'Egy utolsó döntés a csoportban maradt kártyákról.',
   'game.selection.stay_next': 'Következőbe is maradjon',
   'game.selection.stay_next_desc': '1 szériával később',
+
+  'deck_card.minutes': 'perc',
+  'chart.minutes_short': 'p',
 };
 //#endregion
