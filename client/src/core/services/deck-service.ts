@@ -80,12 +80,21 @@ export class DeckService {
     return this.http.get<DeckForUser>(`${this.baseUrl}decks/${id}/for-game`, { withCredentials: true });
   }
 
-  getDecks(): DeckForUser[] {
-    return this._decks();
-  }
-
   getDeckById(id: string): DeckForUser | undefined {
     return this._decks().find(d => d.info.id === id);
+  }
+
+  getDeckWithCards(id: string): Observable<DeckForUser> {
+    return this.http.get<DeckForUser>(`${this.baseUrl}decks/${id}/with-cards`, { withCredentials: true }).pipe(
+      tap(data => {
+        // Update local signals if they exist
+        this.updateItemInSignals(id, (d) => {
+          d.info = data.info;
+          d.cards = data.cards;
+          d.stats = data.stats;
+        });
+      })
+    );
   }
 
   addDeck(title: string, goal: string): Observable<Deck> {
@@ -96,7 +105,7 @@ export class DeckService {
             info: newDeck,
             stats: { knowledgePercentage: 0, timeSpentMinutes: 0, goal: goal }
           };
-          this._decks.update(current => [...current, newDeckForUser]);
+          this._decks.update(current => [newDeckForUser, ...current]);
           this.homeService.updateDeckCount(1);
         }
       })
@@ -139,6 +148,18 @@ export class DeckService {
           };
           this.updateItemInSignals(deckId, updateFn, true);
           this.homeService.updateCardCount(1);
+        }
+      })
+    );
+  }
+
+  importCards(deckId: string, bulkText: string): Observable<any> {
+    const payload = { bulkText };
+    return this.http.post(`${this.baseUrl}decks/${deckId}/cards/import`, payload, { withCredentials: true }).pipe(
+      tap((result: any) => {
+        if (result && result.isSuccess) {
+          this.homeService.updateCardCount(result.importedCount || 0);
+          this.loadDecks(true).subscribe(); // Reload decks to get the new cards and updated counts
         }
       })
     );

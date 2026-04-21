@@ -2,11 +2,11 @@ using API.DTOs;
 using API.Entities;
 using AutoMapper;
 
-namespace API.Helpers;
+namespace API.Helpers.MappingProfiles;
 
-public class AutoMapperProfiles : Profile
+public class DeckMappingProfile : Profile
 {
-    public AutoMapperProfiles()
+    public DeckMappingProfile()
     {
         CreateMap<CreateDeckDto, Deck>();
         CreateMap<Deck, DeckDto>();
@@ -16,26 +16,14 @@ public class AutoMapperProfiles : Profile
             
         CreateMap<Deck, DeckWithCardsDto>()
             .ForMember(dest => dest.Deck, opt => opt.MapFrom(src => src))
-            .ForMember(dest => dest.Cards, opt => opt.MapFrom(src => src.Cards));
+            .ForMember(dest => dest.Cards, opt => opt.MapFrom(src => src.Cards))
+            .ForMember(dest => dest.Stats, opt => opt.MapFrom(src => src.DeckStats.FirstOrDefault()));
             
         CreateMap<Deck, DeckForGameDto>()
             .ForMember(dest => dest.Deck, opt => opt.MapFrom(src => src))
             .ForMember(dest => dest.DeckStats, opt => opt.MapFrom(src => src.DeckStats.FirstOrDefault()))
             .ForMember(dest => dest.Cards, opt => opt.MapFrom(src => src.Cards));
-        
-        CreateMap<CreateCardDto, Card>();
-        CreateMap<Card, CardDto>();
-        CreateMap<Card, CardWithStatsDto>()
-            .ForMember(dest => dest.Card, opt => opt.MapFrom(src => src))
-            .ForMember(dest => dest.CardStats, opt => opt.MapFrom(src => src.CardStats.FirstOrDefault()));
 
-        CreateMap<AppUser, UserDto>()
-            .ForMember(dest => dest.Token, opt => opt.Ignore());
-
-        CreateMap<UserStats, UserStatsDto>();
-        
         CreateMap<DeckStats, DeckStatsDto>();
-        
-        CreateMap<CardStats, CardStatsDto>();
     }
 }

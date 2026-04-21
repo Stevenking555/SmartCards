@@ -49,7 +49,7 @@ public class CardsController(IUnitOfWork unitOfWork, IMapper mapper, ICardImport
         var userStats = await unitOfWork.StatsRepository.GetUserStatsAsync(User.GetUserId());
         if (userStats != null) userStats.TotalCards++;
 
-        if (await unitOfWork.Complete()) return Ok(mapper.Map<CardWithStatsDto>(card));
+        if (await unitOfWork.Complete()) return CreatedAtAction(nameof(GetCard), new { deckId, id = card.Id }, mapper.Map<CardWithStatsDto>(card));
 
         return BadRequest("Failed to create card");
     }

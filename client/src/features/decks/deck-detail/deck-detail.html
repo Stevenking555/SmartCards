@@ -84,6 +84,14 @@
           </div>
         </div>
         <div class="flex items-center gap-3">
+          <button (click)="openImportModal()"
+            class="flex items-center gap-2 px-4 py-2 bg-secondary hover:bg-secondary/80
+          rounded-xl text-secondary-content text-sm font-semibold transition-all border border-secondary/20">
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+            </svg>
+            {{ 'deck_detail.import_cards' | translate }}
+          </button>
           <button (click)="openModal()"
             class="flex items-center gap-2 px-4 py-2 bg-primary
           hover:bg-primary/80 rounded-xl text-primary-content text-sm font-semibold transition-colors border border-primary/20">
@@ -315,4 +323,95 @@
     }
   </div>
   <div class="modal-backdrop bg-neutral/80" (click)="closeViewModal()"></div>
-</div>
+</div>
+
+<!-- Import cards Modal -->
+<div class="modal" [class.modal-open]="isImportModalOpen()">
+  <div class="modal-box bg-base-100 text-base-content border border-base-content/10 max-w-lg rounded-[2.5rem] p-8 shadow-xl">
+    <div class="flex justify-between items-center mb-6">
+      <button (click)="closeImportModal()" class="btn btn-ghost btn-sm text-primary">✕
+        {{ 'deck_detail.modal.cancel' | translate }}
+      </button>
+      <h3 class="font-bold text-lg text-base-content">{{ 'deck_detail.import.modal.title' | translate }}</h3>
+      <div class="w-16"></div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="tabs tabs-boxed bg-base-200 mb-6 rounded-2xl p-1">
+      <a class="tab flex-1 rounded-xl transition-all" 
+         [class.tab-active]="importTab() === 'paste'" 
+         (click)="importTab.set('paste')">{{ 'deck_detail.import.modal.tabs.paste' | translate }}</a>
+      <a class="tab flex-1 rounded-xl transition-all" 
+         [class.tab-active]="importTab() === 'upload'" 
+         (click)="importTab.set('upload')">{{ 'deck_detail.import.modal.tabs.upload' | translate }}</a>
+    </div>
+
+    <div class="space-y-6">
+      <!-- Paste Tab -->
+      <div *ngIf="importTab() === 'paste'" class="animate-fade-in">
+        <label class="block text-[10px] font-bold uppercase text-base-content/50 mb-2">
+          {{ 'deck_detail.import.modal.paste_label' | translate }}
+        </label>
+        <textarea [ngModel]="importBulkText()" 
+          (ngModelChange)="importBulkText.set($event)"
+          [placeholder]="'deck_detail.import.modal.paste_placeholder' | translate"
+          rows="8" class="textarea textarea-bordered w-full bg-base-200 border-base-content/20
+          focus:border-primary rounded-2xl text-base-content resize-none font-mono text-sm">
+        </textarea>
+      </div>
+
+      <!-- Upload Tab -->
+      <div *ngIf="importTab() === 'upload'" class="animate-fade-in">
+        <label class="block text-[10px] font-bold uppercase text-base-content/50 mb-2">
+          {{ 'deck_detail.import.modal.upload_label' | translate }}
+        </label>
+        
+        <div *ngIf="!importFileName()" class="relative border-2 border-dashed border-base-content/20 rounded-2xl p-10 flex flex-col items-center justify-center bg-base-200/50 hover:bg-base-200/80 transition-all group cursor-pointer h-48">
+          <input type="file" (change)="onFileChange($event)" accept=".txt" 
+            class="absolute inset-0 opacity-0 cursor-pointer z-10" />
+          <div class="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mb-4 text-primary group-hover:scale-110 transition-transform shadow-inner">
+            <svg class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+            </svg>
+          </div>
+          <p class="text-sm font-bold text-base-content/60 group-hover:text-primary transition-colors text-center">{{ 'deck_detail.import.modal.upload_label' | translate }}</p>
+          <p class="text-[10px] text-base-content/40 mt-2">{{ 'deck_detail.import.modal.upload_helper' | translate }}</p>
+        </div>
+
+        <!-- Selected File State -->
+        <div *ngIf="importFileName()" class="border-2 border-primary/20 bg-primary/5 rounded-2xl p-8 flex flex-col items-center justify-center animate-fade-in h-48 relative overflow-hidden">
+          <div class="absolute -right-4 -bottom-4 text-primary/10 rotate-12">
+            <svg class="w-32 h-32" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+            </svg>
+          </div>
+          
+          <div class="w-12 h-12 bg-primary/20 rounded-xl flex items-center justify-center mb-3 text-primary shadow-sm">
+            <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+            </svg>
+          </div>
+          
+          <p class="text-[10px] uppercase font-black text-primary tracking-widest mb-1">{{ 'deck_detail.import.file_loaded' | translate }}</p>
+          <p class="text-sm font-black text-base-content tracking-tight mb-4">{{ importFileName() }}</p>
+          
+          <button (click)="removeFile()" class="btn btn-xs btn-ghost text-error hover:bg-error/10 rounded-lg flex items-center gap-1 normal-case px-3 mt-2">
+            <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+            {{ 'action.remove_file' | translate }}
+          </button>
+        </div>
+      </div>
+
+      <button (click)="onImportCards()" 
+        [disabled]="!importBulkText() || !importBulkText().trim()"
+        class="btn btn-primary w-full rounded-2xl border-none text-base
+        hover:bg-primary/80 transition-colors text-primary-content">
+        {{ 'deck_detail.import.modal.import_btn' | translate }}
+      </button>
+    </div>
+  </div>
+  <div class="modal-backdrop bg-neutral/80" (click)="closeImportModal()"></div>
+</div>
+

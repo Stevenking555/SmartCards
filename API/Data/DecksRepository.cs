@@ -40,6 +40,10 @@ public class DecksRepository(AppDbContext context) : IDecksRepository
         return await context.Decks
             .Where(d => d.AppUserId == userId)
             .Include(d => d.DeckStats.Where(ds => ds.AppUserId == userId))
+            .OrderByDescending(d => d.DeckStats.Where(ds => ds.AppUserId == userId)
+                .Select(ds => (DateTime?)ds.LastPlayedAt)
+                .Max() ?? d.CreatedAt)
+            .ThenByDescending(d => d.CreatedAt)
             .ToListAsync();
     }
 
@@ -66,7 +70,9 @@ public class DecksRepository(AppDbContext context) : IDecksRepository
     public async Task<Deck?> GetDeckWithCardsAsync(string userId, Guid deckId)
     {
         return await context.Decks
-            .Include(d => d.Cards)
+            .Include(d => d.DeckStats.Where(ds => ds.AppUserId == userId))
+            .Include(d => d.Cards.OrderByDescending(c => c.CreatedAt))
+                .ThenInclude(c => c.CardStats.Where(cs => cs.AppUserId == userId))
             .AsSplitQuery()
             .FirstOrDefaultAsync(d => d.Id == deckId && d.AppUserId == userId);
     }
@@ -75,7 +81,7 @@ public class DecksRepository(AppDbContext context) : IDecksRepository
     {
         return await context.Decks
             .Include(d => d.DeckStats.Where(ds => ds.AppUserId == userId))
-            .Include(d => d.Cards)
+            .Include(d => d.Cards.OrderByDescending(c => c.CreatedAt))
                 .ThenInclude(c => c.CardStats.Where(cs => cs.AppUserId == userId))
             .AsSplitQuery()
             .FirstOrDefaultAsync(d => d.Id == deckId && d.AppUserId == userId);

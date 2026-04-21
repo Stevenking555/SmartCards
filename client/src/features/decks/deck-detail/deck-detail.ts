@@ -75,20 +75,25 @@ export class DeckDetailComponent implements OnInit {
   }
 
   onCreateCard(): void {
-    if (this.deck) {
+    if (this.deck && this.newCard.question?.trim() && this.newCard.answer?.trim()) {
       this.deckService.addCardToDeck(this.deckId, {
         question: this.newCard.question,
         answer: this.newCard.answer
-      }).subscribe(newCardWithStats => {
-        const current = this.currentDeck();
-        if (current) {
-          if (!current.cards) current.cards = [];
-          current.cards.push(newCardWithStats);
-          this.currentDeck.set({ ...current });
+      }).subscribe({
+        next: (newCardWithStats) => {
+          const current = this.currentDeck();
+          if (current) {
+            // Add to the beginning of the array to show at the top immediately
+            current.cards = [newCardWithStats, ...(current.cards || [])];
+            this.currentDeck.set({ ...current });
+          }
+          this.closeModal();
+        },
+        error: () => {
+          alert('Failed to create card. Please try again.');
         }
       });
     }
-    this.closeModal();
   }
 
   onDeleteCard(id: string): void {
@@ -227,6 +232,61 @@ export class DeckDetailComponent implements OnInit {
 
   cancelEditDescription(): void {
     this.isEditingDescription.set(false);
+  }
+
+  // Card Import
+  isImportModalOpen = signal(false);
+  importTab = signal<'paste' | 'upload'>('paste');
+  importBulkText = signal('');
+  importFileName = signal<string | null>(null);
+
+  openImportModal(): void {
+    this.isImportModalOpen.set(true);
+    this.importBulkText.set('');
+    this.importFileName.set(null);
+  }
+
+  closeImportModal(): void {
+    this.isImportModalOpen.set(false);
+  }
+
+  onFileChange(event: any): void {
+    const file = event.target.files[0];
+    if (file) {
+      this.importFileName.set(file.name);
+      const reader = new FileReader();
+      reader.onload = (e: any) => {
+        this.importBulkText.set(e.target.result);
+      };
+      reader.readAsText(file);
+    }
+  }
+
+  removeFile(): void {
+    this.importFileName.set(null);
+    this.importBulkText.set('');
+  }
+
+  onImportCards(): void {
+    const text = this.importBulkText().trim();
+    if (text) {
+      this.deckService.importCards(this.deckId, text).subscribe({
+        next: (result) => {
+          if (result.isSuccess) {
+            // Force reload deck from API to show new cards immediately
+            this.deckService.getDeckWithCards(this.deckId).subscribe(data => {
+              this.currentDeck.set(data);
+              this.closeImportModal();
+            });
+          } else {
+            alert('Import failed: ' + (result.failedLines?.join(', ') || 'Unknown error'));
+          }
+        },
+        error: () => {
+          alert('Error during import!');
+        }
+      });
+    }
   }
 
 }

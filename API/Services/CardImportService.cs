@@ -40,7 +40,8 @@ public class CardImportService(IUnitOfWork unitOfWork) : ICardImportService
             {
                 DeckId = deckId,
                 Question = parts[0].Trim(),
-                Answer = parts[1].Trim()
+                Answer = parts[1].Trim(),
+                CreatedAt = DateTime.UtcNow.AddMilliseconds(-lineNumber)
             };
             cardsToAdd.Add(card);
 

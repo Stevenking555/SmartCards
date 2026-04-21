@@ -17,6 +17,7 @@ export const EN: Record<string, string> = {
   'action.save': 'Save',
   'action.delete': 'Delete',
   'action.edit': 'Edit',
+  'action.remove_file': 'Remove file',
 
   // Profile
   'profile.title': 'Profile',
@@ -323,6 +324,20 @@ export const EN: Record<string, string> = {
   'game.selection.desc': 'One last decision for the remaining cards of this batch.',
   'game.selection.stay_next': 'Stay in next',
   'game.selection.stay_next_desc': '1 batch later',
+
+  // Import
+  'deck_detail.import_cards': 'Import Cards',
+  'deck_detail.import.modal.title': 'Import Cards to Deck',
+  'deck_detail.import.modal.tabs.paste': 'Paste Text',
+  'deck_detail.import.modal.tabs.upload': 'Upload File',
+  'deck_detail.import.modal.paste_label': 'Bulk Text (Format: Question;Answer per line)',
+  'deck_detail.import.modal.paste_placeholder': 'Paste your content here...',
+  'deck_detail.import.modal.upload_label': 'Drag and drop a .txt file here or click to browse',
+  'deck_detail.import.modal.upload_helper': 'The file should contain Question;Answer pairs on each line.',
+  'deck_detail.import.modal.import_btn': 'Import Cards →',
+  'deck_detail.import.success': 'Cards successfully imported!',
+  'deck_detail.import.error': 'Failed to import cards. Please check the format.',
+  'deck_detail.import.file_loaded': 'File loaded: ',
 };
 //#endregion
 //#region Hungarian Dictionary
@@ -341,6 +356,7 @@ export const HU: Record<string, string> = {
   'action.save': 'Mentés',
   'action.delete': 'Törlés',
   'action.edit': 'Szerkesztés',
+  'action.remove_file': 'Fájl eltávolítása',
 
   // Profile
   'profile.title': 'Profil',
@@ -647,5 +663,19 @@ export const HU: Record<string, string> = {
   'game.selection.desc': 'Egy utolsó döntés a csoportban maradt kártyákról.',
   'game.selection.stay_next': 'Következőbe is maradjon',
   'game.selection.stay_next_desc': '1 szériával később',
+
+  // Import
+  'deck_detail.import_cards': 'Kártyák importálása',
+  'deck_detail.import.modal.title': 'Kártyák hozzáadása paklihoz',
+  'deck_detail.import.modal.tabs.paste': 'Szöveg beillesztése',
+  'deck_detail.import.modal.tabs.upload': 'Fájl feltöltése',
+  'deck_detail.import.modal.paste_label': 'Szöveg (Formátum: Kérdés;Válasz soronként)',
+  'deck_detail.import.modal.paste_placeholder': 'Itt illeszd be a tartalmat...',
+  'deck_detail.import.modal.upload_label': 'Húzz ide egy .txt fájlt, vagy kattints a tallózáshoz',
+  'deck_detail.import.modal.upload_helper': 'A fájlnak Kérdés;Válasz párokat kell tartalmaznia soronként.',
+  'deck_detail.import.modal.import_btn': 'Importálás indítása →',
+  'deck_detail.import.success': 'Kártyák sikeresen importálva!',
+  'deck_detail.import.error': 'Hiba az importálás során. Ellenőrizd a formátumot!',
+  'deck_detail.import.file_loaded': 'Fájl betöltve: ',
 };
 //#endregion
