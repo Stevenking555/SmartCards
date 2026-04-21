@@ -680,6 +680,7 @@ export const HU: Record<string, string> = {
   'deck_detail.import.success': 'Kártyák sikeresen importálva!',
   'deck_detail.import.error': 'Hiba az importálás során. Ellenőrizd a formátumot!',
   'deck_detail.import.file_loaded': 'Fájl betöltve: ',
+
   'deck_card.minutes': 'perc',
   'chart.minutes_short': 'p',
 };
