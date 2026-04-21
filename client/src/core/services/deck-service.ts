@@ -13,6 +13,13 @@ export class DeckService {
   private homeService = inject(HomeService);
   baseUrl = environment.apiUrl;
 
+  clearCache() {
+    this._decks.set([]);
+    this._lastEditedDecks.set([]);
+    this._lastPlayedDecks.set([]);
+    this.initialLoadCompleted = false;
+  }
+
   // Internal Writable Signals (Private)
   private _decks = signal<DeckForUser[]>([]);
   private _lastEditedDecks = signal<DeckForUser[]>([]);

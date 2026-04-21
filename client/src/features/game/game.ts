@@ -30,6 +30,7 @@ export class GameComponent implements OnInit, OnDestroy {
   activeRotationIndex = signal<number>(0);
   isSelectionMode = signal(false);
   showProgressionModal = signal(false);
+  private skipProgressionCheck = false;
   
   // The cards currently in the "loop"
   activeRotation = signal<CardWithStats[]>([]);
@@ -137,10 +138,13 @@ export class GameComponent implements OnInit, OnDestroy {
     const rotIdx = this.activeRotationIndex();
 
     // Check for batch progression if all cards in current batch reached the goal rank
-    if (!this.isSelectionMode() && rotIdx >= this.currentRankUpGoal) {
+    // But skip if we just entered a new batch or finished a selection round
+    if (!this.isSelectionMode() && !this.skipProgressionCheck && rotIdx >= this.currentRankUpGoal) {
       this.showProgressionModal.set(true);
       return;
     }
+    
+    this.skipProgressionCheck = false; // Reset flag after one check
 
     let rotationCards = this.allCardsWithStats.filter(c => 
       !c.stats.isMastered && 
@@ -172,6 +176,7 @@ export class GameComponent implements OnInit, OnDestroy {
       this.isCardFlipped.set(false);
     } else {
       this.currentRankUpGoal += 1; // Increase goal and continue refining
+      this.skipProgressionCheck = true; // Ensure we play the refined batch at least once
       this.startNewRotation();
     }
   }
@@ -225,6 +230,7 @@ export class GameComponent implements OnInit, OnDestroy {
         if (remainingInThisBatch <= 0) {
            this.isSelectionMode.set(false);
            this.currentRankUpGoal = RANK_UP_THRESHOLD;
+           this.skipProgressionCheck = true; // Just finished selection, start next batch fresh
         }
       }
       this.startNewRotation();

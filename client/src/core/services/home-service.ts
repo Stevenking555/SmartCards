@@ -20,6 +20,11 @@ export class HomeService {
   private http = inject(HttpClient);
   baseUrl = environment.apiUrl;
 
+  clearCache() {
+    this._stats.set(null);
+    this.initialLoadCompleted = false;
+  }
+
   // Internal Writable Signals
   private _dailyData = signal<DailyData>({ quoteIndex: 1, colorTheme: 'primary', quoteStyle: 'motivational' });
   private _stats = signal<UserStats | null>(null);
@@ -64,10 +69,10 @@ export class HomeService {
   }
 
   incrementFlippedStats() {
-    this._stats.update(s => s ? { 
-      ...s, 
-      flippedCardsToday: s.flippedCardsToday + 1, 
-      flippedCardsTotal: s.flippedCardsTotal + 1 
+    this._stats.update(s => s ? {
+      ...s,
+      flippedCardsToday: s.flippedCardsToday + 1,
+      flippedCardsTotal: s.flippedCardsTotal + 1
     } : s);
   }
 
