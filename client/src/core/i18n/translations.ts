@@ -231,6 +231,9 @@ export const EN: Record<string, string> = {
   'auth.alert.wrong_credentials': 'Wrong credentials!',
   'auth.alert.reset_sent': 'If an account with that email exists, a reset link has been sent.',
 
+  'deck_card.minutes': 'minutes',
+  'chart.minutes_short': 'm',
+
   // Decks
   'decks.title_prefix': 'Manage your',
   'decks.title': 'Decks',
@@ -677,5 +680,7 @@ export const HU: Record<string, string> = {
   'deck_detail.import.success': 'Kártyák sikeresen importálva!',
   'deck_detail.import.error': 'Hiba az importálás során. Ellenőrizd a formátumot!',
   'deck_detail.import.file_loaded': 'Fájl betöltve: ',
+  'deck_card.minutes': 'perc',
+  'chart.minutes_short': 'p',
 };
 //#endregion
