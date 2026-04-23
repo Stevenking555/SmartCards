@@ -65,7 +65,12 @@ export class HomeService {
   }
 
   updateCardCount(delta: number) {
-    this._stats.update(s => s ? { ...s, totalCards: s.totalCards + delta } : s);
+    this._stats.update(s => {
+      if (!s) return s;
+      const newVal = s.totalCards + delta;
+      console.log(`Updating card count: ${s.totalCards} -> ${newVal}`);
+      return { ...s, totalCards: newVal };
+    });
   }
 
   incrementFlippedStats() {

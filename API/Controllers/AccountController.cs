@@ -137,7 +137,6 @@ public class AccountController(UserManager<AppUser> userManager, ITokenService t
         var user = await userManager.FindByIdAsync(User.GetUserId());
         if (user == null) return NotFound();
 
-        // 1. Manuális jelszó ellenőrzés, hogy mi kontrolláljuk a hibaüzenetet
         var passwordCheck = await userManager.CheckPasswordAsync(user, changePasswordDto.OldPassword);
         if (!passwordCheck)
         {
@@ -145,7 +144,6 @@ public class AccountController(UserManager<AppUser> userManager, ITokenService t
             return ValidationProblem();
         }
 
-        // 2. Ha a régi jó, akkor jöhet a csere (az új jelszó komplexitását még mindig az Identity védi)
         var result = await userManager.ChangePasswordAsync(user, changePasswordDto.OldPassword, changePasswordDto.NewPassword);
 
         if (!result.Succeeded)

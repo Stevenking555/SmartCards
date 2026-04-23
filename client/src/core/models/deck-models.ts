@@ -4,6 +4,12 @@ export interface Card {
   answer: string;
 }
 
+export interface CreateCardDto {
+  question: string;
+  answer: string;
+  tempId?: string; // For local tracking in batch
+}
+
 export interface CardStats {
   batchIndex: number;
   rotationPoints: number;
@@ -33,4 +39,10 @@ export interface DeckForUser {
 export interface CardWithStats {
   data: Card;
   stats: CardStats;
+}
+
+export interface SyncCardsDto {
+  addedCards: CreateCardDto[];
+  updatedCards: Card[];
+  deletedCardIds: string[];
 }

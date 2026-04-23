@@ -91,13 +91,15 @@
               <div [class]="'absolute -left-4 -top-4 w-24 h-24 rounded-full opacity-50 ' + themeClasses.circle"></div>
               <div class="relative z-10">
                 <p class="text-2xl font-medium text-base-content/90 italic leading-relaxed">
-                  "{{ (dailyData().quoteStyle === 'funny' ? 'home.quote_funny.' : 'home.quote.') + dailyData().quoteIndex +
+                  "{{ (dailyData().quoteStyle === 'funny' ? 'home.quote_funny.' : 'home.quote.') +
+                  dailyData().quoteIndex +
                   '.text' | translate }}"
                 </p>
                 <p class="text-base font-bold mt-4 uppercase tracking-widest flex items-center gap-2 "
                   [class]="themeClasses.text">
                   <span class="w-8 h-px bg-base-content/20"></span>
-                  {{ (dailyData().quoteStyle === 'funny' ? 'home.quote_funny.' : 'home.quote.') + dailyData().quoteIndex +
+                  {{ (dailyData().quoteStyle === 'funny' ? 'home.quote_funny.' : 'home.quote.') + dailyData().quoteIndex
+                  +
                   '.author' | translate }}
                 </p>
               </div>
@@ -145,7 +147,7 @@
                 <h2 class="text-xl font-black text-base-content tracking-tight">{{ 'home.last_played' | translate }}
                 </h2>
               </div>
-              <div class="space-y-3">
+              <div class="flex flex-col gap-3">
                 @for (deck of lastPlayedDecks(); track deck.info.title) {
                 <app-deck-card [item]="deck" layout="desktop" [showDelete]="false"></app-deck-card>
                 }
@@ -169,7 +171,8 @@
               </div>
               <p class="text-xs font-bold uppercase tracking-widest text-primary/80 mb-3">{{ 'home.mastered_cards' |
                 translate }}</p>
-              <div class="text-5xl font-black text-base-content mb-2 tracking-tight">{{ userStats()?.totalMasteredCards }}</div>
+              <div class="text-5xl font-black text-base-content mb-2 tracking-tight">{{ userStats()?.totalMasteredCards
+                }}</div>
               <p class="text-sm font-semibold text-success">{{ 'home.pride_of_collection' | translate }}</p>
             </div>
 
@@ -184,7 +187,8 @@
                 <p class="text-[11px] font-bold uppercase tracking-widest text-info mb-2">{{ 'home.cards_flipped_today'
                   |
                   translate }}</p>
-                <div class="text-4xl font-black text-base-content mb-1 tracking-tight">{{ userStats()?.flippedCardsToday }}</div>
+                <div class="text-4xl font-black text-base-content mb-1 tracking-tight">{{ userStats()?.flippedCardsToday
+                  }}</div>
                 <p class="text-xs font-medium text-base-content/50">{{ 'home.keep_it_up' | translate }}</p>
               </div>
 
@@ -196,7 +200,8 @@
                 </div>
                 <p class="text-[11px] font-bold uppercase tracking-widest text-success mb-2">{{
                   'home.cards_flipped_all_time' | translate }}</p>
-                <div class="text-4xl font-black text-base-content mb-1 tracking-tight">{{ userStats()?.flippedCardsTotal }}</div>
+                <div class="text-4xl font-black text-base-content mb-1 tracking-tight">{{ userStats()?.flippedCardsTotal
+                  }}</div>
                 <p class="text-xs font-medium text-base-content/50">{{ 'home.invested_work' | translate }}</p>
               </div>
             </div>
@@ -248,7 +253,8 @@
             <div [class]="'absolute -left-4 -top-4 w-24 h-24 rounded-full opacity-50 ' + themeClasses.circle"></div>
             <div class="relative z-10">
               <p class="text-base font-medium text-base-content/90 italic leading-relaxed">
-                "{{ (dailyData().quoteStyle === 'funny' ? 'home.quote_funny.' : 'home.quote.') + dailyData().quoteIndex +
+                "{{ (dailyData().quoteStyle === 'funny' ? 'home.quote_funny.' : 'home.quote.') + dailyData().quoteIndex
+                +
                 '.text' | translate }}"
               </p>
               <p class="text-xs font-bold mt-3 uppercase tracking-widest flex items-center gap-2 "
@@ -329,7 +335,7 @@
           <div class="mt-6">
             <h2 class="text-sm font-bold text-base-content/60 uppercase tracking-widest mb-4">{{ 'home.last_played'
               | translate }}</h2>
-            <div class="space-y-3">
+            <div class="flex flex-col gap-3">
               @for (deck of lastPlayedDecks(); track deck.info.title) {
               <app-deck-card [item]="deck" layout="mobile" [showDelete]="false"></app-deck-card>
               }
@@ -386,10 +392,3 @@
 
   </div>
 </div>
-
-
-
-
-
-
-

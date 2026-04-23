@@ -11,6 +11,7 @@ import { Card } from '../../../core/models/deck-models';
 })
 export class FlashcardComponent {
   @Input({ required: true }) card!: Card;
+  @Input() isMastered: boolean = false;
 
   @Output() viewCard = new EventEmitter<void>();
   @Output() editCard = new EventEmitter<void>();

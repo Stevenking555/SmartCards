@@ -36,7 +36,7 @@ namespace API.Controllers
             var appUser = await userManager.FindByIdAsync(userId);
             if (appUser == null) return BadRequest("Could not get appUser");
 
-            // Jelszó ellenőrzése
+            // Verify current password
             if (string.IsNullOrEmpty(userUpdateDto.CurrentPassword)) return BadRequest("Password is required");
 
             var resultCheck = await userManager.CheckPasswordAsync(appUser, userUpdateDto.CurrentPassword);

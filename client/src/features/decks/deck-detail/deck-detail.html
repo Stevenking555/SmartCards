@@ -17,10 +17,12 @@
         <div *ngIf="!isEditingTitle()">
           <p class="text-[10px] font-bold uppercase text-base-content/60 tracking-widest leading-none mb-1">
             {{ 'deck_detail.title_prefix' | translate }}</p>
-          <div class="flex items-center gap-2 mt-1">
-            <h1 class="text-base font-black text-base-content tracking-tight leading-none">{{ deck?.title }}</h1>
-            <button (click)="startEditTitle()" class="text-base-content/60 hover:text-primary transition-colors">
-              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <div class="flex items-center gap-2 mt-1 max-w-[145px] sm:max-w-xs">
+            <h1 class="text-base font-black text-base-content tracking-tight leading-none truncate">{{ deck()?.title }}
+            </h1>
+            <button (click)="startEditTitle()"
+              class="w-7 h-7 flex-shrink-0 rounded-lg bg-base-content/5 hover:bg-base-content/10 flex items-center justify-center text-base-content/40 hover:text-primary transition-colors">
+              <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
                 <path stroke-linecap="round" stroke-linejoin="round"
                   d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
               </svg>
@@ -36,16 +38,25 @@
           </div>
         </div>
       </div>
-      <button routerLink="game"
-        class="flex items-center gap-2 px-3 py-2 bg-success hover:bg-success/80
-      rounded-xl text-success-content text-sm font-bold transition-colors shadow-lg shadow-success/20 border border-success/20">
-        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
-          <path stroke-linecap="round" stroke-linejoin="round"
-            d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
-          <path stroke-linecap="round" stroke-linejoin="round" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-        </svg>
-        {{ 'deck_detail.study' | translate }}
-      </button>
+      <div class="flex items-center gap-2">
+        <button (click)="openImportModal()"
+          class="flex items-center justify-center w-9 h-9 bg-secondary hover:bg-secondary/80 rounded-xl text-secondary-content transition-all shadow-lg shadow-secondary/10 border border-secondary/20">
+          <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+            <path stroke-linecap="round" stroke-linejoin="round"
+              d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+          </svg>
+        </button>
+        <button (click)="startStudy()"
+          class="flex items-center gap-2 px-3 py-2 bg-success hover:bg-success/80
+        rounded-xl text-success-content text-sm font-bold transition-colors shadow-lg shadow-success/20 border border-success/20">
+          <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+            <path stroke-linecap="round" stroke-linejoin="round"
+              d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+            <path stroke-linecap="round" stroke-linejoin="round" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          {{ 'deck_detail.study' | translate }}
+        </button>
+      </div>
     </header>
 
     <!-- Scrollable content -->
@@ -65,7 +76,7 @@
             <p class="text-[11px] font-bold uppercase tracking-widest text-base-content/50">
               {{ 'deck_detail.desktop_title_prefix' | translate }}</p>
             <div class="flex items-center gap-3">
-              <h1 class="text-3xl font-black text-base-content tracking-tight">{{ deck?.title }}</h1>
+              <h1 class="text-3xl font-black text-base-content tracking-tight">{{ deck()?.title }}</h1>
               <button (click)="startEditTitle()" title="{{ 'action.edit' | translate }}" class="w-8 h-8 rounded-lg
               bg-base-content/5 hover:bg-base-content/10 flex items-center justify-center text-base-content/60
               hover:text-primary transition-colors">
@@ -84,14 +95,6 @@
           </div>
         </div>
         <div class="flex items-center gap-3">
-          <button (click)="openImportModal()"
-            class="flex items-center gap-2 px-4 py-2 bg-secondary hover:bg-secondary/80
-          rounded-xl text-secondary-content text-sm font-semibold transition-all border border-secondary/20">
-            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
-            </svg>
-            {{ 'deck_detail.import_cards' | translate }}
-          </button>
           <button (click)="openModal()"
             class="flex items-center gap-2 px-4 py-2 bg-primary
           hover:bg-primary/80 rounded-xl text-primary-content text-sm font-semibold transition-colors border border-primary/20">
@@ -100,7 +103,15 @@
             </svg>
             {{ 'deck_detail.add_card' | translate }}
           </button>
-          <button routerLink="game"
+          <button (click)="openImportModal()" class="flex items-center gap-2 px-4 py-2 bg-secondary hover:bg-secondary/80
+          rounded-xl text-secondary-content text-sm font-semibold transition-all border border-secondary/20">
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round"
+                d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+            </svg>
+            {{ 'deck_detail.import_cards' | translate }}
+          </button>
+          <button (click)="startStudy()"
             class="flex items-center gap-2 px-4 py-2 bg-success
           hover:bg-success/80 rounded-xl text-success-content text-sm font-semibold transition-colors border border-success/20">
             <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -114,22 +125,26 @@
       </div>
 
       <!-- Description Section -->
-      <div class="max-w-5xl mx-auto lg:mx-0 mb-8 bg-base-100 p-5 lg:p-6 rounded-3xl border border-base-content/5 shadow-sm transition-all duration-300 relative group overflow-hidden"
-           [class.cursor-pointer]="!isEditingDescription()"
-           [class.hover:border-base-content/10]="!isEditingDescription()"
-           (click)="toggleDescriptionExpand()">
-        
+      <div
+        class="max-w-5xl mx-auto lg:mx-0 mb-8 bg-base-100 p-5 lg:p-6 rounded-3xl border border-base-content/5 shadow-sm transition-all duration-300 relative group overflow-hidden"
+        [class.cursor-pointer]="!isEditingDescription()" [class.hover:border-base-content/10]="!isEditingDescription()"
+        (click)="toggleDescriptionExpand()">
+
         <div class="flex justify-between items-start mb-2">
           <h3 class="text-[10px] font-bold uppercase tracking-widest text-base-content/50">
             {{ 'deck_detail.description' | translate }}
           </h3>
-          <button (click)="isEditingDescription() ? cancelEditDescription() : startEditDescription(); $event.stopPropagation()" 
+          <button
+            (click)="isEditingDescription() ? cancelEditDescription() : startEditDescription(); $event.stopPropagation()"
             class="w-8 h-8 rounded-lg bg-base-content/5 hover:bg-base-content/10 flex items-center justify-center text-base-content/40 hover:text-primary transition-colors relative z-10"
             [title]="isEditingDescription() ? ('action.cancel' | translate) : ('action.edit' | translate)">
-            <svg *ngIf="!isEditingDescription()" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+            <svg *ngIf="!isEditingDescription()" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+              stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round"
+                d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
             </svg>
-            <svg *ngIf="isEditingDescription()" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <svg *ngIf="isEditingDescription()" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+              stroke-width="2">
               <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
             </svg>
           </button>
@@ -138,13 +153,13 @@
         <!-- Read Mode -->
         <div *ngIf="!isEditingDescription()" class="transition-all duration-300 pl-1">
           <p class="text-sm text-base-content/80 leading-relaxed min-h-[1.25rem] transition-all duration-300"
-             [ngClass]="isDescriptionExpanded() ? '' : 'line-clamp-2'"
-             [class.italic]="!deck?.description">
-            {{ deck?.description ? deck?.description : ('deck_detail.no_description' | translate) }}
+            [ngClass]="isDescriptionExpanded() ? '' : 'line-clamp-2'" [class.italic]="!deck()?.description">
+            {{ deck()?.description ? deck()?.description : ('deck_detail.no_description' | translate) }}
           </p>
           <!-- Gradient mask to show there is more text -->
-          <div *ngIf="!isDescriptionExpanded() && deck?.description && deck!.description!.length > 100" 
-               class="absolute bottom-0 left-0 right-0 h-8 bg-gradient-to-t from-base-100 to-transparent pointer-events-none rounded-b-3xl"></div>
+          <div *ngIf="!isDescriptionExpanded() && deck()?.description && deck()!.description!.length > 100"
+            class="absolute bottom-0 left-0 right-0 h-8 bg-gradient-to-t from-base-100 to-transparent pointer-events-none rounded-b-3xl">
+          </div>
         </div>
 
         <!-- Edit Mode -->
@@ -154,19 +169,20 @@
             (click)="$event.stopPropagation()"
             [placeholder]="'deck_detail.description_placeholder' | translate"></textarea>
           <div class="flex gap-2 justify-end">
-            <button (click)="cancelEditDescription(); $event.stopPropagation()" class="btn btn-sm btn-ghost rounded-xl">{{ 'action.cancel' | translate }}</button>
-            <button (click)="saveDescription(); $event.stopPropagation()" class="btn btn-sm btn-primary rounded-xl px-6">{{ 'action.save' | translate }}</button>
+            <button (click)="cancelEditDescription(); $event.stopPropagation()"
+              class="btn btn-sm btn-ghost rounded-xl">{{ 'action.cancel' | translate }}</button>
+            <button (click)="saveDescription(); $event.stopPropagation()"
+              class="btn btn-sm btn-primary rounded-xl px-6">{{ 'action.save' | translate }}</button>
           </div>
         </div>
       </div>
 
       <!-- Card-List -->
-      <div class="max-w-5xl mx-auto lg:mx-0 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-        @for (card of cards; track card.id) {
-        <app-flashcard [card]="card"
-          (viewCard)="openViewModal(card.id)"
-          (editCard)="openEditModal(card.id)"
-          (deleteCard)="onDeleteCard(card.id)">
+      <div class="max-w-5xl mx-auto lg:mx-0 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        @for (cardWithStats of currentDeck()?.cards; track cardWithStats.data.id) {
+        <app-flashcard [card]="cardWithStats.data" [isMastered]="cardWithStats.stats.isMastered"
+          (viewCard)="openViewModal(cardWithStats.data.id)" (editCard)="openEditModal(cardWithStats.data.id)"
+          (deleteCard)="onDeleteCard(cardWithStats.data.id)">
         </app-flashcard>
         }
 
@@ -264,8 +280,8 @@
         <label class="block text-[10px] font-bold uppercase text-base-content/50 mb-2">
           {{ 'deck_detail.modal.back' | translate }}
         </label>
-        <textarea [(ngModel)]="editCard.answer" [placeholder]="'deck_detail.modal.back_placeholder' | translate" rows="3"
-          class="textarea textarea-bordered w-full bg-base-200 border-base-content/20
+        <textarea [(ngModel)]="editCard.answer" [placeholder]="'deck_detail.modal.back_placeholder' | translate"
+          rows="3" class="textarea textarea-bordered w-full bg-base-200 border-base-content/20
           focus:border-primary rounded-2xl text-base-content resize-none">
         </textarea>
       </div>
@@ -281,25 +297,29 @@
 
 <!-- View Card Modal -->
 <div class="modal" [class.modal-open]="isViewModalOpen()">
-  <div class="modal-box bg-base-100 text-base-content border border-base-content/10 w-auto max-w-[min(90vw,36rem)] rounded-[2.5rem] p-8 shadow-xl">
+  <div
+    class="modal-box bg-base-100 text-base-content border border-base-content/10 w-auto max-w-[min(90vw,36rem)] rounded-[2.5rem] p-8 shadow-xl">
 
     @if (viewingCard) {
     <!-- Header -->
     <div class="flex justify-between items-center mb-6">
       <button (click)="closeViewModal()" class="btn btn-ghost btn-sm text-base-content/50">✕</button>
-      <p class="text-xs font-bold uppercase tracking-widest text-base-content/40">{{ 'deck_detail.question' | translate }} / {{ 'deck_detail.answer' | translate }}</p>
+      <p class="text-xs font-bold uppercase tracking-widest text-base-content/40">{{ 'deck_detail.question' | translate
+        }} / {{ 'deck_detail.answer' | translate }}</p>
       <div class="w-8"></div>
     </div>
 
     <!-- Question -->
     <div class="bg-base-200 rounded-2xl p-6 mb-4 text-center">
-      <p class="text-[10px] font-bold uppercase text-base-content/50 mb-2 tracking-wider">{{ 'deck_detail.question' | translate }}</p>
+      <p class="text-[10px] font-bold uppercase text-base-content/50 mb-2 tracking-wider">{{ 'deck_detail.question' |
+        translate }}</p>
       <p class="font-semibold text-base leading-relaxed text-primary break-words">{{ viewingCard.question }}</p>
     </div>
 
     <!-- Answer -->
     <div class="bg-base-200 rounded-2xl p-6 mb-6 text-center">
-      <p class="text-[10px] font-bold uppercase text-base-content/50 mb-2 tracking-wider">{{ 'deck_detail.answer' | translate }}</p>
+      <p class="text-[10px] font-bold uppercase text-base-content/50 mb-2 tracking-wider">{{ 'deck_detail.answer' |
+        translate }}</p>
       <p class="text-secondary font-semibold text-base leading-relaxed break-words">{{ viewingCard.answer }}</p>
     </div>
 
@@ -308,14 +328,16 @@
       <button (click)="editFromView()"
         class="btn flex-1 rounded-2xl border-none bg-info/20 text-info hover:bg-info hover:text-info-content transition-colors">
         <svg class="w-4 h-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+          <path stroke-linecap="round" stroke-linejoin="round"
+            d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
         </svg>
         {{ 'action.edit' | translate }}
       </button>
       <button (click)="deleteFromView()"
         class="btn flex-1 rounded-2xl border-none bg-error/20 text-error hover:bg-error hover:text-error-content transition-colors">
         <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+          <path stroke-linecap="round" stroke-linejoin="round"
+            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
         </svg>
         {{ 'action.delete' | translate }}
       </button>
@@ -327,7 +349,8 @@
 
 <!-- Import cards Modal -->
 <div class="modal" [class.modal-open]="isImportModalOpen()">
-  <div class="modal-box bg-base-100 text-base-content border border-base-content/10 max-w-lg rounded-[2.5rem] p-8 shadow-xl">
+  <div
+    class="modal-box bg-base-100 text-base-content border border-base-content/10 max-w-lg rounded-[2.5rem] p-8 shadow-xl">
     <div class="flex justify-between items-center mb-6">
       <button (click)="closeImportModal()" class="btn btn-ghost btn-sm text-primary">✕
         {{ 'deck_detail.modal.cancel' | translate }}
@@ -338,12 +361,10 @@
 
     <!-- Tabs -->
     <div class="tabs tabs-boxed bg-base-200 mb-6 rounded-2xl p-1">
-      <a class="tab flex-1 rounded-xl transition-all" 
-         [class.tab-active]="importTab() === 'paste'" 
-         (click)="importTab.set('paste')">{{ 'deck_detail.import.modal.tabs.paste' | translate }}</a>
-      <a class="tab flex-1 rounded-xl transition-all" 
-         [class.tab-active]="importTab() === 'upload'" 
-         (click)="importTab.set('upload')">{{ 'deck_detail.import.modal.tabs.upload' | translate }}</a>
+      <a class="tab flex-1 rounded-xl transition-all" [class.tab-active]="importTab() === 'paste'"
+        (click)="importTab.set('paste')">{{ 'deck_detail.import.modal.tabs.paste' | translate }}</a>
+      <a class="tab flex-1 rounded-xl transition-all" [class.tab-active]="importTab() === 'upload'"
+        (click)="importTab.set('upload')">{{ 'deck_detail.import.modal.tabs.upload' | translate }}</a>
     </div>
 
     <div class="space-y-6">
@@ -352,10 +373,8 @@
         <label class="block text-[10px] font-bold uppercase text-base-content/50 mb-2">
           {{ 'deck_detail.import.modal.paste_label' | translate }}
         </label>
-        <textarea [ngModel]="importBulkText()" 
-          (ngModelChange)="importBulkText.set($event)"
-          [placeholder]="'deck_detail.import.modal.paste_placeholder' | translate"
-          rows="8" class="textarea textarea-bordered w-full bg-base-200 border-base-content/20
+        <textarea [ngModel]="importBulkText()" (ngModelChange)="importBulkText.set($event)"
+          [placeholder]="'deck_detail.import.modal.paste_placeholder' | translate" rows="8" class="textarea textarea-bordered w-full bg-base-200 border-base-content/20
           focus:border-primary rounded-2xl text-base-content resize-none font-mono text-sm">
         </textarea>
       </div>
@@ -365,37 +384,46 @@
         <label class="block text-[10px] font-bold uppercase text-base-content/50 mb-2">
           {{ 'deck_detail.import.modal.upload_label' | translate }}
         </label>
-        
-        <div *ngIf="!importFileName()" class="relative border-2 border-dashed border-base-content/20 rounded-2xl p-10 flex flex-col items-center justify-center bg-base-200/50 hover:bg-base-200/80 transition-all group cursor-pointer h-48">
-          <input type="file" (change)="onFileChange($event)" accept=".txt" 
+
+        <div *ngIf="!importFileName()"
+          class="relative border-2 border-dashed border-base-content/20 rounded-2xl p-10 flex flex-col items-center justify-center bg-base-200/50 hover:bg-base-200/80 transition-all group cursor-pointer h-48">
+          <input type="file" (change)="onFileChange($event)" accept=".txt"
             class="absolute inset-0 opacity-0 cursor-pointer z-10" />
-          <div class="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mb-4 text-primary group-hover:scale-110 transition-transform shadow-inner">
+          <div
+            class="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mb-4 text-primary group-hover:scale-110 transition-transform shadow-inner">
             <svg class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              <path stroke-linecap="round" stroke-linejoin="round"
+                d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
             </svg>
           </div>
-          <p class="text-sm font-bold text-base-content/60 group-hover:text-primary transition-colors text-center">{{ 'deck_detail.import.modal.upload_label' | translate }}</p>
-          <p class="text-[10px] text-base-content/40 mt-2">{{ 'deck_detail.import.modal.upload_helper' | translate }}</p>
+          <p class="text-sm font-bold text-base-content/60 group-hover:text-primary transition-colors text-center">{{
+            'deck_detail.import.modal.upload_label' | translate }}</p>
+          <p class="text-[10px] text-base-content/40 mt-2">{{ 'deck_detail.import.modal.upload_helper' | translate }}
+          </p>
         </div>
 
         <!-- Selected File State -->
-        <div *ngIf="importFileName()" class="border-2 border-primary/20 bg-primary/5 rounded-2xl p-8 flex flex-col items-center justify-center animate-fade-in h-48 relative overflow-hidden">
+        <div *ngIf="importFileName()"
+          class="border-2 border-primary/20 bg-primary/5 rounded-2xl p-8 flex flex-col items-center justify-center animate-fade-in h-48 relative overflow-hidden">
           <div class="absolute -right-4 -bottom-4 text-primary/10 rotate-12">
             <svg class="w-32 h-32" fill="currentColor" viewBox="0 0 24 24">
-              <path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              <path
+                d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
             </svg>
           </div>
-          
+
           <div class="w-12 h-12 bg-primary/20 rounded-xl flex items-center justify-center mb-3 text-primary shadow-sm">
             <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
               <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
             </svg>
           </div>
-          
-          <p class="text-[10px] uppercase font-black text-primary tracking-widest mb-1">{{ 'deck_detail.import.file_loaded' | translate }}</p>
+
+          <p class="text-[10px] uppercase font-black text-primary tracking-widest mb-1">{{
+            'deck_detail.import.file_loaded' | translate }}</p>
           <p class="text-sm font-black text-base-content tracking-tight mb-4">{{ importFileName() }}</p>
-          
-          <button (click)="removeFile()" class="btn btn-xs btn-ghost text-error hover:bg-error/10 rounded-lg flex items-center gap-1 normal-case px-3 mt-2">
+
+          <button (click)="removeFile()"
+            class="btn btn-xs btn-ghost text-error hover:bg-error/10 rounded-lg flex items-center gap-1 normal-case px-3 mt-2">
             <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
               <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
             </svg>
@@ -404,9 +432,7 @@
         </div>
       </div>
 
-      <button (click)="onImportCards()" 
-        [disabled]="!importBulkText() || !importBulkText().trim()"
-        class="btn btn-primary w-full rounded-2xl border-none text-base
+      <button (click)="onImportCards()" [disabled]="!importBulkText() || !importBulkText().trim()" class="btn btn-primary w-full rounded-2xl border-none text-base
         hover:bg-primary/80 transition-colors text-primary-content">
         {{ 'deck_detail.import.modal.import_btn' | translate }}
       </button>
@@ -414,4 +440,3 @@
   </div>
   <div class="modal-backdrop bg-neutral/80" (click)="closeImportModal()"></div>
 </div>
-

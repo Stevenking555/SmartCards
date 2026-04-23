@@ -10,16 +10,17 @@
       </button>
       <div>
         <p class="text-[10px] uppercase tracking-widest text-primary font-bold mb-0.5">
-          {{ (isSelectionMode() ? 'game.selection.title' : 'deck_detail.study_mode.title') | translate }} 
+          {{ (isSelectionMode() ? 'game.selection.title' : 'deck_detail.study_mode.title') | translate }}
           <span class="ml-2 px-1.5 py-0.5 bg-primary/20 rounded text-[9px]">Batch #{{ activeBatch() }}</span>
         </p>
-        <h2 class="text-base-content font-bold truncate max-w-[200px]">{{ deck?.title }}</h2>
+        <h2 class="text-base-content font-bold truncate max-w-[200px]">{{ deck()?.title }}</h2>
       </div>
     </div>
     <div class="text-base-content/50 font-mono text-sm flex items-center gap-3">
       <div class="flex flex-col items-end mr-2">
         <span class="text-[9px] uppercase opacity-50">{{ 'home.active' | translate }}</span>
-        <span class="text-base-content font-bold">{{ currentRotationPointer() + 1 }} / {{ activeRotation().length }}</span>
+        <span class="text-base-content font-bold">{{ currentRotationPointer() + 1 }} / {{ activeRotation().length
+          }}</span>
       </div>
     </div>
   </div>
@@ -33,6 +34,7 @@
         max-width: 650px;
         height: 420px;
       }
+
       .card-rotor {
         position: relative;
         width: 100%;
@@ -40,7 +42,11 @@
         transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
         transform-style: preserve-3d;
       }
-      .card-rotor.is-flipped { transform: rotateY(180deg); }
+
+      .card-rotor.is-flipped {
+        transform: rotateY(180deg);
+      }
+
       .card-side {
         position: absolute;
         inset: 0;
@@ -53,14 +59,17 @@
         justify-content: center;
         padding: 2.5rem;
       }
+
       .card-side-front {
         transform: rotateY(0deg) translateZ(1px);
         box-shadow: 0 10px 30px -10px oklch(var(--p) / 0.3);
       }
+
       .card-side-back {
         transform: rotateY(180deg) translateZ(2px);
         box-shadow: 0 15px 45px -10px oklch(var(--p) / 0.5);
       }
+
       .card-content-scroll {
         max-height: 250px;
         overflow-y: auto;
@@ -69,10 +78,13 @@
         scrollbar-width: none;
         word-break: break-all;
       }
-      .card-content-scroll::-webkit-scrollbar { display: none; }
+
+      .card-content-scroll::-webkit-scrollbar {
+        display: none;
+      }
     </style>
 
-    @if (currentStudyCard) {
+    @if (currentStudyCard()) {
     <div class="card-viewport cursor-pointer" (click)="flipCard()">
       <div class="card-rotor" [class.is-flipped]="isCardFlipped()">
         <!-- Front -->
@@ -81,7 +93,7 @@
             {{ 'deck_detail.question' | translate }}
           </span>
           <div class="card-content-scroll text-center text-base-content">
-            <h3 class="text-3xl lg:text-4xl font-bold leading-relaxed">{{ currentStudyCard.data.question }}</h3>
+            <h3 class="text-3xl lg:text-4xl font-bold leading-relaxed">{{ currentStudyCard()?.data?.question }}</h3>
           </div>
           <p class="absolute bottom-6 text-sm text-primary font-medium opacity-50 flex items-center gap-2">
             {{ 'deck_detail.study_mode.click_flip' | translate }}
@@ -93,7 +105,7 @@
             {{ 'deck_detail.answer' | translate }}
           </span>
           <div class="card-content-scroll text-center text-base-content">
-            <div class="text-2xl lg:text-3xl font-medium leading-relaxed">{{ currentStudyCard.data.answer }}</div>
+            <div class="text-2xl lg:text-3xl font-medium leading-relaxed">{{ currentStudyCard()?.data?.answer }}</div>
           </div>
           <p class="absolute bottom-6 text-sm text-primary font-medium opacity-50 flex items-center gap-2">
             {{ 'deck_detail.study_mode.click_flip' | translate }}
@@ -103,62 +115,77 @@
     </div>
 
     <!-- Actions Area -->
-    <div class="mt-8 w-full max-w-2xl transition-all duration-300" [class.opacity-0]="!isCardFlipped()" [class.pointer-events-none]="!isCardFlipped()">
-      
+    <div class="mt-8 w-full max-w-2xl transition-all duration-300" [class.opacity-0]="!isCardFlipped()"
+      [class.pointer-events-none]="!isCardFlipped()">
+
       @if (isSelectionMode()) {
-        <!-- Selection Round Mode -->
-        <p class="text-center text-base-content/60 text-sm font-medium mb-6 italic">{{ 'game.selection.desc' | translate }}</p>
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          <button (click)="rateCard('stay_next'); $event.stopPropagation()" class="flex flex-col items-center gap-2 p-4 bg-primary/10 hover:bg-primary/20 border border-primary/20 rounded-2xl transition-colors">
-            <span class="text-primary font-bold">{{ 'game.selection.stay_next' | translate }}</span>
-            <span class="text-[10px] uppercase tracking-tighter opacity-70">{{ 'game.selection.stay_next_desc' | translate }}</span>
-          </button>
-          <button (click)="rateCard('later'); $event.stopPropagation()" class="flex flex-col items-center gap-2 p-4 bg-info/10 hover:bg-info/20 border border-info/20 rounded-2xl transition-colors">
-            <span class="text-info font-bold">{{ 'game.rating.later' | translate }}</span>
-            <span class="text-[10px] uppercase tracking-tighter opacity-70">{{ 'game.rating.later_desc' | translate }}</span>
-          </button>
-          <button (click)="rateCard('mastered'); $event.stopPropagation()" class="flex flex-col items-center gap-2 p-4 bg-success/10 hover:bg-success/20 border border-success/20 rounded-2xl transition-colors font-bold shadow-lg shadow-success/10">
-            <span class="text-success font-bold">{{ 'game.rating.mastered' | translate }}</span>
-            <span class="text-[10px] uppercase tracking-tighter opacity-70">{{ 'game.rating.mastered_desc' | translate }}</span>
-          </button>
-        </div>
+      <!-- Selection Round Mode -->
+      <p class="text-center text-base-content/60 text-sm font-medium mb-6 italic">{{ 'game.selection.desc' | translate
+        }}</p>
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <button (click)="rateCard('stay_next'); $event.stopPropagation()"
+          class="flex flex-col items-center gap-2 p-4 bg-primary/10 hover:bg-primary/20 border border-primary/20 rounded-2xl transition-colors">
+          <span class="text-primary font-bold">{{ 'game.selection.stay_next' | translate }}</span>
+          <span class="text-[10px] uppercase tracking-tighter opacity-70">{{ 'game.selection.stay_next_desc' | translate
+            }}</span>
+        </button>
+        <button (click)="rateCard('later'); $event.stopPropagation()"
+          class="flex flex-col items-center gap-2 p-4 bg-info/10 hover:bg-info/20 border border-info/20 rounded-2xl transition-colors">
+          <span class="text-info font-bold">{{ 'game.rating.later' | translate }}</span>
+          <span class="text-[10px] uppercase tracking-tighter opacity-70">{{ 'game.rating.later_desc' | translate
+            }}</span>
+        </button>
+        <button (click)="rateCard('mastered'); $event.stopPropagation()"
+          class="flex flex-col items-center gap-2 p-4 bg-success/10 hover:bg-success/20 border border-success/20 rounded-2xl transition-colors font-bold shadow-lg shadow-success/10">
+          <span class="text-success font-bold">{{ 'game.rating.mastered' | translate }}</span>
+          <span class="text-[10px] uppercase tracking-tighter opacity-70">{{ 'game.rating.mastered_desc' | translate
+            }}</span>
+        </button>
+      </div>
       } @else {
-        <!-- Standard Game Mode -->
-        <p class="text-center text-base-content/60 text-sm font-medium mb-6">{{ 'deck_detail.study_mode.rate_title' | translate }}</p>
-        <div class="flex flex-wrap justify-center gap-3">
-          <!-- Main 3 options -->
-          <div class="grid grid-cols-3 gap-3 w-full">
-            <button (click)="rateCard('again'); $event.stopPropagation()" class="flex flex-col items-center gap-1 p-3 bg-error/10 hover:bg-error/20 border border-error/20 rounded-2xl transition-colors">
-              <span class="text-error font-bold text-sm">{{ 'game.rating.again' | translate }}</span>
-              <span class="text-[10px] opacity-60">+1 p.</span>
-            </button>
-            <button (click)="rateCard('hard'); $event.stopPropagation()" class="flex flex-col items-center gap-1 p-3 bg-warning/10 hover:bg-warning/20 border border-warning/20 rounded-2xl transition-colors">
-              <span class="text-warning font-bold text-sm">{{ 'game.rating.hard' | translate }}</span>
-              <span class="text-[10px] opacity-60">+2 p.</span>
-            </button>
-            <button (click)="rateCard('good'); $event.stopPropagation()" class="flex flex-col items-center gap-1 p-3 bg-success/10 hover:bg-success/20 border border-success/20 rounded-2xl transition-colors">
-              <span class="text-success font-bold text-sm">{{ 'game.rating.good' | translate }}</span>
-              <span class="text-[10px] opacity-60">+3 p.</span>
-            </button>
-          </div>
-          <!-- Special 2 options -->
-          <div class="grid grid-cols-2 gap-3 w-full">
-            <button (click)="rateCard('later'); $event.stopPropagation()" class="flex flex-col items-center gap-1 p-3 bg-info/10 hover:bg-info/20 border border-info/20 rounded-2xl transition-colors">
-              <span class="text-info font-bold text-sm">{{ 'game.rating.later' | translate }}</span>
-              <span class="text-[10px] opacity-60">{{ 'game.rating.later_desc' | translate }}</span>
-            </button>
-            <button (click)="rateCard('mastered'); $event.stopPropagation()" class="flex flex-col items-center gap-1 p-3 bg-primary/10 hover:bg-primary/20 border border-primary/20 rounded-2xl transition-colors">
-              <span class="text-primary font-bold text-sm">{{ 'game.rating.mastered' | translate }}</span>
-              <span class="text-[10px] opacity-60">{{ 'game.rating.mastered_desc' | translate }}</span>
-            </button>
-          </div>
+      <!-- Standard Game Mode -->
+      <p class="text-center text-base-content/60 text-sm font-medium mb-6">{{ 'deck_detail.study_mode.rate_title' |
+        translate }}</p>
+      <div class="flex flex-wrap justify-center gap-3">
+        <!-- Main 3 options -->
+        <div class="grid grid-cols-3 gap-3 w-full">
+          <button (click)="rateCard('again'); $event.stopPropagation()"
+            class="flex flex-col items-center gap-1 p-3 bg-error/10 hover:bg-error/20 border border-error/20 rounded-2xl transition-colors">
+            <span class="text-error font-bold text-sm">{{ 'game.rating.again' | translate }}</span>
+            <span class="text-[10px] opacity-60">+1 p.</span>
+          </button>
+          <button (click)="rateCard('hard'); $event.stopPropagation()"
+            class="flex flex-col items-center gap-1 p-3 bg-warning/10 hover:bg-warning/20 border border-warning/20 rounded-2xl transition-colors">
+            <span class="text-warning font-bold text-sm">{{ 'game.rating.hard' | translate }}</span>
+            <span class="text-[10px] opacity-60">+2 p.</span>
+          </button>
+          <button (click)="rateCard('good'); $event.stopPropagation()"
+            class="flex flex-col items-center gap-1 p-3 bg-success/10 hover:bg-success/20 border border-success/20 rounded-2xl transition-colors">
+            <span class="text-success font-bold text-sm">{{ 'game.rating.good' | translate }}</span>
+            <span class="text-[10px] opacity-60">+3 p.</span>
+          </button>
         </div>
+        <!-- Special 2 options -->
+        <div class="grid grid-cols-2 gap-3 w-full">
+          <button (click)="rateCard('later'); $event.stopPropagation()"
+            class="flex flex-col items-center gap-1 p-3 bg-info/10 hover:bg-info/20 border border-info/20 rounded-2xl transition-colors">
+            <span class="text-info font-bold text-sm">{{ 'game.rating.later' | translate }}</span>
+            <span class="text-[10px] opacity-60">{{ 'game.rating.later_desc' | translate }}</span>
+          </button>
+          <button (click)="rateCard('mastered'); $event.stopPropagation()"
+            class="flex flex-col items-center gap-1 p-3 bg-primary/10 hover:bg-primary/20 border border-primary/20 rounded-2xl transition-colors">
+            <span class="text-primary font-bold text-sm">{{ 'game.rating.mastered' | translate }}</span>
+            <span class="text-[10px] opacity-60">{{ 'game.rating.mastered_desc' | translate }}</span>
+          </button>
+        </div>
+      </div>
       }
     </div>
     } @else {
     <!-- Empty State -->
     <div class="text-center max-w-sm">
-      <div class="w-20 h-20 rounded-3xl bg-primary/20 text-primary flex items-center justify-center mx-auto mb-6 shadow-xl shadow-primary/10">
+      <div
+        class="w-20 h-20 rounded-3xl bg-primary/20 text-primary flex items-center justify-center mx-auto mb-6 shadow-xl shadow-primary/10">
         <svg class="w-10 h-10" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
           <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
         </svg>
@@ -174,8 +201,10 @@
 
   <!-- Progression Modal Overlay -->
   @if (showProgressionModal()) {
-  <div class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-base-300/80 backdrop-blur-md animate-in fade-in duration-300">
-    <div class="bg-base-100 border-2 border-primary/30 p-8 rounded-[2.5rem] shadow-2xl max-w-md w-full text-center scale-up-center">
+  <div
+    class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-base-300/80 backdrop-blur-md animate-in fade-in duration-300">
+    <div
+      class="bg-base-100 border-2 border-primary/30 p-8 rounded-[2.5rem] shadow-2xl max-w-md w-full text-center scale-up-center">
       <div class="w-20 h-20 bg-primary/10 rounded-3xl flex items-center justify-center mx-auto mb-6">
         <svg class="w-10 h-10 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
           <path stroke-linecap="round" stroke-linejoin="round" d="M13 5l7 7-7 7M5 5l7 7-7 7" />
@@ -183,9 +212,10 @@
       </div>
       <h3 class="text-3xl font-black text-base-content mb-3">{{ 'game.progression.title' | translate }}</h3>
       <p class="text-base-content/70 leading-relaxed mb-8">{{ 'game.progression.desc' | translate }}</p>
-      
+
       <div class="flex flex-col gap-3">
-        <button (click)="handleProgressionChoice('next')" class="btn btn-primary btn-lg rounded-2xl shadow-xl shadow-primary/20">
+        <button (click)="handleProgressionChoice('next')"
+          class="btn btn-primary btn-lg rounded-2xl shadow-xl shadow-primary/20">
           {{ 'game.progression.continue' | translate }}
         </button>
         <button (click)="handleProgressionChoice('stay')" class="btn btn-ghost btn-lg rounded-2xl">

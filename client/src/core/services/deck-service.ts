@@ -84,7 +84,17 @@ export class DeckService {
     const fromPlay = this._lastPlayedDecks().find(d => d.info.id === id);
     if (fromPlay) return of(fromPlay);
 
-    return this.http.get<DeckForUser>(`${this.baseUrl}decks/${id}/for-game`, { withCredentials: true });
+    return this.http.get<DeckForUser>(`${this.baseUrl}decks/${id}/for-game`, { withCredentials: true }).pipe(
+      tap(data => {
+        if (data) {
+          this.updateItemInSignals(id, (d) => {
+            d.info = data.info;
+            d.cards = data.cards;
+            d.stats = data.stats;
+          }, true);
+        }
+      })
+    );
   }
 
   getDeckById(id: string): DeckForUser | undefined {
@@ -94,7 +104,6 @@ export class DeckService {
   getDeckWithCards(id: string): Observable<DeckForUser> {
     return this.http.get<DeckForUser>(`${this.baseUrl}decks/${id}/with-cards`, { withCredentials: true }).pipe(
       tap(data => {
-        // Update local signals if they exist
         this.updateItemInSignals(id, (d) => {
           d.info = data.info;
           d.cards = data.cards;
@@ -134,12 +143,16 @@ export class DeckService {
   }
 
   deleteDeck(id: string): Observable<any> {
-    return this.http.delete(`${this.baseUrl}decks/${id}`, { withCredentials: true }).pipe(
-      tap(() => {
+    return this.http.delete<{ cardCount: number }>(`${this.baseUrl}decks/${id}`, { withCredentials: true }).pipe(
+      tap((response) => {
         this._decks.update(list => list.filter(d => d.info.id !== id));
         this._lastPlayedDecks.update(list => list.filter(d => d.info.id !== id));
         this._lastEditedDecks.update(list => list.filter(d => d.info.id !== id));
+
         this.homeService.updateDeckCount(-1);
+        if (response && response.cardCount > 0) {
+          this.homeService.updateCardCount(-response.cardCount);
+        }
       })
     );
   }
@@ -166,7 +179,7 @@ export class DeckService {
       tap((result: any) => {
         if (result && result.isSuccess) {
           this.homeService.updateCardCount(result.importedCount || 0);
-          this.loadDecks(true).subscribe(); // Reload decks to get the new cards and updated counts
+          this.loadDecks(true).subscribe();
         }
       })
     );
@@ -180,6 +193,23 @@ export class DeckService {
         };
         this.updateItemInSignals(deckId, filterFn, true);
         this.homeService.updateCardCount(-1);
+      })
+    );
+  }
+
+  syncCards(deckId: string, syncDto: any): Observable<DeckForUser> {
+    return this.http.post<DeckForUser>(`${this.baseUrl}decks/${deckId}/cards/sync`, syncDto, { withCredentials: true }).pipe(
+      tap(updatedDeck => {
+        if (updatedDeck) {
+          // Force update local signals with the definitive server state
+          this.updateItemInSignals(deckId, (d) => {
+            d.info = updatedDeck.info;
+            d.cards = updatedDeck.cards;
+            d.stats = updatedDeck.stats;
+          }, true);
+
+          this.loadDecks(true).subscribe();
+        }
       })
     );
   }
@@ -199,6 +229,13 @@ export class DeckService {
         }
       })
     );
+  }
+
+  updateDeckCardsLocally(deckId: string, cards: CardWithStats[]) {
+    const updateFn = (d: DeckForUser) => {
+      d.cards = [...cards];
+    };
+    this.updateItemInSignals(deckId, updateFn, true);
   }
 
   updateDeckStats(deckId: string, stats: DeckStats) {

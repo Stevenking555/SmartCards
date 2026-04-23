@@ -14,7 +14,7 @@ namespace API.Controllers;
 
 [Authorize]
 [Route("api/decks/{deckId}/[controller]")]
-public class CardsController(IUnitOfWork unitOfWork, IMapper mapper, ICardImportService importService) : BaseApiController
+public class CardsController(IUnitOfWork unitOfWork, IMapper mapper, ICardImportService importService, IStatsService statsService) : BaseApiController
 {
     [HttpGet("{id}")]
     public async Task<ActionResult<CardDto>> GetCard(Guid deckId, Guid id)
@@ -33,7 +33,8 @@ public class CardsController(IUnitOfWork unitOfWork, IMapper mapper, ICardImport
     {
         var deck = await unitOfWork.DecksRepository.GetDeckByIdAsync(deckId);
         if (deck == null) return NotFound("Deck not found");
-        if (deck.AppUserId != User.GetUserId()) return NotFound();
+        var userId = User.GetUserId();
+        if (deck.AppUserId != userId) return NotFound();
 
         var card = mapper.Map<Card>(createCardDto);
         card.DeckId = deckId;
@@ -41,15 +42,19 @@ public class CardsController(IUnitOfWork unitOfWork, IMapper mapper, ICardImport
 
         var cardStats = new CardStats
         {
-            AppUserId = User.GetUserId(),
+            AppUserId = userId,
             Card = card
         };
         unitOfWork.StatsRepository.AddCardStats(cardStats);
 
-        var userStats = await unitOfWork.StatsRepository.GetUserStatsAsync(User.GetUserId());
+        var userStats = await unitOfWork.StatsRepository.GetUserStatsAsync(userId);
         if (userStats != null) userStats.TotalCards++;
 
-        if (await unitOfWork.Complete()) return CreatedAtAction(nameof(GetCard), new { deckId, id = card.Id }, mapper.Map<CardWithStatsDto>(card));
+        if (await unitOfWork.Complete()) 
+        {
+            await statsService.RecalculateDeckKnowledgeAsync(userId, deckId);
+            return CreatedAtAction(nameof(GetCard), new { deckId, id = card.Id }, mapper.Map<CardWithStatsDto>(card));
+        }
 
         return BadRequest("Failed to create card");
     }
@@ -78,13 +83,14 @@ public class CardsController(IUnitOfWork unitOfWork, IMapper mapper, ICardImport
                 userStats.TotalCards += result.ImportedCount;
                 await unitOfWork.Complete();
             }
+            await statsService.RecalculateDeckKnowledgeAsync(userId, deckId);
         }
 
         return Ok(result);
     }
 
     [HttpPost("sync")]
-    public async Task<ActionResult<IEnumerable<CardDto>>> SyncCards(Guid deckId, SyncCardsDto syncCardsDto)
+    public async Task<ActionResult<DeckForGameDto>> SyncCards(Guid deckId, SyncCardsDto syncCardsDto)
     {
         var deck = await unitOfWork.DecksRepository.GetDeckByIdAsync(deckId);
         if (deck == null) return NotFound("Deck not found");
@@ -101,25 +107,19 @@ public class CardsController(IUnitOfWork unitOfWork, IMapper mapper, ICardImport
         var results = new List<Card>();
         int netCardChange = 0;
 
-        // 1. Process Additions
         foreach (var newCard in syncCardsDto.AddedCards)
         {
             var card = mapper.Map<Card>(newCard);
             card.DeckId = deckId;
             unitOfWork.CardsRepository.AddCard(card);
 
-            var cardStats = new CardStats
-            {
-                AppUserId = userId,
-                Card = card
-            };
+            var cardStats = new CardStats { AppUserId = userId, Card = card };
             unitOfWork.StatsRepository.AddCardStats(cardStats);
 
             results.Add(card);
             netCardChange++;
         }
 
-        // 2. Process Updates
         foreach (var updateCard in syncCardsDto.UpdatedCards)
         {
             var card = await unitOfWork.CardsRepository.GetCardByIdAsync(updateCard.Id);
@@ -131,7 +131,6 @@ public class CardsController(IUnitOfWork unitOfWork, IMapper mapper, ICardImport
             }
         }
 
-        // 3. Process Deletions
         foreach (var deletedId in syncCardsDto.DeletedCardIds)
         {
             var card = await unitOfWork.CardsRepository.GetCardByIdAsync(deletedId);
@@ -146,13 +145,20 @@ public class CardsController(IUnitOfWork unitOfWork, IMapper mapper, ICardImport
         
         if (await unitOfWork.Complete()) 
         {
-            return Ok(mapper.Map<IEnumerable<CardDto>>(results));
+            if (netCardChange != 0)
+            {
+                await statsService.RecalculateDeckKnowledgeAsync(userId, deckId);
+            }
+            // Return the full deck with updated cards and stats
+            var updatedDeck = await unitOfWork.DecksRepository.GetDeckForGameAsync(userId, deckId);
+            return Ok(mapper.Map<DeckForGameDto>(updatedDeck));
         }
 
-        // Return empty OK if nothing was sent to sync (Complete returns false if no changes)
+        // Return current deck if nothing was sent to sync (Complete returns false if no changes)
         if (netCardChange == 0 && !syncCardsDto.UpdatedCards.Any()) 
         {
-            return Ok(new List<CardDto>());
+            var currentDeck = await unitOfWork.DecksRepository.GetDeckForGameAsync(userId, deckId);
+            return Ok(mapper.Map<DeckForGameDto>(currentDeck));
         }
 
         return BadRequest("Failed to sync cards");
@@ -182,14 +188,19 @@ public class CardsController(IUnitOfWork unitOfWork, IMapper mapper, ICardImport
         if (card == null) return NotFound();
 
         var deck = await unitOfWork.DecksRepository.GetDeckByIdAsync(card.DeckId);
-        if (deck == null || deck.AppUserId != User.GetUserId()) return NotFound();
+        var userId = User.GetUserId();
+        if (deck == null || deck.AppUserId != userId) return NotFound();
 
         unitOfWork.CardsRepository.DeleteCard(card);
 
-        var userStats = await unitOfWork.StatsRepository.GetUserStatsAsync(deck.AppUserId);
+        var userStats = await unitOfWork.StatsRepository.GetUserStatsAsync(userId);
         if (userStats != null) userStats.TotalCards--;
 
-        if (await unitOfWork.Complete()) return Ok();
+        if (await unitOfWork.Complete()) 
+        {
+            await statsService.RecalculateDeckKnowledgeAsync(userId, deckId);
+            return Ok();
+        }
 
         return BadRequest("Failed to delete card");
     }

@@ -39,7 +39,7 @@
           </div>
         </div>
 
-        <div class="max-w-4xl space-y-4">
+        <div class="max-w-4xl flex flex-col gap-3">
           @for (deck of decks(); track deck.info.title) {
           <app-deck-card [item]="deck" layout="desktop" (delete)="confirmDeleteDeck($event)"></app-deck-card>
           }
@@ -66,7 +66,7 @@
             translate }}</h2>
         </div>
 
-        <div class="space-y-4">
+        <div class="flex flex-col gap-3">
           @for (deck of decks(); track deck.info.title) {
           <app-deck-card [item]="deck" layout="mobile" (delete)="confirmDeleteDeck($event)"></app-deck-card>
           }
@@ -222,4 +222,3 @@
   </div>
   <div class="modal-backdrop bg-neutral/70" (click)="cancelDelete()"></div>
 </div>
-

@@ -30,18 +30,22 @@ export class HomeComponent implements OnInit {
   lastPlayedDecks = this.deckService.lastPlayedDecks;
 
   weeklyActivity = computed(() => {
+    // Backend uses Mon=0, Tue=1, ..., Sun=6
     const weeklyData: number[] = JSON.parse(this.userStats()?.weeklyActivityJson || '[0,0,0,0,0,0,0]');
     const maxVal = Math.max(...weeklyData, 1);
-    const currentDayIndex = new Date().getDay();
 
-    const daysOrder = [1, 2, 3, 4, 5, 6, 0];
+    // JS getDay(): Sun=0, Mon=1, Tue=2, Wed=3, Thu=4, Fri=5, Sat=6
+    // Match backend: Mon=0, Tue=1, Wed=2, Thu=3, Fri=4, Sat=5, Sun=6
+    const todayJS = new Date().getDay();
+    const todayIndex = todayJS === 0 ? 6 : todayJS - 1;
+
     const dayKeys = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'];
 
-    return daysOrder.map((dayIdx, i) => ({
-      dayKey: dayKeys[i],
-      value: weeklyData[dayIdx],
-      heightPercent: (weeklyData[dayIdx] / maxVal * 100) + '%',
-      isToday: currentDayIndex === dayIdx
+    return dayKeys.map((key, i) => ({
+      dayKey: key,
+      value: weeklyData[i],
+      heightPercent: (weeklyData[i] / maxVal * 100) + '%',
+      isToday: todayIndex === i
     }));
   });
 

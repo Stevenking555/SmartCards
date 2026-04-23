@@ -11,4 +11,5 @@ public interface IStatsService
     Task<DeckStatsDto> GetDeckStatsAsync(string userId, Guid deckId);
     Task<IEnumerable<CardStatsDto>> GetCardStatsForDeckAsync(string userId, Guid deckId);
     Task<StudySessionResultDto?> SaveStudySessionAsync(string userId, UpdateSessionStatsDto updateDto);
+    Task RecalculateDeckKnowledgeAsync(string userId, Guid deckId);
 }

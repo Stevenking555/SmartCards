@@ -40,10 +40,7 @@ public class DecksController(IUnitOfWork unitOfWork, IMapper mapper) : BaseApiCo
     public async Task<ActionResult<DeckDto>> GetDeck(Guid id)
     {
         var deck = await unitOfWork.DecksRepository.GetDeckByIdAsync(id);
-        if (deck == null) return NotFound();
-        
-        // Ensure user owns the deck
-        if (deck.AppUserId != User.GetUserId()) return NotFound();
+        if (deck == null || deck.AppUserId != User.GetUserId()) return NotFound();
         
         return Ok(mapper.Map<DeckDto>(deck));
     }
@@ -83,7 +80,6 @@ public class DecksController(IUnitOfWork unitOfWork, IMapper mapper) : BaseApiCo
 
         unitOfWork.DecksRepository.AddDeck(deck);
         
-        // Automatically initialize DeckStats for the creator
         var deckStats = new DeckStats
         {
             AppUserId = deck.AppUserId,
@@ -192,12 +188,18 @@ public class DecksController(IUnitOfWork unitOfWork, IMapper mapper) : BaseApiCo
         if (deck == null) return NotFound();
         if (deck.AppUserId != User.GetUserId()) return NotFound();
 
+        var cardCount = 0;
+        var userStats = await unitOfWork.StatsRepository.GetUserStatsAsync(deck.AppUserId);
+        if (userStats != null) 
+        {
+            userStats.TotalDecks--;
+            cardCount = await unitOfWork.CardsRepository.GetCardCountForDeckAsync(id);
+            userStats.TotalCards -= cardCount;
+        }
+
         unitOfWork.DecksRepository.DeleteDeck(deck);
 
-        var userStats = await unitOfWork.StatsRepository.GetUserStatsAsync(deck.AppUserId);
-        if (userStats != null) userStats.TotalDecks--;
-
-        if (await unitOfWork.Complete()) return Ok();
+        if (await unitOfWork.Complete()) return Ok(new { cardCount });
 
         return BadRequest("Failed to delete deck");
     }

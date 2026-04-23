@@ -49,7 +49,7 @@ export class ProfilePageComponent implements OnInit {
       username: [{ value: '', disabled: true }, [Validators.required, Validators.minLength(2), Validators.maxLength(50)]],
       email: [{ value: '', disabled: true }, [Validators.required, Validators.email]],
       password: [{ value: '', disabled: true }],
-      newPassword: [{ value: '', disabled: true }, [Validators.pattern('(?=.*\\d)(?=.*[a-z])(?=.*[A-Z]).{6,}')]] // Legalább 6 karakter, 1 kis/nagybetű és szám
+      newPassword: [{ value: '', disabled: true }, [Validators.pattern('(?=.*\\d)(?=.*[a-z])(?=.*[A-Z]).{6,}')]] // At least 6 chars, 1 uppercase, 1 lowercase, 1 number
     });
   }
 
@@ -66,7 +66,7 @@ export class ProfilePageComponent implements OnInit {
     if (field === 'email') this.emailControl.enable();
     if (field === 'password') this.newPasswordControl.enable();
 
-    this.passwordControl.enable(); // A szerkesztéshez mindig kell az aktuális jelszó
+    this.passwordControl.enable(); // Current password is always required for editing
   }
 
   cancelEdit() {
@@ -80,7 +80,7 @@ export class ProfilePageComponent implements OnInit {
       newPassword: ''
     });
 
-    this.profileForm.disable(); // Minden mezőt inaktiválunk
+    this.profileForm.disable(); // Deactivate all fields
     this.profileForm.markAsUntouched();
   }
 

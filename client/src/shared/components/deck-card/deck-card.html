@@ -18,7 +18,9 @@
 
     <!-- Title & Meta -->
     <div>
-      <h3 class="font-black text-base-content text-lg mb-1 group-hover:text-primary transition-colors tracking-tight">{{
+      <h3
+        class="font-black text-base-content text-lg mb-1 group-hover:text-primary transition-colors tracking-tight truncate max-w-[250px] sm:max-w-md">
+        {{
         item.info.title }}</h3>
       <div class="flex items-center gap-2 text-[11px] font-bold text-base-content/60 uppercase tracking-wider">
         <span class="px-2 py-0.5 rounded-md bg-base-200 border border-base-content/5">
@@ -44,8 +46,10 @@
         {{ item.stats.knowledgePercentage || 0 }}%
       </span>
       <div class="w-full h-1.5 rounded-full bg-base-200 overflow-hidden shadow-inner">
-        <div class="h-full rounded-full transition-all duration-1000" [class.bg-primary]="item.stats.knowledgePercentage < 100"
-          [class.bg-success]="item.stats.knowledgePercentage === 100" [style.width]="(item.stats.knowledgePercentage || 0) + '%'"></div>
+        <div class="h-full rounded-full transition-all duration-1000"
+          [class.bg-primary]="item.stats.knowledgePercentage < 100"
+          [class.bg-success]="item.stats.knowledgePercentage === 100"
+          [style.width]="(item.stats.knowledgePercentage || 0) + '%'"></div>
       </div>
     </div>
     }
@@ -84,7 +88,7 @@
     </div>
 
     <div class="flex-1 pr-2">
-      <h3 class="font-bold text-base-content tracking-tight line-clamp-1 mb-1">{{ item.info.title }}</h3>
+      <h3 class="font-bold text-base-content tracking-tight line-clamp-1 mb-1 max-w-[140px]">{{ item.info.title }}</h3>
       <div class="flex items-center gap-1.5 text-[9px] font-bold text-base-content/60 uppercase tracking-wider">
         <span class="px-1.5 py-0.5 rounded bg-base-200 border border-base-content/5">
           <svg class="w-2.5 h-2.5 inline-block -mt-0.5 mr-0.5 opacity-60" fill="none" viewBox="0 0 24 24"
@@ -106,7 +110,8 @@
         [class.text-success]="item.stats.knowledgePercentage === 100">{{ item.stats.knowledgePercentage || 0 }}%</span>
       <div class="w-full h-1 rounded-full bg-base-200 overflow-hidden shadow-inner">
         <div class="h-full rounded-full transition-all" [class.bg-primary]="item.stats.knowledgePercentage < 100"
-          [class.bg-success]="item.stats.knowledgePercentage === 100" [style.width]="(item.stats.knowledgePercentage || 0) + '%'"></div>
+          [class.bg-success]="item.stats.knowledgePercentage === 100"
+          [style.width]="(item.stats.knowledgePercentage || 0) + '%'"></div>
       </div>
     </div>
     }
@@ -123,4 +128,3 @@
   </div>
 </div>
 }
-

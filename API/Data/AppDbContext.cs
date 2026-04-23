@@ -48,23 +48,23 @@ public class AppDbContext(DbContextOptions options) : IdentityDbContext<AppUser>
             .HasOne(ds => ds.AppUser)
             .WithMany(u => u.DeckStats)
             .HasForeignKey(ds => ds.AppUserId)
-            .OnDelete(DeleteBehavior.Cascade);
+            .OnDelete(DeleteBehavior.Restrict);
 
         // Deck -> DeckStats
         modelBuilder.Entity<DeckStats>()
             .HasOne(ds => ds.Deck)
             .WithMany(d => d.DeckStats)
             .HasForeignKey(ds => ds.DeckId)
-            .OnDelete(DeleteBehavior.Restrict); // Prevent multiple cascade paths
+            .OnDelete(DeleteBehavior.Cascade);
 
         // AppUser -> CardStats
         modelBuilder.Entity<CardStats>()
             .HasOne(cs => cs.AppUser)
             .WithMany(u => u.CardStats)
             .HasForeignKey(cs => cs.AppUserId)
-            .OnDelete(DeleteBehavior.Cascade);
+            .OnDelete(DeleteBehavior.Restrict);
 
-        // Card -> CardStats (Cascade: SQLite supports multiple cascade paths, unlike SQL Server)
+        // Card -> CardStats
         modelBuilder.Entity<CardStats>()
             .HasOne(cs => cs.Card)
             .WithMany(c => c.CardStats)

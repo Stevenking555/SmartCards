@@ -22,11 +22,6 @@ public class DecksRepository(AppDbContext context) : IDecksRepository
 
     public void DeleteDeck(Deck deck)
     {
-        // DeckStats must still be removed manually (no cascade from Deck→DeckStats)
-        var deckStats = context.DeckStats.Where(ds => ds.DeckId == deck.Id);
-        context.DeckStats.RemoveRange(deckStats);
-
-        // CardStats are now auto-deleted by the DB cascade (Card→CardStats: Cascade)
         context.Decks.Remove(deck);
     }
 
