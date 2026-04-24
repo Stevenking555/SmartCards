@@ -1,4 +1,4 @@
-<!-- Copyright (c) 2026 Laczkó István & Brückner Gábor. All rights reserved. -->
+﻿<!-- Copyright (c) 2026 Laczkó István & Brückner Gábor. All rights reserved. -->
 <div class="flex h-screen bg-base-300 overflow-hidden text-base-content transition-colors duration-300">
 
   <app-sidebar></app-sidebar>
@@ -99,7 +99,7 @@
 <div class="modal" [class.modal-open]="isModalOpen()">
   <div class="modal-box bg-base-100 text-base-content border border-base-content/10 max-w-sm rounded-[2.5rem] p-8">
     <div class="flex justify-between items-center mb-8">
-      <button (click)="closeModal()" class="btn btn-ghost btn-sm text-primary">âś• {{ 'decks.modal.cancel' | translate
+      <button (click)="closeModal()" class="btn btn-ghost btn-sm text-primary">✕ {{ 'decks.modal.cancel' | translate
         }}</button>
       <h3 class="font-bold text-lg">{{ 'decks.modal.title' | translate }}</h3>
       <div class="w-16"></div>
@@ -192,7 +192,7 @@
 <div class="modal" [class.modal-open]="isDeleteConfirmOpen()">
   <div class="modal-box bg-base-100 border border-base-content/10 max-w-sm rounded-[2.5rem] p-8 relative shadow-xl">
     <button (click)="cancelDelete()"
-      class="btn btn-sm btn-circle btn-ghost absolute right-4 top-4 text-base-content/50 hover:text-base-content">âś•</button>
+      class="btn btn-sm btn-circle btn-ghost absolute right-4 top-4 text-base-content/50 hover:text-base-content">✕</button>
     <h3 class="font-bold text-lg text-base-content mb-4">{{ 'decks.delete_confirm.title' | translate }}</h3>
     <p class="text-base-content/60 text-sm mb-6">{{ 'decks.delete_confirm.desc' | translate }}</p>
     <div class="flex gap-3">
@@ -212,7 +212,7 @@
   <div
     class="modal-box bg-base-100 border border-error/50 max-w-sm rounded-[2.5rem] p-8 relative shadow-xl shadow-error/10">
     <button (click)="cancelDelete()"
-      class="btn btn-sm btn-circle btn-ghost absolute right-4 top-4 text-base-content/50 hover:text-base-content">âś•</button>
+      class="btn btn-sm btn-circle btn-ghost absolute right-4 top-4 text-base-content/50 hover:text-base-content">✕</button>
     <h3 class="font-bold text-lg text-error mb-4">{{ 'decks.delete_validate.title' | translate }}</h3>
     <p class="text-base-content/70 text-sm mb-6">{{ 'decks.delete_validate.desc' | translate }}</p>
     <input type="text" [(ngModel)]="deleteValidationText" placeholder="DeLeTe"

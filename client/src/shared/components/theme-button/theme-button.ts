@@ -13,6 +13,7 @@ export class ThemeButtonComponent implements OnInit {
   private themeService = inject(ThemeService);
 
   isThemeDropdownOpen = signal(false);
+
   themes: string[] = [];
   currentIndex = signal(0);
 
