@@ -8,13 +8,13 @@ import { environment } from "../../environments/environment";
 export const loadingInterceptor: HttpInterceptorFn = (req, next) => {
     const busyService = inject(BusyService);
 
-    // ElindĂ­tjuk a pĂ¶rgĹ‘t
+    // Start the spinner
     busyService.busy();
 
     return next(req).pipe(
-        // FejlesztĂ©s alatt adunk hozzĂˇ egy kis kĂ©sleltetĂ©st, hogy lĂˇssuk a spinnert
+        // Add a small delay in development to see the spinner
         (environment.production ? identity : delay(500)),
-        // Amikor vĂ©ge a kĂ©rĂ©snek (akĂˇr hiba, akĂˇr siker), leĂˇllĂ­tjuk a pĂ¶rgĹ‘t
+        // When the request ends (whether error or success), stop the spinner
         finalize(() => {
             busyService.idle();
         })

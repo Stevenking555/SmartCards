@@ -13,6 +13,5 @@ export const rootGuard: CanActivateFn = () => {
     router.navigateByUrl('/login');
   }
 
-  return false; // MegĂˇllĂ­tjuk az aktuĂˇlis navigĂˇciĂłt, mert ĂˇtirĂˇnyĂ­tottunk
+  return false; // Stop the current navigation because we redirected
 };
-
