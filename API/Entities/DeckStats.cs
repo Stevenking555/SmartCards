@@ -1,3 +1,4 @@
+// Copyright (c) 2026 Laczkó István & Brückner Gábor. All rights reserved.
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -24,3 +25,4 @@ public class DeckStats
     [Required]
     public string Goal { get; set; } = "weeks";
 }
+

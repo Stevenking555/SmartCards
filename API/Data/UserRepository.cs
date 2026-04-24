@@ -1,3 +1,4 @@
+// Copyright (c) 2026 Laczkó István & Brückner Gábor. All rights reserved.
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using API.Entities;
@@ -18,3 +19,4 @@ public class UserRepository(AppDbContext context) : IUserRepository
         return await context.Users.FindAsync(id);
     }
 }
+

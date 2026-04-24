@@ -1,3 +1,4 @@
+// Copyright (c) 2026 Laczkó István & Brückner Gábor. All rights reserved.
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -18,3 +19,4 @@ public interface IDecksRepository
     void UpdateDeck(Deck deck);
     void DeleteDeck(Deck deck);
 }
+

@@ -1,3 +1,4 @@
+// Copyright (c) 2026 Laczkó István & Brückner Gábor. All rights reserved.
 using System;
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
@@ -19,3 +20,4 @@ public class DeckDto
     public DateTime CreatedAt { get; set; }
 
 }
+

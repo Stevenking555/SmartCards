@@ -1,3 +1,4 @@
+/* Copyright (c) 2026 Laczkó István & Brückner Gábor. All rights reserved. */
 import { Injectable } from '@angular/core';
 
 @Injectable({
@@ -52,5 +53,6 @@ export class ThemeService {
     return localStorage.getItem(this.currentThemeKey) || 'dark';
   }
 }
+
 
 

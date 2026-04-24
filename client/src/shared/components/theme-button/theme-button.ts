@@ -1,3 +1,4 @@
+/* Copyright (c) 2026 Laczkó István & Brückner Gábor. All rights reserved. */
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ThemeService } from '../../../core/services/theme-service';
@@ -36,3 +37,4 @@ export class ThemeButtonComponent implements OnInit {
     this.themeService.setTheme(this.themes[this.currentIndex()]);
   }
 }
+

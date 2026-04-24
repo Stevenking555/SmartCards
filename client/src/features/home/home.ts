@@ -1,3 +1,4 @@
+/* Copyright (c) 2026 Laczkó István & Brückner Gábor. All rights reserved. */
 import { Component, inject, OnInit, computed, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
@@ -65,4 +66,5 @@ export class HomeComponent implements OnInit {
     this.deckService.loadDecks().subscribe(); // Background load all decks
   }
 }
+
 

@@ -1,3 +1,4 @@
+/* Copyright (c) 2026 Laczkó István & Brückner Gábor. All rights reserved. */
 import { Component } from '@angular/core';
 import { TranslatePipe } from '../../core/i18n/translate.pipe';
 import { SidebarComponent } from '../../layout/sidebar/sidebar';
@@ -10,5 +11,6 @@ import { BottomNavComponent } from '../../layout/bottom-nav/bottom-nav';
   styleUrl: './about.css',
 })
 export class AboutComponent { }
+
 
 

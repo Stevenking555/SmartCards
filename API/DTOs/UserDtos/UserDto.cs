@@ -1,3 +1,4 @@
+// Copyright (c) 2026 Laczkó István & Brückner Gábor. All rights reserved.
 using System;
 
 namespace API.DTOs;
@@ -10,3 +11,4 @@ public class UserDto
     public string? ImageUrl { get; set; }
     public required string Token {get; set; }
 }
+

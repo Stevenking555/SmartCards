@@ -1,3 +1,4 @@
+// Copyright (c) 2026 Laczkó István & Brückner Gábor. All rights reserved.
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -52,3 +53,4 @@ public class CardsRepository(AppDbContext context) : ICardsRepository
         context.Entry(card).State = EntityState.Modified;
     }
 }
+

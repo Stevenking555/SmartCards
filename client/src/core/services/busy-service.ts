@@ -1,3 +1,4 @@
+/* Copyright (c) 2026 Laczkó István & Brückner Gábor. All rights reserved. */
 import { Injectable, signal } from '@angular/core';
 
 @Injectable({
@@ -14,3 +15,4 @@ export class BusyService {
     this.busyRequestCount.update(current => Math.max(0, current - 1));
   }
 }
+

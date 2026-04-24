@@ -1,3 +1,4 @@
+// Copyright (c) 2026 Laczkó István & Brückner Gábor. All rights reserved.
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -21,3 +22,4 @@ public interface IStatsRepository
     Task<int> GetMasteredCountForDeckAsync(string userId, Guid deckId);
     void UpdateCardStats(CardStats cardStats);
 }
+

@@ -1,3 +1,4 @@
+/* Copyright (c) 2026 Laczkó István & Brückner Gábor. All rights reserved. */
 export type User = {
     id: string;
     displayName: string;
@@ -41,3 +42,4 @@ export interface UserStats {
     totalMasteredCards: number;
     weeklyActivityJson: string;
 }
+

@@ -1,3 +1,4 @@
+// Copyright (c) 2026 Laczkó István & Brückner Gábor. All rights reserved.
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -71,3 +72,4 @@ public class StatsRepository(AppDbContext context) : IStatsRepository
         context.Entry(cardStats).State = EntityState.Modified;
     }
 }
+

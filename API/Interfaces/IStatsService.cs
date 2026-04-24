@@ -1,3 +1,4 @@
+// Copyright (c) 2026 Laczkó István & Brückner Gábor. All rights reserved.
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -13,3 +14,4 @@ public interface IStatsService
     Task<StudySessionResultDto?> SaveStudySessionAsync(string userId, UpdateSessionStatsDto updateDto);
     Task RecalculateDeckKnowledgeAsync(string userId, Guid deckId);
 }
+

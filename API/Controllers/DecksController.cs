@@ -1,3 +1,4 @@
+// Copyright (c) 2026 Laczkó István & Brückner Gábor. All rights reserved.
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -204,5 +205,6 @@ public class DecksController(IUnitOfWork unitOfWork, IMapper mapper) : BaseApiCo
         return BadRequest("Failed to delete deck");
     }
 }
+
 
 

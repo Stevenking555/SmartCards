@@ -1,3 +1,4 @@
+/* Copyright (c) 2026 Laczkó István & Brückner Gábor. All rights reserved. */
 import { Routes } from '@angular/router';
 import { LoginComponent } from '../features/auth/login/login';
 import { HomeComponent } from '../features/home/home';

@@ -1,3 +1,4 @@
+// Copyright (c) 2026 Laczkó István & Brückner Gábor. All rights reserved.
 using System;
 using System.ComponentModel.DataAnnotations;
 
@@ -11,3 +12,4 @@ public class CreateCardDto
     [Required]
     public string Answer { get; set; } = null!;
 }
+

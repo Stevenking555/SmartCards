@@ -1,3 +1,4 @@
+/* Copyright (c) 2026 Laczkó István & Brückner Gábor. All rights reserved. */
 import { HttpInterceptorFn } from "@angular/common/http";
 import { inject } from "@angular/core";
 import { BusyService } from "../services/busy-service";
@@ -7,13 +8,13 @@ import { environment } from "../../environments/environment";
 export const loadingInterceptor: HttpInterceptorFn = (req, next) => {
     const busyService = inject(BusyService);
 
-    // Elindítjuk a pörgőt
+    // ElindĂ­tjuk a pĂ¶rgĹ‘t
     busyService.busy();
 
     return next(req).pipe(
-        // Fejlesztés alatt adunk hozzá egy kis késleltetést, hogy lássuk a spinnert
+        // FejlesztĂ©s alatt adunk hozzĂˇ egy kis kĂ©sleltetĂ©st, hogy lĂˇssuk a spinnert
         (environment.production ? identity : delay(500)),
-        // Amikor vége a kérésnek (akár hiba, akár siker), leállítjuk a pörgőt
+        // Amikor vĂ©ge a kĂ©rĂ©snek (akĂˇr hiba, akĂˇr siker), leĂˇllĂ­tjuk a pĂ¶rgĹ‘t
         finalize(() => {
             busyService.idle();
         })

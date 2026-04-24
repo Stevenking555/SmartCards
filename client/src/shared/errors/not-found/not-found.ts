@@ -1,3 +1,4 @@
+/* Copyright (c) 2026 Laczkó István & Brückner Gábor. All rights reserved. */
 import { Component } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
@@ -9,3 +10,4 @@ import { CommonModule } from '@angular/common';
   templateUrl: './not-found.html'
 })
 export class NotFoundComponent { }
+

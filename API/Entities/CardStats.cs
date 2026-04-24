@@ -1,3 +1,4 @@
+// Copyright (c) 2026 Laczkó István & Brückner Gábor. All rights reserved.
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -22,3 +23,4 @@ public class CardStats
     public int RotationIndex { get; set; }
     public bool IsMastered { get; set; }
 }
+

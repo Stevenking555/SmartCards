@@ -1,3 +1,4 @@
+// Copyright (c) 2026 Laczkó István & Brückner Gábor. All rights reserved.
 using System;
 using API.Entities;
 using Microsoft.AspNetCore.Identity;

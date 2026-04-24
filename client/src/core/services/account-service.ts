@@ -1,3 +1,4 @@
+/* Copyright (c) 2026 Laczkó István & Brückner Gábor. All rights reserved. */
 import { Injectable, inject, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { ChangePasswordForm, LoginCreds, RegisterCreds, UpdateEmailForm, User } from '../models/user-models';

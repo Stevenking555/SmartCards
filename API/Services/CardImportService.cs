@@ -1,3 +1,4 @@
+// Copyright (c) 2026 Laczkó István & Brückner Gábor. All rights reserved.
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -83,3 +84,4 @@ public class CardImportService(IUnitOfWork unitOfWork) : ICardImportService
         return result;
     }
 }
+

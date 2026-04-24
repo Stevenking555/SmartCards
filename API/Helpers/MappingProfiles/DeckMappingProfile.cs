@@ -1,3 +1,4 @@
+// Copyright (c) 2026 Laczkó István & Brückner Gábor. All rights reserved.
 using API.DTOs;
 using API.Entities;
 using AutoMapper;
@@ -27,3 +28,4 @@ public class DeckMappingProfile : Profile
         CreateMap<DeckStats, DeckStatsDto>();
     }
 }
+

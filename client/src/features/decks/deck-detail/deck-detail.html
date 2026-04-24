@@ -1,3 +1,4 @@
+<!-- Copyright (c) 2026 Laczkó István & Brückner Gábor. All rights reserved. -->
 <div class="flex h-screen bg-base-300 overflow-hidden text-base-content transition-colors duration-300">
 
   <app-sidebar></app-sidebar>
@@ -213,7 +214,7 @@
     class="modal-box bg-base-100 text-base-content border border-base-content/10 max-w-sm rounded-[2.5rem] p-8 shadow-xl">
     <div class="flex justify-between items-center mb-8">
 
-      <button (click)="closeModal()" class="btn btn-ghost btn-sm text-primary">✕
+      <button (click)="closeModal()" class="btn btn-ghost btn-sm text-primary">âś•
         {{ 'deck_detail.modal.cancel' | translate }}
       </button>
 
@@ -258,7 +259,7 @@
   <div
     class="modal-box bg-base-100 text-base-content border border-base-content/10 max-w-sm rounded-[2.5rem] p-8 shadow-xl">
     <div class="flex justify-between items-center mb-8">
-      <button (click)="closeEditModal()" class="btn btn-ghost btn-sm text-primary">✕
+      <button (click)="closeEditModal()" class="btn btn-ghost btn-sm text-primary">âś•
         {{ 'deck_detail.modal.cancel' | translate }}
       </button>
       <h3 class="font-bold text-lg text-base-content">{{ 'deck_detail.modal.edit_title' | translate }}</h3>
@@ -303,7 +304,7 @@
     @if (viewingCard) {
     <!-- Header -->
     <div class="flex justify-between items-center mb-6">
-      <button (click)="closeViewModal()" class="btn btn-ghost btn-sm text-base-content/50">✕</button>
+      <button (click)="closeViewModal()" class="btn btn-ghost btn-sm text-base-content/50">âś•</button>
       <p class="text-xs font-bold uppercase tracking-widest text-base-content/40">{{ 'deck_detail.question' | translate
         }} / {{ 'deck_detail.answer' | translate }}</p>
       <div class="w-8"></div>
@@ -352,7 +353,7 @@
   <div
     class="modal-box bg-base-100 text-base-content border border-base-content/10 max-w-lg rounded-[2.5rem] p-8 shadow-xl">
     <div class="flex justify-between items-center mb-6">
-      <button (click)="closeImportModal()" class="btn btn-ghost btn-sm text-primary">✕
+      <button (click)="closeImportModal()" class="btn btn-ghost btn-sm text-primary">âś•
         {{ 'deck_detail.modal.cancel' | translate }}
       </button>
       <h3 class="font-bold text-lg text-base-content">{{ 'deck_detail.import.modal.title' | translate }}</h3>

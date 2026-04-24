@@ -1,3 +1,4 @@
+// Copyright (c) 2026 Laczkó István & Brückner Gábor. All rights reserved.
 using System.Text.Json.Serialization;
 
 namespace API.DTOs;
@@ -13,3 +14,4 @@ public class DeckStatsDto
     [JsonPropertyName("goal")]
     public string Goal { get; set; } = "weeks";
 }
+

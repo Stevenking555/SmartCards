@@ -1,3 +1,4 @@
+// Copyright (c) 2026 Laczkó István & Brückner Gábor. All rights reserved.
 using System;
 using System.Text.Json.Serialization;
 
@@ -17,3 +18,4 @@ public class CardDto
     [JsonPropertyName("answer")]
     public string Answer { get; set; } = null!;
 }
+

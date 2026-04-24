@@ -1,3 +1,4 @@
+// Copyright (c) 2026 Laczkó István & Brückner Gábor. All rights reserved.
 using System.Security.Claims;
 using API.DTOs;
 using API.Entities;
@@ -59,3 +60,4 @@ namespace API.Controllers
         }
     }
 }
+

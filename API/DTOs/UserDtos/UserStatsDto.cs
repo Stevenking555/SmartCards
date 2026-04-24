@@ -1,3 +1,4 @@
+// Copyright (c) 2026 Laczkó István & Brückner Gábor. All rights reserved.
 using System;
 using System.Collections.Generic;
 
@@ -12,4 +13,4 @@ public class UserStatsDto
     public long TotalCards { get; set; }
     public long TotalMasteredCards { get; set; }
     public string WeeklyActivityJson { get; set; } = "[]";
-}
+}

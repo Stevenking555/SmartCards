@@ -1,3 +1,4 @@
+// Copyright (c) 2026 Laczkó István & Brückner Gábor. All rights reserved.
 using System;
 using System.Collections.Generic;
 
@@ -9,3 +10,4 @@ public class SyncCardsDto
     public List<CardDto> UpdatedCards { get; set; } = new();
     public List<Guid> DeletedCardIds { get; set; } = new();
 }
+

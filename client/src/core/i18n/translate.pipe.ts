@@ -1,3 +1,4 @@
+/* Copyright (c) 2026 Laczkó István & Brückner Gábor. All rights reserved. */
 import { Pipe, PipeTransform, inject } from '@angular/core';
 import { LanguageService } from './language-service';
 
@@ -13,6 +14,7 @@ export class TranslatePipe implements PipeTransform {
     return this.langService.translate(key);
   }
 }
+
 
 
 

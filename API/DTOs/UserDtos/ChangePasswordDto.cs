@@ -1,3 +1,4 @@
+// Copyright (c) 2026 Laczkó István & Brückner Gábor. All rights reserved.
 using System.ComponentModel.DataAnnotations;
 
 namespace API.DTOs;
@@ -9,7 +10,7 @@ public class ChangePasswordDto
     public required string OldPassword { get; set; }
 
     [Required]
-    [StringLength(32, MinimumLength = 6, ErrorMessage = "A jelszónak legalább 6 karakter hosszúvnak kell lennie.")]
+    [StringLength(32, MinimumLength = 6, ErrorMessage = "A jelszĂłnak legalĂˇbb 6 karakter hosszĂşvnak kell lennie.")]
     [DataType(DataType.Password)]
     public required string NewPassword { get; set; }
 }

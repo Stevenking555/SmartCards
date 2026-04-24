@@ -1,3 +1,4 @@
+// Copyright (c) 2026 Laczkó István & Brückner Gábor. All rights reserved.
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -87,3 +88,4 @@ public class DecksRepository(AppDbContext context) : IDecksRepository
         context.Entry(deck).State = EntityState.Modified;
     }
 }
+

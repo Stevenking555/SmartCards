@@ -1,3 +1,4 @@
+// Copyright (c) 2026 Laczkó István & Brückner Gábor. All rights reserved.
 using System;
 using System.Collections.Generic;
 
@@ -23,3 +24,4 @@ public class CardSessionUpdateDto
     public int RotationIndex { get; set; }
     public bool IsMastered { get; set; }
 }
+

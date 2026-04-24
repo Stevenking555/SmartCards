@@ -1,3 +1,4 @@
+/* Copyright (c) 2026 Laczkó István & Brückner Gábor. All rights reserved. */
 import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { environment } from '../../environments/environment';
@@ -22,5 +23,6 @@ export class UserService {
     return this.http.put(this.baseUrl + 'user', model);
   }
 }
+
 
 

@@ -1,3 +1,4 @@
+// Copyright (c) 2026 Laczkó István & Brückner Gábor. All rights reserved.
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -16,3 +17,4 @@ public interface ICardsRepository
     void UpdateCard(Card card);
     void DeleteCard(Card card);
 }
+

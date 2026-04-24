@@ -1,3 +1,4 @@
+// Copyright (c) 2026 Laczkó István & Brückner Gábor. All rights reserved.
 using System;
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
@@ -15,3 +16,4 @@ public class DeckWithCardsDto
     [JsonPropertyName("stats")]
     public DeckStatsDto Stats { get; set; } = null!;
 }
+

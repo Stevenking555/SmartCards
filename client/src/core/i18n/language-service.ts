@@ -1,3 +1,4 @@
+/* Copyright (c) 2026 Laczkó István & Brückner Gábor. All rights reserved. */
 import { Injectable, signal } from '@angular/core';
 import { EN, HU } from './translations';
 
@@ -8,12 +9,12 @@ export type Language = 'en' | 'hu';
 })
 export class LanguageService {
   private readonly STORAGE_KEY = 'smartcards-language';
-  
+
   currentLang = signal<Language>('en');
 
   constructor() {
     this.initLanguage();
-    
+
     window.addEventListener('storage', (event) => {
       if (event.key === this.STORAGE_KEY && event.newValue) {
         if (event.newValue === 'en' || event.newValue === 'hu') {
@@ -43,5 +44,6 @@ export class LanguageService {
     return dict[key] || key;
   }
 }
+
 
 

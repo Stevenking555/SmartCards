@@ -1,3 +1,4 @@
+// Copyright (c) 2026 Laczkó István & Brückner Gábor. All rights reserved.
 using System;
 using System.Security.Cryptography;
 using System.Text;
@@ -196,4 +197,5 @@ public class AccountController(UserManager<AppUser> userManager, ITokenService t
         return dto;
     }
 }
+
 

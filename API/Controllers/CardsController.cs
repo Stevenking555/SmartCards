@@ -1,3 +1,4 @@
+// Copyright (c) 2026 Laczkó István & Brückner Gábor. All rights reserved.
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -205,5 +206,6 @@ public class CardsController(IUnitOfWork unitOfWork, IMapper mapper, ICardImport
         return BadRequest("Failed to delete card");
     }
 }
+
 
 
