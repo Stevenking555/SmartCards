@@ -1,3 +1,4 @@
+/* Copyright (c) 2026 Laczkó István & Brückner Gábor. All rights reserved. */
 import { Component, input, Self } from '@angular/core';
 import { ControlValueAccessor, FormControl, NgControl, ReactiveFormsModule } from '@angular/forms';
 

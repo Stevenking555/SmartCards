@@ -1,11 +1,19 @@
+// Copyright (c) 2026 Laczkó István & Brückner Gábor. All rights reserved.
 using System;
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace API.DTOs;
 
 public class DeckWithCardsDto
 {
-    public DeckDto Deck { get; set; } = new DeckDto();
-    
-    public IEnumerable<CardDto> Cards { get; set; } = new List<CardDto>();
+    [JsonPropertyName("info")]
+    public DeckDto Deck { get; set; } = null!;
+
+    [JsonPropertyName("cards")]
+    public List<CardWithStatsDto> Cards { get; set; } = new();
+
+    [JsonPropertyName("stats")]
+    public DeckStatsDto Stats { get; set; } = null!;
 }
+

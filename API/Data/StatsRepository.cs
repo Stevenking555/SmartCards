@@ -1,3 +1,4 @@
+// Copyright (c) 2026 Laczkó István & Brückner Gábor. All rights reserved.
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -50,16 +51,6 @@ public class StatsRepository(AppDbContext context) : IStatsRepository
             .FirstOrDefaultAsync(ds => ds.AppUserId == userId && ds.DeckId == deckId);
     }
 
-    public async Task<IEnumerable<DeckStats>> GetLastPlayedDecksAsync(string userId, int limit)
-    {
-        return await context.DeckStats
-            .Include(ds => ds.Deck)
-            .Where(ds => ds.AppUserId == userId)
-            .OrderByDescending(ds => ds.LastPlayedAt)
-            .Take(limit)
-            .ToListAsync();
-    }
-
     public async Task<UserStats?> GetUserStatsAsync(string userId)
     {
         return await context.UserStats
@@ -71,8 +62,14 @@ public class StatsRepository(AppDbContext context) : IStatsRepository
         return await context.CardStats.CountAsync(cs => cs.AppUserId == userId && cs.IsMastered);
     }
 
+    public async Task<int> GetMasteredCountForDeckAsync(string userId, Guid deckId)
+    {
+        return await context.CardStats.CountAsync(cs => cs.AppUserId == userId && cs.Card.DeckId == deckId && cs.IsMastered);
+    }
+
     public void UpdateCardStats(CardStats cardStats)
     {
         context.Entry(cardStats).State = EntityState.Modified;
     }
 }
+

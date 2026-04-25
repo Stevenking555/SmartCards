@@ -1,3 +1,4 @@
+/* Copyright (c) 2026 Laczkó István & Brückner Gábor. All rights reserved. */
 import { inject } from '@angular/core';
 import { CanActivateFn, Router } from '@angular/router';
 import { AccountService } from '../services/account-service';
@@ -14,3 +15,4 @@ export const authGuard: CanActivateFn = () => {
   router.navigateByUrl('/login');
   return false;
 };
+

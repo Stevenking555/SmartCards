@@ -1,3 +1,4 @@
+// Copyright (c) 2026 Laczkó István & Brückner Gábor. All rights reserved.
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -40,7 +41,8 @@ public class CardImportService(IUnitOfWork unitOfWork) : ICardImportService
             {
                 DeckId = deckId,
                 Question = parts[0].Trim(),
-                Answer = parts[1].Trim()
+                Answer = parts[1].Trim(),
+                CreatedAt = DateTime.UtcNow.AddMilliseconds(-lineNumber)
             };
             cardsToAdd.Add(card);
 
@@ -50,6 +52,7 @@ public class CardImportService(IUnitOfWork unitOfWork) : ICardImportService
                 Card = card,
                 BatchIndex = 0,
                 RotationPoints = 0,
+                RotationIndex = 0,
                 IsMastered = false
             };
             cardStatsToAdd.Add(cardStats);
@@ -81,3 +84,4 @@ public class CardImportService(IUnitOfWork unitOfWork) : ICardImportService
         return result;
     }
 }
+

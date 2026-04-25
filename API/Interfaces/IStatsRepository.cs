@@ -1,3 +1,4 @@
+// Copyright (c) 2026 Laczkó István & Brückner Gábor. All rights reserved.
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -11,7 +12,6 @@ public interface IStatsRepository
     void AddUserStats(UserStats userStats);
     
     Task<DeckStats?> GetDeckStatsAsync(string userId, Guid deckId);
-    Task<IEnumerable<DeckStats>> GetLastPlayedDecksAsync(string userId, int limit);
     void AddDeckStats(DeckStats deckStats);
     
     Task<IEnumerable<CardStats>> GetCardStatsForDeckAsync(string userId, Guid deckId);
@@ -19,5 +19,7 @@ public interface IStatsRepository
     void AddCardStats(CardStats cardStats);
     void AddCardStatsRange(IEnumerable<CardStats> cardStats);
     Task<int> GetMasteredCardCountAsync(string userId);
+    Task<int> GetMasteredCountForDeckAsync(string userId, Guid deckId);
     void UpdateCardStats(CardStats cardStats);
 }
+

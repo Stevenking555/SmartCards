@@ -1,3 +1,4 @@
+// Copyright (c) 2026 Laczkó István & Brückner Gábor. All rights reserved.
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -21,13 +22,14 @@ public class StatsController(IStatsService statsService) : BaseApiController
     }
 
     [HttpPost("session")]
-    public async Task<ActionResult> UpdateSessionStats(UpdateSessionStatsDto updateDto)
+    public async Task<ActionResult<StudySessionResultDto>> SaveStudySession(UpdateSessionStatsDto updateDto)
     {
         var userId = User.GetUserId();
-        var success = await statsService.UpdateSessionStatsAsync(userId, updateDto);
+        var result = await statsService.SaveStudySessionAsync(userId, updateDto);
         
-        if (success) return Ok();
+        if (result != null) return Ok(result);
         
         return BadRequest("Failed to update session stats");
     }
 }
+

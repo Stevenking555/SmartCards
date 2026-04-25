@@ -1,3 +1,4 @@
+/* Copyright (c) 2026 Laczkó István & Brückner Gábor. All rights reserved. */
 import { Routes } from '@angular/router';
 import { LoginComponent } from '../features/auth/login/login';
 import { HomeComponent } from '../features/home/home';
@@ -6,6 +7,7 @@ import { RegisterComponent } from '../features/auth/register/register';
 import { AboutComponent } from '../features/about/about';
 import { Decks } from '../features/decks/decks';
 import { DeckDetailComponent } from '../features/decks/deck-detail/deck-detail';
+import { GameComponent } from '../features/game/game';
 import { rootGuard } from '../core/guards/root.guard';
 import { authGuard } from '../core/guards/auth.guard';
 import { NotFoundComponent } from '../shared/errors/not-found/not-found';
@@ -25,6 +27,7 @@ export const routes: Routes = [
       { path: 'home', component: HomeComponent },
       { path: 'decks', component: Decks },
       { path: 'decks/:id', component: DeckDetailComponent },
+      { path: 'decks/:id/game', component: GameComponent },
       { path: 'about', component: AboutComponent },
       { path: 'profile', component: ProfilePageComponent },
     ]

@@ -1,3 +1,4 @@
+// Copyright (c) 2026 Laczkó István & Brückner Gábor. All rights reserved.
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,6 +14,11 @@ public class CardsRepository(AppDbContext context) : ICardsRepository
     public async Task<int> GetCardCountAsync(string userId)
     {
         return await context.Cards.CountAsync(c => c.Deck.AppUserId == userId);
+    }
+
+    public async Task<int> GetCardCountForDeckAsync(Guid deckId)
+    {
+        return await context.Cards.CountAsync(c => c.DeckId == deckId);
     }
 
     public void AddCard(Card card)
@@ -47,3 +53,4 @@ public class CardsRepository(AppDbContext context) : ICardsRepository
         context.Entry(card).State = EntityState.Modified;
     }
 }
+

@@ -1,3 +1,4 @@
+/* Copyright (c) 2026 Laczkó István & Brückner Gábor. All rights reserved. */
 import { inject, Injectable } from '@angular/core';
 import { AccountService } from './account-service';
 import { tap } from 'rxjs';
@@ -19,3 +20,4 @@ export class InitService {
     );
   }
 }
+

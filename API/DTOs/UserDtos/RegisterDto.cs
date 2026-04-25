@@ -1,3 +1,4 @@
+﻿// Copyright (c) 2026 Laczkó István & Brückner Gábor. All rights reserved.
 using System;
 using System.ComponentModel.DataAnnotations;
 
@@ -13,7 +14,8 @@ public class RegisterDto
     public string Email { get; set; } = "";
     
     [Required]
-    [StringLength(32, MinimumLength = 6, ErrorMessage = "A jelszónak legalább 6 karakter hosszúnak kell lennie.")]
+    [StringLength(32, MinimumLength = 6, ErrorMessage = "The password must be at least 6 characters long.")]
     [DataType(DataType.Password)]
     public string Password { get; set; } = "";
 }
+

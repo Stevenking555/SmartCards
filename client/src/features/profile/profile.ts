@@ -1,16 +1,17 @@
-import { Component, inject, OnInit } from '@angular/core';
+/* Copyright (c) 2026 Laczkó István & Brückner Gábor. All rights reserved. */
+import { Component, inject, OnInit, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
 import { Router } from '@angular/router';
-import { ThemeService } from '../../core/services/theme.service';
-import { LanguageService, Language } from '../../core/i18n/language.service';
+import { ThemeService } from '../../core/services/theme-service';
+import { LanguageService, Language } from '../../core/i18n/language-service';
 import { TranslatePipe } from '../../core/i18n/translate.pipe';
 import { AccountService } from '../../core/services/account-service';
-import { UserService } from '../../core/services/user.service';
+import { UserService } from '../../core/services/user-service';
 import { SidebarComponent } from '../../layout/sidebar/sidebar';
 import { BottomNavComponent } from '../../layout/bottom-nav/bottom-nav';
 import { ToastService } from '../../core/services/toast-service';
-import { HomeService } from '../../core/services/home.service';
+import { HomeService } from '../../core/services/home-service';
 import { Observable, tap } from 'rxjs';
 
 @Component({
@@ -31,7 +32,7 @@ export class ProfilePageComponent implements OnInit {
 
   themes: string[] = [];
   selectedTheme = '';
-  quoteStyle = 'motivational';
+  quoteStyle = computed(() => this.homeService.dailyData().quoteStyle);
 
   activeEditField: 'displayName' | 'email' | 'password' | null = null;
   profileForm: FormGroup = new FormGroup({});
@@ -42,10 +43,6 @@ export class ProfilePageComponent implements OnInit {
 
     this.themes = this.themeService.availableThemes;
     this.selectedTheme = this.themeService.getCurrentTheme();
-
-    this.homeService.dailyData$.subscribe(data => {
-      this.quoteStyle = data.quoteStyle;
-    });
   }
 
   initializeForm() {
@@ -53,7 +50,7 @@ export class ProfilePageComponent implements OnInit {
       username: [{ value: '', disabled: true }, [Validators.required, Validators.minLength(2), Validators.maxLength(50)]],
       email: [{ value: '', disabled: true }, [Validators.required, Validators.email]],
       password: [{ value: '', disabled: true }],
-      newPassword: [{ value: '', disabled: true }, [Validators.pattern('(?=.*\\d)(?=.*[a-z])(?=.*[A-Z]).{6,}')]] // Legalább 6 karakter, 1 kis/nagybetű és szám
+      newPassword: [{ value: '', disabled: true }, [Validators.pattern('(?=.*\\d)(?=.*[a-z])(?=.*[A-Z]).{6,}')]] // At least 6 chars, 1 uppercase, 1 lowercase, 1 number
     });
   }
 
@@ -70,7 +67,7 @@ export class ProfilePageComponent implements OnInit {
     if (field === 'email') this.emailControl.enable();
     if (field === 'password') this.newPasswordControl.enable();
 
-    this.passwordControl.enable(); // A szerkesztéshez mindig kell az aktuális jelszó
+    this.passwordControl.enable(); // Current password is always required for editing
   }
 
   cancelEdit() {
@@ -84,7 +81,7 @@ export class ProfilePageComponent implements OnInit {
       newPassword: ''
     });
 
-    this.profileForm.disable(); // Minden mezőt inaktiválunk
+    this.profileForm.disable(); // Deactivate all fields
     this.profileForm.markAsUntouched();
   }
 
@@ -174,3 +171,6 @@ export class ProfilePageComponent implements OnInit {
     });
   }
 }
+
+
+
