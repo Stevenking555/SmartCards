@@ -1,3 +1,4 @@
+/* Copyright (c) 2026 Laczkó István & Brückner Gábor. All rights reserved. */
 import { inject, Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 

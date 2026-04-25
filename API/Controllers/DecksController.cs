@@ -1,5 +1,7 @@
+// Copyright (c) 2026 Laczkó István & Brückner Gábor. All rights reserved.
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using API.DTOs;
 using API.Entities;
@@ -21,14 +23,25 @@ public class DecksController(IUnitOfWork unitOfWork, IMapper mapper) : BaseApiCo
         return Ok(mapper.Map<IEnumerable<DeckDto>>(decks));
     }
 
+    [HttpGet("with-stats")]
+    public async Task<ActionResult<IEnumerable<DeckWithStatsDto>>> GetDecksWithStats()
+    {
+        var decks = await unitOfWork.DecksRepository.GetDecksAsync(User.GetUserId());
+        return Ok(mapper.Map<IEnumerable<DeckWithStatsDto>>(decks));
+    }
+
+    [HttpGet("last-played")]
+    public async Task<ActionResult<IEnumerable<DeckForGameDto>>> GetLastPlayedDecks([FromQuery] int limit = 5)
+    {
+        var decks = await unitOfWork.DecksRepository.GetLastPlayedDecksAsync(User.GetUserId(), limit);
+        return Ok(mapper.Map<IEnumerable<DeckForGameDto>>(decks));
+    }
+
     [HttpGet("{id}")]
     public async Task<ActionResult<DeckDto>> GetDeck(Guid id)
     {
         var deck = await unitOfWork.DecksRepository.GetDeckByIdAsync(id);
-        if (deck == null) return NotFound();
-        
-        // Ensure user owns the deck
-        if (deck.AppUserId != User.GetUserId()) return NotFound();
+        if (deck == null || deck.AppUserId != User.GetUserId()) return NotFound();
         
         return Ok(mapper.Map<DeckDto>(deck));
     }
@@ -68,20 +81,90 @@ public class DecksController(IUnitOfWork unitOfWork, IMapper mapper) : BaseApiCo
 
         unitOfWork.DecksRepository.AddDeck(deck);
         
-        // Automatically initialize DeckStats for the creator
         var deckStats = new DeckStats
         {
             AppUserId = deck.AppUserId,
             Deck = deck,
-            KnowledgePercentage = 0,
-            TimeSpentMinutes = 0,
-            LastPlayedAt = DateTime.UtcNow
+            LastPlayedAt = DateTime.UtcNow,
+            Goal = createDeckDto.Goal
         };
         unitOfWork.StatsRepository.AddDeckStats(deckStats);
+
+        var userStats = await unitOfWork.StatsRepository.GetUserStatsAsync(deck.AppUserId);
+        if (userStats != null) userStats.TotalDecks++;
 
         if (await unitOfWork.Complete()) return Ok(mapper.Map<DeckDto>(deck));
 
         return BadRequest("Failed to create deck");
+    }
+
+    [HttpPost("sync")]
+    public async Task<ActionResult<IEnumerable<DeckDto>>> SyncDecks(SyncDecksDto syncDecksDto)
+    {
+        var userId = User.GetUserId();
+        var userStats = await unitOfWork.StatsRepository.GetUserStatsAsync(userId);
+        if (userStats == null)
+        {
+            userStats = new UserStats { AppUserId = userId };
+            unitOfWork.StatsRepository.AddUserStats(userStats);
+        }
+
+        var results = new List<Deck>();
+        int netDeckChange = 0;
+
+        foreach (var newDeck in syncDecksDto.AddedDecks)
+        {
+            var deck = mapper.Map<Deck>(newDeck);
+            deck.AppUserId = userId;
+            unitOfWork.DecksRepository.AddDeck(deck);
+
+            var deckStats = new DeckStats
+            {
+                AppUserId = userId,
+                Deck = deck,
+                LastPlayedAt = DateTime.UtcNow,
+                Goal = newDeck.Goal
+            };
+            unitOfWork.StatsRepository.AddDeckStats(deckStats);
+            
+            results.Add(deck);
+            netDeckChange++;
+        }
+
+        foreach (var updateDeck in syncDecksDto.UpdatedDecks)
+        {
+            var deck = await unitOfWork.DecksRepository.GetDeckByIdAsync(updateDeck.Id);
+            if (deck != null && deck.AppUserId == userId)
+            {
+                mapper.Map(updateDeck, deck);
+                unitOfWork.DecksRepository.UpdateDeck(deck);
+                results.Add(deck);
+            }
+        }
+
+        foreach (var deletedId in syncDecksDto.DeletedDeckIds)
+        {
+            var deck = await unitOfWork.DecksRepository.GetDeckByIdAsync(deletedId);
+            if (deck != null && deck.AppUserId == userId)
+            {
+                unitOfWork.DecksRepository.DeleteDeck(deck);
+                netDeckChange--;
+            }
+        }
+
+        userStats.TotalDecks += netDeckChange;
+
+        if (await unitOfWork.Complete())
+        {
+            return Ok(mapper.Map<IEnumerable<DeckDto>>(results));
+        }
+
+        if (netDeckChange == 0 && !syncDecksDto.UpdatedDecks.Any())
+        {
+            return Ok(new List<DeckDto>());
+        }
+
+        return BadRequest("Failed to sync decks");
     }
 
     [HttpPut("{id}")]
@@ -106,12 +189,22 @@ public class DecksController(IUnitOfWork unitOfWork, IMapper mapper) : BaseApiCo
         if (deck == null) return NotFound();
         if (deck.AppUserId != User.GetUserId()) return NotFound();
 
+        var cardCount = 0;
+        var userStats = await unitOfWork.StatsRepository.GetUserStatsAsync(deck.AppUserId);
+        if (userStats != null) 
+        {
+            userStats.TotalDecks--;
+            cardCount = await unitOfWork.CardsRepository.GetCardCountForDeckAsync(id);
+            userStats.TotalCards -= cardCount;
+        }
+
         unitOfWork.DecksRepository.DeleteDeck(deck);
 
-        if (await unitOfWork.Complete()) return Ok();
+        if (await unitOfWork.Complete()) return Ok(new { cardCount });
 
         return BadRequest("Failed to delete deck");
     }
 }
+
 
 

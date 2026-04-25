@@ -1,13 +1,15 @@
+/* Copyright (c) 2026 Laczkó István & Brückner Gábor. All rights reserved. */
 import { Component, signal, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
-import { DeckService } from '../../core/services/deck.service';
-import { Deck } from '../../core/models/deck.model';
+import { DeckService } from '../../core/services/deck-service';
+import { Deck, DeckForUser } from '../../core/models/deck-models';
 import { TranslatePipe } from '../../core/i18n/translate.pipe';
-import { LanguageService } from '../../core/i18n/language.service';
+import { LanguageService } from '../../core/i18n/language-service';
 import { SidebarComponent } from '../../layout/sidebar/sidebar';
 import { BottomNavComponent } from '../../layout/bottom-nav/bottom-nav';
+import { DeckCardComponent } from '../../shared/components/deck-card/deck-card';
 
 interface NewDeck {
   title: string;
@@ -17,7 +19,7 @@ interface NewDeck {
 @Component({
   selector: 'app-decks',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink, TranslatePipe, SidebarComponent, BottomNavComponent],
+  imports: [CommonModule, FormsModule, TranslatePipe, SidebarComponent, BottomNavComponent, DeckCardComponent],
   templateUrl: './decks.html',
   styleUrl: './decks.css',
 })
@@ -26,15 +28,12 @@ export class Decks implements OnInit {
   deckService = inject(DeckService);
   langService = inject(LanguageService);
 
-  decks: Deck[] = [];
+  decks = this.deckService.decks;
 
-  newDeck: NewDeck = { title: '', goal: '1 Week' };
+  newDeck: NewDeck = { title: '', goal: 'weeks' };
 
   ngOnInit() {
     this.deckService.loadDecks().subscribe();
-    this.deckService.decks$.subscribe(decks => {
-      this.decks = decks;
-    });
   }
 
   openModal(): void {
@@ -43,7 +42,7 @@ export class Decks implements OnInit {
 
   closeModal(): void {
     this.isModalOpen.set(false);
-    this.newDeck = { title: '', goal: '1 Week' };
+    this.newDeck = { title: '', goal: 'weeks' };
   }
 
   onCreateDeck(): void {
@@ -52,8 +51,8 @@ export class Decks implements OnInit {
     this.closeModal();
   }
 
-  onDeleteDeck(title: string): void {
-    this.deckService.deleteDeck(title).subscribe();
+  onDeleteDeck(id: string): void {
+    this.deckService.deleteDeck(id).subscribe();
   }
 
   // DeLeTe Modal
@@ -62,8 +61,8 @@ export class Decks implements OnInit {
   deckToDelete = signal<string | null>(null);
   deleteValidationText = '';
 
-  confirmDeleteDeck(title: string): void {
-    this.deckToDelete.set(title);
+  confirmDeleteDeck(id: string): void {
+    this.deckToDelete.set(id);
     this.isDeleteConfirmOpen.set(true);
   }
 
@@ -82,9 +81,9 @@ export class Decks implements OnInit {
 
   executeDeleteDeck(): void {
     if (this.deleteValidationText === 'DeLeTe') {
-      const title = this.deckToDelete();
-      if (title) {
-        this.deckService.deleteDeck(title).subscribe();
+      const id = this.deckToDelete();
+      if (id) {
+        this.deckService.deleteDeck(id).subscribe();
       }
       this.cancelDelete();
     } else {
@@ -92,3 +91,6 @@ export class Decks implements OnInit {
     }
   }
 }
+
+
+

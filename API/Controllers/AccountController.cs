@@ -1,3 +1,4 @@
+// Copyright (c) 2026 Laczkó István & Brückner Gábor. All rights reserved.
 using System;
 using System.Security.Cryptography;
 using System.Text;
@@ -39,20 +40,7 @@ public class AccountController(UserManager<AppUser> userManager, ITokenService t
             return ValidationProblem();
         }
 
-        var userStats = new UserStats
-        {
-            AppUserId = user.Id,
-            FlippedCardsTotal = 0,
-            FlippedCardsToday = 0,
-            LearningStreak = 0,
-            TotalDecks = 0,
-            TotalCards = 0,
-            TotalMasteredCards = 0,
-            LastFlipAt = DateTime.UtcNow,
-            WeeklyActivityJson = "[]"
-        };
-
-        unitOfWork.StatsRepository.AddUserStats(userStats);
+        unitOfWork.StatsRepository.AddUserStats(new UserStats { AppUserId = user.Id });
         await unitOfWork.Complete();
 
         await SetRefreshTokenCookie(user);
@@ -150,7 +138,6 @@ public class AccountController(UserManager<AppUser> userManager, ITokenService t
         var user = await userManager.FindByIdAsync(User.GetUserId());
         if (user == null) return NotFound();
 
-        // 1. Manuális jelszó ellenőrzés, hogy mi kontrolláljuk a hibaüzenetet
         var passwordCheck = await userManager.CheckPasswordAsync(user, changePasswordDto.OldPassword);
         if (!passwordCheck)
         {
@@ -158,7 +145,6 @@ public class AccountController(UserManager<AppUser> userManager, ITokenService t
             return ValidationProblem();
         }
 
-        // 2. Ha a régi jó, akkor jöhet a csere (az új jelszó komplexitását még mindig az Identity védi)
         var result = await userManager.ChangePasswordAsync(user, changePasswordDto.OldPassword, changePasswordDto.NewPassword);
 
         if (!result.Succeeded)
@@ -211,4 +197,5 @@ public class AccountController(UserManager<AppUser> userManager, ITokenService t
         return dto;
     }
 }
+
 

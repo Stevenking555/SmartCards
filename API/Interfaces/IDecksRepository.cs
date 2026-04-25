@@ -1,3 +1,4 @@
+// Copyright (c) 2026 Laczkó István & Brückner Gábor. All rights reserved.
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -8,6 +9,7 @@ namespace API.Interfaces;
 public interface IDecksRepository
 {
     Task<IEnumerable<Deck>> GetDecksAsync(string userId);
+    Task<IEnumerable<Deck>> GetLastPlayedDecksAsync(string userId, int limit);
     Task<Deck?> GetDeckByIdAsync(Guid id);
     Task<Deck?> GetDeckWithStatsAsync(string userId, Guid deckId);
     Task<Deck?> GetDeckWithCardsAsync(string userId, Guid deckId);
@@ -17,3 +19,4 @@ public interface IDecksRepository
     void UpdateDeck(Deck deck);
     void DeleteDeck(Deck deck);
 }
+

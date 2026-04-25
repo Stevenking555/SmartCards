@@ -1,3 +1,4 @@
+// Copyright (c) 2026 Laczkó István & Brückner Gábor. All rights reserved.
 using System;
 using System.Security.Claims;
 
@@ -8,6 +9,6 @@ public static class ClaimsPrincipalExtensions
     public static string GetUserId(this ClaimsPrincipal user)
     {
         return user.FindFirstValue(ClaimTypes.NameIdentifier)
-            ?? throw new Exception("Cannot get userId from token");
+            ?? throw new InvalidOperationException("Cannot get userId from token");
     }
 }

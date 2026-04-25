@@ -1,3 +1,4 @@
+// Copyright (c) 2026 Laczkó István & Brückner Gábor. All rights reserved.
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,13 +23,6 @@ public class DecksRepository(AppDbContext context) : IDecksRepository
 
     public void DeleteDeck(Deck deck)
     {
-        // Must manually drop related stats because of Restrict delete behavior
-        var deckStats = context.DeckStats.Where(ds => ds.DeckId == deck.Id);
-        context.DeckStats.RemoveRange(deckStats);
-
-        var cardStats = context.CardStats.Where(cs => cs.Card.DeckId == deck.Id);
-        context.CardStats.RemoveRange(cardStats);
-
         context.Decks.Remove(deck);
     }
 
@@ -41,6 +35,24 @@ public class DecksRepository(AppDbContext context) : IDecksRepository
     {
         return await context.Decks
             .Where(d => d.AppUserId == userId)
+            .Include(d => d.DeckStats.Where(ds => ds.AppUserId == userId))
+            .OrderByDescending(d => d.DeckStats.Where(ds => ds.AppUserId == userId)
+                .Select(ds => (DateTime?)ds.LastPlayedAt)
+                .Max() ?? d.CreatedAt)
+            .ThenByDescending(d => d.CreatedAt)
+            .ToListAsync();
+    }
+
+    public async Task<IEnumerable<Deck>> GetLastPlayedDecksAsync(string userId, int limit)
+    {
+        return await context.Decks
+            .Include(d => d.DeckStats.Where(ds => ds.AppUserId == userId))
+            .Include(d => d.Cards)
+                .ThenInclude(c => c.CardStats.Where(cs => cs.AppUserId == userId))
+            .Where(d => d.AppUserId == userId && d.DeckStats.Any(ds => ds.AppUserId == userId))
+            .OrderByDescending(d => d.DeckStats.Where(ds => ds.AppUserId == userId).Max(ds => ds.LastPlayedAt))
+            .Take(limit)
+            .AsSplitQuery()
             .ToListAsync();
     }
 
@@ -54,7 +66,9 @@ public class DecksRepository(AppDbContext context) : IDecksRepository
     public async Task<Deck?> GetDeckWithCardsAsync(string userId, Guid deckId)
     {
         return await context.Decks
-            .Include(d => d.Cards)
+            .Include(d => d.DeckStats.Where(ds => ds.AppUserId == userId))
+            .Include(d => d.Cards.OrderByDescending(c => c.CreatedAt))
+                .ThenInclude(c => c.CardStats.Where(cs => cs.AppUserId == userId))
             .AsSplitQuery()
             .FirstOrDefaultAsync(d => d.Id == deckId && d.AppUserId == userId);
     }
@@ -62,7 +76,8 @@ public class DecksRepository(AppDbContext context) : IDecksRepository
     public async Task<Deck?> GetDeckForGameAsync(string userId, Guid deckId)
     {
         return await context.Decks
-            .Include(d => d.Cards)
+            .Include(d => d.DeckStats.Where(ds => ds.AppUserId == userId))
+            .Include(d => d.Cards.OrderByDescending(c => c.CreatedAt))
                 .ThenInclude(c => c.CardStats.Where(cs => cs.AppUserId == userId))
             .AsSplitQuery()
             .FirstOrDefaultAsync(d => d.Id == deckId && d.AppUserId == userId);
@@ -73,3 +88,4 @@ public class DecksRepository(AppDbContext context) : IDecksRepository
         context.Entry(deck).State = EntityState.Modified;
     }
 }
+

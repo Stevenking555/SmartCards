@@ -1,3 +1,4 @@
+// Copyright (c) 2026 Laczkó István & Brückner Gábor. All rights reserved.
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -20,4 +21,8 @@ public class DeckStats
     public int KnowledgePercentage { get; set; }
     public int TimeSpentMinutes { get; set; }
     public DateTime LastPlayedAt { get; set; }
+    
+    [Required]
+    public string Goal { get; set; } = "weeks";
 }
+

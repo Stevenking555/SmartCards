@@ -1,3 +1,4 @@
+/* Copyright (c) 2026 Laczkó István & Brückner Gábor. All rights reserved. */
 import { Component, EventEmitter, Output, inject, OnInit } from '@angular/core';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AccountService } from '../../../core/services/account-service';
@@ -19,7 +20,7 @@ export class RegisterComponent implements OnInit {
   private router = inject(Router);
   private fb = inject(FormBuilder);
   private toast = inject(ToastService);
-  
+
   protected registerForm: FormGroup = new FormGroup({});
 
   ngOnInit(): void {
@@ -35,8 +36,8 @@ export class RegisterComponent implements OnInit {
       email: ['', [Validators.required, Validators.email, Validators.maxLength(32)]],
       displayName: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(32)]],
       password: ['', [
-        Validators.required, 
-        Validators.minLength(6), 
+        Validators.required,
+        Validators.minLength(6),
         Validators.maxLength(32),
         // Password pattern: at least one digit, one lowercase, and one uppercase letter
         Validators.pattern(/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,32}$/)
@@ -68,7 +69,6 @@ export class RegisterComponent implements OnInit {
             }
             this.registerForm.markAllAsTouched();
           } else if (typeof err === 'string' || Array.isArray(err)) {
-            // ErrorInterceptor might have thrown flattened array if we matched Neil's structure exactly
             const msgs = Array.isArray(err) ? err : [err];
             this.toast.error(msgs.join('\n'));
           } else {

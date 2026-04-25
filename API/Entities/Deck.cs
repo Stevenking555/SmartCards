@@ -1,3 +1,4 @@
+// Copyright (c) 2026 Laczkó István & Brückner Gábor. All rights reserved.
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -25,3 +26,4 @@ public class Deck
     public ICollection<Card> Cards { get; set; } = new List<Card>();
     public ICollection<DeckStats> DeckStats { get; set; } = new List<DeckStats>();
 }
+

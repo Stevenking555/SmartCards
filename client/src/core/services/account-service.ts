@@ -1,8 +1,11 @@
+/* Copyright (c) 2026 Laczkó István & Brückner Gábor. All rights reserved. */
 import { Injectable, inject, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { ChangePasswordForm, LoginCreds, RegisterCreds, UpdateEmailForm, User } from '../models/user';
+import { ChangePasswordForm, LoginCreds, RegisterCreds, UpdateEmailForm, User } from '../models/user-models';
 import { tap } from 'rxjs';
 import { environment } from '../../environments/environment';
+import { DeckService } from './deck-service';
+import { HomeService } from './home-service';
 
 @Injectable({
   providedIn: 'root',
@@ -10,6 +13,8 @@ import { environment } from '../../environments/environment';
 export class AccountService {
 
   private http = inject(HttpClient);
+  private deckService = inject(DeckService);
+  private homeService = inject(HomeService);
   currentUser = signal<User | null>(null);
 
   baseUrl = environment.apiUrl;
@@ -47,6 +52,8 @@ export class AccountService {
   logout() {
     return this.http.post(this.baseUrl + 'account/logout', {}, { withCredentials: true }).pipe(
       tap(() => {
+        this.deckService.clearCache();
+        this.homeService.clearCache();
         this.currentUser.set(null);
       })
     );
