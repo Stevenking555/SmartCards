@@ -1,15 +1,17 @@
+// Copyright (c) 2026 Laczkó István & Brückner Gábor. All rights reserved.
 using System.Security.Claims;
 using API.DTOs;
 using API.Entities;
 using API.Extensions;
 using API.Interfaces;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers
 {
     [Authorize]
-    public class UserController(IUnitOfWork uow) : BaseApiController
+    public class UserController(IUnitOfWork uow, UserManager<AppUser> userManager) : BaseApiController
     {
         [HttpGet]
         public async Task<ActionResult<IEnumerable<AppUser>>> GetUsers()
@@ -32,17 +34,30 @@ namespace API.Controllers
         {
             var userId = User.GetUserId();
 
-            var appUser = await uow.UserRepository.GetUserForUpdate(userId);
-
+            var appUser = await userManager.FindByIdAsync(userId);
             if (appUser == null) return BadRequest("Could not get appUser");
+
+            // Verify current password
+            if (string.IsNullOrEmpty(userUpdateDto.CurrentPassword)) return BadRequest("Password is required");
+
+            var resultCheck = await userManager.CheckPasswordAsync(appUser, userUpdateDto.CurrentPassword);
+            if (!resultCheck)
+            {
+                ModelState.AddModelError("CurrentPassword", "error.password.mismatch");
+                return ValidationProblem();
+            }
 
             appUser.DisplayName = userUpdateDto.DisplayName ?? appUser.DisplayName;
 
-            uow.UserRepository.Update(appUser); // optional
+            var result = await userManager.UpdateAsync(appUser);
+            if (result.Succeeded) return NoContent();
 
-            if (await uow.Complete()) return NoContent();
-
-            return BadRequest("Failed to update AppUser");
+            foreach (var error in result.Errors)
+            {
+                ModelState.AddModelError("Identity", error.Description);
+            }
+            return ValidationProblem();
         }
     }
 }
+

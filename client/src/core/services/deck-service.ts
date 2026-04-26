@@ -1,0 +1,273 @@
+/* Copyright (c) 2026 Laczkó István & Brückner Gábor. All rights reserved. */
+import { Injectable, inject, signal, WritableSignal } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { tap, of, Observable } from 'rxjs';
+import { Deck, Card, DeckForUser, DeckStats, CardWithStats } from '../models/deck-models';
+import { environment } from '../../environments/environment';
+import { HomeService } from './home-service';
+
+@Injectable({
+  providedIn: 'root'
+})
+export class DeckService {
+  private http = inject(HttpClient);
+  private homeService = inject(HomeService);
+  baseUrl = environment.apiUrl;
+
+  clearCache() {
+    this._decks.set([]);
+    this._lastEditedDecks.set([]);
+    this._lastPlayedDecks.set([]);
+    this.initialLoadCompleted = false;
+  }
+
+  // Internal Writable Signals (Private)
+  private _decks = signal<DeckForUser[]>([]);
+  private _lastEditedDecks = signal<DeckForUser[]>([]);
+  private _lastPlayedDecks = signal<DeckForUser[]>([]);
+
+  // Public Read-only Signals (Encapsulation)
+  public decks = this._decks.asReadonly();
+  public lastEditedDecks = this._lastEditedDecks.asReadonly();
+  public lastPlayedDecks = this._lastPlayedDecks.asReadonly();
+
+  private initialLoadCompleted = false;
+
+  addToLastEdited(deck: DeckForUser) {
+    this.updateLRUSignal(this._lastEditedDecks, deck);
+  }
+
+  addToLastPlayed(deck: DeckForUser) {
+    this.updateLRUSignal(this._lastPlayedDecks, deck);
+  }
+
+  private updateLRUSignal(sig: WritableSignal<DeckForUser[]>, deck: DeckForUser) {
+    sig.update(current => {
+      const list = [...current];
+      const index = list.findIndex(d => d.info.id === deck.info.id);
+      if (index !== -1) list.splice(index, 1);
+      list.unshift(deck);
+      if (list.length > 5) list.pop();
+      return list;
+    });
+  }
+
+  loadDecks(force: boolean = false): Observable<DeckForUser[]> {
+    if (!force && this.initialLoadCompleted) {
+      return of(this._decks());
+    }
+
+    this.loadLastPlayedDecks(5, force).subscribe();
+
+    return this.http.get<DeckForUser[]>(this.baseUrl + 'decks/with-stats', { withCredentials: true }).pipe(
+      tap(data => {
+        this._decks.set(data);
+        this.initialLoadCompleted = true;
+      })
+    );
+  }
+
+  loadLastPlayedDecks(limit: number = 5, force: boolean = false): Observable<DeckForUser[]> {
+    if (!force && this._lastPlayedDecks().length > 0) {
+      return of(this._lastPlayedDecks());
+    }
+    return this.http.get<DeckForUser[]>(`${this.baseUrl}decks/last-played?limit=${limit}`, { withCredentials: true }).pipe(
+      tap(data => {
+        this._lastPlayedDecks.set(data);
+      })
+    );
+  }
+
+  getOrLoadDeckForGame(id: string): Observable<DeckForUser> {
+    const fromEdit = this._lastEditedDecks().find(d => d.info.id === id);
+    if (fromEdit) return of(fromEdit);
+
+    const fromPlay = this._lastPlayedDecks().find(d => d.info.id === id);
+    if (fromPlay) return of(fromPlay);
+
+    return this.http.get<DeckForUser>(`${this.baseUrl}decks/${id}/for-game`, { withCredentials: true }).pipe(
+      tap(data => {
+        if (data) {
+          this.updateItemInSignals(id, (d) => {
+            d.info = data.info;
+            d.cards = data.cards;
+            d.stats = data.stats;
+          }, true);
+        }
+      })
+    );
+  }
+
+  getDeckById(id: string): DeckForUser | undefined {
+    return this._decks().find(d => d.info.id === id);
+  }
+
+  getDeckWithCards(id: string): Observable<DeckForUser> {
+    return this.http.get<DeckForUser>(`${this.baseUrl}decks/${id}/with-cards`, { withCredentials: true }).pipe(
+      tap(data => {
+        this.updateItemInSignals(id, (d) => {
+          d.info = data.info;
+          d.cards = data.cards;
+          d.stats = data.stats;
+        });
+      })
+    );
+  }
+
+  addDeck(title: string, goal: string): Observable<Deck> {
+    return this.http.post<Deck>(this.baseUrl + 'decks', { title, goal }, { withCredentials: true }).pipe(
+      tap(newDeck => {
+        if (newDeck) {
+          const newDeckForUser: DeckForUser = {
+            info: newDeck,
+            stats: { knowledgePercentage: 0, timeSpentMinutes: 0, goal: goal }
+          };
+          this._decks.update(current => [newDeckForUser, ...current]);
+          this.homeService.updateDeckCount(1);
+        }
+      })
+    );
+  }
+
+  updateDeck(id: string, deckData: { title: string, description?: string }): Observable<any> {
+    const title = deckData.title.trim();
+    const description = deckData.description?.trim();
+    return this.http.put(`${this.baseUrl}decks/${id}`, { title, description }, { withCredentials: true }).pipe(
+      tap(() => {
+        const updateFn = (d: DeckForUser) => {
+          d.info.title = title;
+          if (description !== undefined) d.info.description = description;
+        };
+        this.updateItemInSignals(id, updateFn);
+      })
+    );
+  }
+
+  deleteDeck(id: string): Observable<any> {
+    return this.http.delete<{ cardCount: number }>(`${this.baseUrl}decks/${id}`, { withCredentials: true }).pipe(
+      tap((response) => {
+        this._decks.update(list => list.filter(d => d.info.id !== id));
+        this._lastPlayedDecks.update(list => list.filter(d => d.info.id !== id));
+        this._lastEditedDecks.update(list => list.filter(d => d.info.id !== id));
+
+        this.homeService.updateDeckCount(-1);
+        if (response && response.cardCount > 0) {
+          this.homeService.updateCardCount(-response.cardCount);
+        }
+      })
+    );
+  }
+
+  addCardToDeck(deckId: string, card: Omit<Card, 'id'>): Observable<CardWithStats> {
+    const payload = { question: card.question, answer: card.answer };
+    return this.http.post<CardWithStats>(`${this.baseUrl}decks/${deckId}/cards`, payload, { withCredentials: true }).pipe(
+      tap(newCardWithStats => {
+        if (newCardWithStats) {
+          const updateFn = (d: DeckForUser) => {
+            if (!d.cards) d.cards = [];
+            d.cards.push(newCardWithStats);
+          };
+          this.updateItemInSignals(deckId, updateFn, true);
+          this.homeService.updateCardCount(1);
+        }
+      })
+    );
+  }
+
+  importCards(deckId: string, bulkText: string): Observable<any> {
+    const payload = { bulkText };
+    return this.http.post(`${this.baseUrl}decks/${deckId}/cards/import`, payload, { withCredentials: true }).pipe(
+      tap((result: any) => {
+        if (result && result.isSuccess) {
+          this.homeService.updateCardCount(result.importedCount || 0);
+          this.loadDecks(true).subscribe();
+        }
+      })
+    );
+  }
+
+  deleteCard(deckId: string, cardId: string): Observable<any> {
+    return this.http.delete(`${this.baseUrl}decks/${deckId}/cards/${cardId}`, { withCredentials: true }).pipe(
+      tap(() => {
+        const filterFn = (d: DeckForUser) => {
+          if (d.cards) d.cards = d.cards.filter(cw => cw.data.id !== cardId);
+        };
+        this.updateItemInSignals(deckId, filterFn, true);
+        this.homeService.updateCardCount(-1);
+      })
+    );
+  }
+
+  syncCards(deckId: string, syncDto: any): Observable<DeckForUser> {
+    return this.http.post<DeckForUser>(`${this.baseUrl}decks/${deckId}/cards/sync`, syncDto, { withCredentials: true }).pipe(
+      tap(updatedDeck => {
+        if (updatedDeck) {
+          // Force update local signals with the definitive server state
+          this.updateItemInSignals(deckId, (d) => {
+            d.info = updatedDeck.info;
+            d.cards = updatedDeck.cards;
+            d.stats = updatedDeck.stats;
+          }, true);
+
+          this.loadDecks(true).subscribe();
+        }
+      })
+    );
+  }
+
+  updateCard(deckId: string, cardId: string, updatedData: Omit<Card, 'id'>): Observable<Card> {
+    const payload = { question: updatedData.question, answer: updatedData.answer };
+    return this.http.put<Card>(`${this.baseUrl}decks/${deckId}/cards/${cardId}`, payload, { withCredentials: true }).pipe(
+      tap(updatedCard => {
+        if (updatedCard) {
+          const updateFn = (d: DeckForUser) => {
+            if (d.cards) {
+              const idx = d.cards.findIndex(cw => cw.data.id === cardId);
+              if (idx !== -1) d.cards[idx].data = updatedCard;
+            }
+          };
+          this.updateItemInSignals(deckId, updateFn);
+        }
+      })
+    );
+  }
+
+  updateDeckCardsLocally(deckId: string, cards: CardWithStats[]) {
+    const updateFn = (d: DeckForUser) => {
+      d.cards = [...cards];
+    };
+    this.updateItemInSignals(deckId, updateFn, true);
+  }
+
+  updateDeckStats(deckId: string, stats: DeckStats) {
+    const updateFn = (d: DeckForUser) => {
+      d.stats = stats;
+    };
+    this.updateItemInSignals(deckId, updateFn);
+  }
+
+  private updateItemInSignals(deckId: string, updateFn: (deck: DeckForUser) => void, isCardOp: boolean = false) {
+    // Determine which signals to update
+    // Summary list (_decks) only gets title/desc updates.
+    // Detailed lists (Played/Edited) get everything.
+    const signalsToUpdate = isCardOp
+      ? [this._lastPlayedDecks, this._lastEditedDecks]
+      : [this._decks, this._lastPlayedDecks, this._lastEditedDecks];
+
+    signalsToUpdate.forEach(sig => {
+      sig.update(list => {
+        const newList = [...list];
+        const idx = newList.findIndex(d => d.info.id === deckId);
+        if (idx !== -1) {
+          const item: DeckForUser = {
+            ...newList[idx],
+            cards: newList[idx].cards ? [...newList[idx].cards] : newList[idx].cards
+          };
+          updateFn(item);
+          newList[idx] = item;
+        }
+        return newList;
+      });
+    });
+  }
+}
