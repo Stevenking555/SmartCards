@@ -1,3 +1,4 @@
+// Copyright (c) 2026 Laczkó István & Brückner Gábor. All rights reserved.
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers
@@ -8,3 +9,4 @@ namespace API.Controllers
     {
     }
 }
+

@@ -1,0 +1,37 @@
+<!-- Copyright (c) 2026 Laczkó István & Brückner Gábor. All rights reserved. -->
+<div>
+  <label class="block text-sm/6 font-medium text-base-content/80">{{label()}}</label>
+  <div class="mt-2">
+    <input 
+      [type]="type()"
+      [formControl]="control"
+      [placeholder]="placeholder()"
+      class="block w-full rounded-md bg-base-200 px-3 py-1.5 text-base text-base-content outline-1 -outline-offset-1 outline-base-content/20 placeholder:text-base-content/50 focus:outline-2 focus:-outline-offset-2 sm:text-sm/6"
+      [class.focus:outline-orange-600]="!control.invalid || !control.touched"
+      [class.outline-red-500]="control.invalid && control.touched"
+      [class.focus:outline-red-500]="control.invalid && control.touched" 
+    />
+  </div>
+  @if (control.hasError('required') && control.touched) {
+    <div class="text-red-500 text-xs mt-1">The {{label()}} field is required.</div>
+  }
+  @if (control.hasError('email') && control.touched) {
+    <div class="text-red-500 text-xs mt-1">The {{label()}} field is not a valid e-mail address.</div>
+  }
+  @if (control.hasError('minlength') && control.touched) {
+    <div class="text-red-500 text-xs mt-1">
+      The {{label()}} must be at least {{control.errors?.['minlength'].requiredLength}} characters.
+    </div>
+  }
+  @if (control.hasError('maxlength') && control.touched) {
+    <div class="text-red-500 text-xs mt-1">
+      The {{label()}} must be at most {{control.errors?.['maxlength'].requiredLength}} characters.
+    </div>
+  }
+  @if (control.hasError('pattern') && control.touched) {
+    <div class="text-red-500 text-xs mt-1">Must contain at least one digit, one lowercase, and one uppercase letter.</div>
+  }
+  @if (control.hasError('serverError')) {
+    <div class="text-red-500 text-xs mt-1">{{ control.getError('serverError') }}</div>
+  }
+</div>

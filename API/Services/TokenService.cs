@@ -1,3 +1,4 @@
+// Copyright (c) 2026 Laczkó István & Brückner Gábor. All rights reserved.
 using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -15,10 +16,10 @@ public class TokenService(IConfiguration config) : ITokenService
 {
     public async Task<string> CreateToken(AppUser user)
     {
-        var tokenKey = config["TokenKey"] ?? throw new Exception("Cannot get token key");
+        var tokenKey = config["TokenKey"] ?? throw new InvalidOperationException("Cannot get token key");
         if (tokenKey.Length < 64)
         {
-            throw new Exception("Your token key needs to be >= 64 characters");
+            throw new InvalidOperationException("Your token key needs to be >= 64 characters");
         }
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(tokenKey));
 
@@ -33,7 +34,7 @@ public class TokenService(IConfiguration config) : ITokenService
         var tokenDescriptor = new SecurityTokenDescriptor
         {
             Subject = new ClaimsIdentity(claims),
-            Expires = DateTime.UtcNow.AddDays(7),
+            Expires = DateTime.UtcNow.AddMinutes(15),
             SigningCredentials = creds
         };
 
@@ -49,3 +50,4 @@ public class TokenService(IConfiguration config) : ITokenService
         return Convert.ToBase64String(randomBytes);
     }
 }
+
