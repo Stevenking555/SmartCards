@@ -10,7 +10,7 @@ public class CardMappingProfile : Profile
     public CardMappingProfile()
     {
         CreateMap<CreateCardDto, Card>();
-        CreateMap<Card, CardDto>();
+        CreateMap<Card, CardDto>().ReverseMap();
         CreateMap<Card, CardWithStatsDto>()
             .ForMember(dest => dest.Card, opt => opt.MapFrom(src => src))
             .ForMember(dest => dest.CardStats, opt => opt.MapFrom(src => src.CardStats.FirstOrDefault()));

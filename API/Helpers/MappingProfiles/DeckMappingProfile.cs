@@ -10,7 +10,7 @@ public class DeckMappingProfile : Profile
     public DeckMappingProfile()
     {
         CreateMap<CreateDeckDto, Deck>();
-        CreateMap<Deck, DeckDto>();
+        CreateMap<Deck, DeckDto>().ReverseMap();
         CreateMap<Deck, DeckWithStatsDto>()
             .ForMember(dest => dest.Deck, opt => opt.MapFrom(src => src))
             .ForMember(dest => dest.DeckStats, opt => opt.MapFrom(src => src.DeckStats.FirstOrDefault()));

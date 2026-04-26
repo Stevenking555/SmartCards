@@ -66,7 +66,7 @@ public class StatsService(IUnitOfWork unitOfWork, IMapper mapper) : IStatsServic
             
             // Reset daily counters
             userStats.FlippedCardsToday = 0;
-            userStats.LearningStreak = (daysPassed == 1) ? userStats.LearningStreak + 1 : 0;
+            if (daysPassed > 1) userStats.LearningStreak = 0; 
             
             modified = true;
         }
